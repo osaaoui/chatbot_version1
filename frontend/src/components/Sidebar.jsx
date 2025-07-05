@@ -94,7 +94,7 @@ const Sidebar = ({
 };
 
   return (
-    <div className="flex flex-col items-center w-[280px] h-screen px-4 py-6 bg-gray-50 border-r border-gray-200">
+<div className="fixed top-0 left-0 z-10 flex flex-col items-center w-[280px] h-screen px-4 py-6 bg-gray-50 border-r border-gray-200">
       {/* Header with icon */}
       <h2 className="flex items-center gap-2 text-base font-semibold text-gray-700 mb-6">
         <DocumentIcon className="w-5 h-5 text-purple-600" />

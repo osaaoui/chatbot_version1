@@ -15,28 +15,44 @@ export default function App() {
   const [sources, setSources] = useState([]);
   const [stagedFiles, setStagedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
 
   // ✅ Always call hooks at the top-level – this one stays here
   useEffect(() => {
-    setQuestion("");
+  setQuestion("");
   setAnswer("");
   setSources([]);
-    const fetchFiles = async () => {
-      if (token && user?.email) {
-        try {
-          const response = await axios.get("http://localhost:8000/files", {
-            params: { user_id: user.email },
-          });
-          setUploadedFiles(response.data.files);
-          
-        } catch (error) {
-          console.error("Failed to fetch uploaded files:", error);
-        }
-      }
-    };
 
-    fetchFiles();
-  }, [token, user]);
+  const fetchFiles = async () => {
+    if (token && user?.email) {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/v2/documents/user-documents/${user.email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Normalize the backend metadata into the expected structure
+        const formattedFiles = response.data.map(entry => ({
+          name: entry.filename,
+          status: "processed",
+          total_chunks: entry.total_chunks,
+          processed_at: entry.processed_at,
+        }));
+
+        setUploadedFiles(formattedFiles);
+      } catch (error) {
+        console.error("Failed to fetch uploaded files:", error);
+      }
+    }
+  };
+
+  fetchFiles();
+}, [token, user]);
 
   // ✅ Show nothing (or spinner) while auth state is loading
   if (!loaded) return null;
@@ -154,7 +170,13 @@ export default function App() {
   return (
     <div>
       <Header onLogout={logout} />
-      <div className="flex h-screen">
+<div
+  className={`flex mt-[48px] h-[calc(100vh-48px)] transition-all duration-300 ${
+    sidebarOpen ? "ml-[280px]" : "ml-0"
+  }`}
+>
+
+        {sidebarOpen && (
         <Sidebar
           stagedFiles={stagedFiles}
           setStagedFiles={setStagedFiles}
@@ -166,12 +188,14 @@ export default function App() {
           onFileSelected={handleFileSelected}
           isProcessing={isProcessing}
         />
+        )}
         <ChatPane
           question={question}
           answer={answer}
           sources={sources}
           onQuestionChange={(e) => setQuestion(e.target.value)}
           onSend={sendQuestion}
+          toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
       </div>
     </div>

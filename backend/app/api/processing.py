@@ -2,12 +2,15 @@
 from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 import os
+from fastapi.responses import JSONResponse
+
 from app.services.vectorstore_service import process_document
 from typing import List
 from app.services.metadata_store import (
     has_already_been_processed,
     mark_as_processed,
     get_total_chunks,
+    load_metadata
 )
 
 UPLOAD_DIR = "uploaded_files"
@@ -18,6 +21,15 @@ router = APIRouter()
 class ProcessRequest(BaseModel):
     filenames: List[str]
     user_id: str
+
+@router.get("/user-documents/{user_id}")
+def get_user_documents(user_id: str):
+    metadata = load_metadata()
+    user_docs = [entry for entry in metadata if entry["user_id"] == user_id]
+    return JSONResponse(content=user_docs)
+
+
+
 
 @router.post("/process")
 def process_documents(req: ProcessRequest):

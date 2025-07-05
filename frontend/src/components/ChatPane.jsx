@@ -1,8 +1,8 @@
 // src/components/ChatPane.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { UserCircle, Bot } from "lucide-react"; // Icons
+import { UserCircle, Bot, PanelLeft } from "lucide-react"; // Icons
 
-function ChatPane({ question, answer, onQuestionChange, onSend, sources }) {
+function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSidebar }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [openSourceStates, setOpenSourceStates] = useState([]);
   const chatEndRef = useRef(null);
@@ -55,7 +55,20 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources }) {
   };
 
   return (
-    <div className="flex flex-col flex-1 h-screen bg-white">
+    <div className="flex flex-col flex-1 bg-white">
+
+      {/* Sidebar Toggle Button (Top Left) */}
+<div className="p-2 border-b">
+  <button
+    onClick={toggleSidebar}
+    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-7 w-7"
+    data-sidebar="trigger"
+  >
+    <PanelLeft />
+    <span className="sr-only">Toggle Sidebar</span>
+  </button>
+</div>
+
       {/* Chat Messages */}
       <main className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {chatHistory.length === 0 ? (
@@ -124,6 +137,7 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources }) {
         )}
         <div ref={chatEndRef} />
       </main>
+      
 
       {/* Chat Input */}
       <footer className="border-t px-6 py-3 bg-white">
