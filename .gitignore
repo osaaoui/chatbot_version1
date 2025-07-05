@@ -1,0 +1,15 @@
+# Environment variables
+.env
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env/
+venv/
+
+chroma_store/
+
+node_modules/
+# macOS or system files
+.DS_Store
