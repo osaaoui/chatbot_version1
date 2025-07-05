@@ -1,8 +1,5 @@
-# app/services/vectorstore_service.py
-
 import os
 import re
-import tempfile
 import camelot
 import pytesseract
 from pdf2image import convert_from_path
@@ -12,12 +9,12 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from app.core.config import settings
+from app.services.metadata_store import mark_as_processed  # <-- Make sure this is implemented
 
 CHROMA_DIR = "chroma_store"
 
 def safe_collection_name(user_id: str) -> str:
     return user_id.replace("@", "_at_").replace(".", "_dot_")
-
 
 def split_by_sections(text):
     section_keywords = [
@@ -50,7 +47,6 @@ def split_by_sections(text):
             structured_sections.append((section_title.title(), section_text))
     return structured_sections
 
-
 def chunk_table_rows(df, rows_per_chunk=10):
     chunks = []
     num_chunks = (len(df) + rows_per_chunk - 1) // rows_per_chunk
@@ -59,7 +55,6 @@ def chunk_table_rows(df, rows_per_chunk=10):
         md_chunk = chunk_df.to_markdown(index=False)
         chunks.append(md_chunk)
     return chunks
-
 
 def extract_tables_from_pdf(file_path, original_filename):
     tables_text = []
@@ -82,7 +77,6 @@ def extract_tables_from_pdf(file_path, original_filename):
                     }
                 })
     except Exception as e:
-        # fallback to OCR
         try:
             images = convert_from_path(file_path)
             for i, image in enumerate(images):
@@ -100,14 +94,12 @@ def extract_tables_from_pdf(file_path, original_filename):
             print(f"OCR extraction failed: {ocr_e}")
     return tables_text
 
-
 def process_document(file_path: str, user_id: str):
     documents = []
     original_filename = os.path.basename(file_path)
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     os.makedirs(user_store_dir, exist_ok=True)
-    collection_name = safe_collection_name(user_id)  # ✅ sanitize email
-
+    collection_name = safe_collection_name(user_id)
 
     try:
         loader = PyPDFLoader(file_path)
@@ -138,8 +130,6 @@ def process_document(file_path: str, user_id: str):
         print(f"Error during document parsing: {e}")
         raise e
 
-    # Save to vectorstore
-
     vectorstore = Chroma.from_documents(
         documents=documents,
         embedding=OpenAIEmbeddings(
@@ -150,12 +140,13 @@ def process_document(file_path: str, user_id: str):
         collection_name=collection_name
     )
     vectorstore.persist()
+
+    # ✅ Store document as processed
+    #mark_as_processed(user_id, original_filename, len(documents))
+
     return len(documents)
 
 def get_vectorstore(user_id):
-    """
-    Load Chroma vectorstore for a user.
-    """
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     return Chroma(
         collection_name=safe_collection_name(user_id),
@@ -166,18 +157,12 @@ def get_vectorstore(user_id):
         )
     )
 
-
 def get_retriever(user_id, search_kwargs=None):
-    """
-    Return retriever for user's vectorstore.
-    """
     if search_kwargs is None:
         search_kwargs = {"k": 4}
-
     try:
         vectorstore = get_vectorstore(user_id)
         return vectorstore.as_retriever(search_kwargs=search_kwargs)
     except Exception as e:
         print(f"[RAG] Failed to load retriever for user {user_id}: {e}")
         return None
-

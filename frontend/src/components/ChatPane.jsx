@@ -1,36 +1,171 @@
 // src/components/ChatPane.jsx
-import React from "react";
-import { SourceList } from "./SourceList"; // If it's in the same folder
-
+import React, { useState, useEffect, useRef } from "react";
+import { UserCircle, Bot } from "lucide-react"; // Icons
 
 function ChatPane({ question, answer, onQuestionChange, onSend, sources }) {
+  const [chatHistory, setChatHistory] = useState([]);
+  const [openSourceStates, setOpenSourceStates] = useState([]);
+  const chatEndRef = useRef(null);
+
+  // Auto-scroll on new message
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatHistory]);
+
+  // Update source states when new sources arrive
+  useEffect(() => {
+    if (sources?.length) {
+      setOpenSourceStates(Array(sources.length).fill(false));
+    }
+  }, [sources]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submitQuestion();
+    }
+  };
+
+  const submitQuestion = () => {
+    const trimmed = question.trim();
+    if (!trimmed) return;
+
+    setChatHistory((prev) => [
+      ...prev,
+      { type: "user", text: trimmed, time: new Date() },
+    ]);
+    onQuestionChange({ target: { value: "" } });
+    onSend();
+  };
+
+  // Add answer to chat history when it changes
+  useEffect(() => {
+    if (answer) {
+      setChatHistory((prev) => [
+        ...prev,
+        { type: "bot", text: answer, time: new Date() },
+      ]);
+    }
+  }, [answer]);
+
+  const toggleSource = (idx) => {
+    setOpenSourceStates((prev) =>
+      prev.map((val, i) => (i === idx ? !val : val))
+    );
+  };
+
   return (
-    <div style={{ flex: 1, padding: "1rem" }}>
-      <h1>Softia Chat</h1>
-      <input
-        type="text"
-        value={question}
-        onChange={onQuestionChange}
-        style={{ width: "100%", padding: "0.5rem" }}
-      />
-      <button onClick={onSend} style={{ marginTop: "0.5rem" }}>
-        Ask
-      </button>
-      <p style={{ marginTop: "1rem" }}>{answer}</p>
-
-      {sources && sources.length > 0 && (
-        <div style={{ marginTop: "2rem" }}>
-          <ul>
-            {sources && sources.length > 0 && (
-            <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-2">Sources</h3>
-            <SourceList sources={sources} />
-            </div>
-      )}
-
-          </ul>
+    <div className="flex flex-col flex-1 h-screen bg-white">
+      {/* Chat Messages */}
+      <main className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        {chatHistory.length === 0 ? (
+          <p className="text-gray-400 italic">Ask a question to get started...</p>
+        ) : (
+          chatHistory.map((msg, idx) => {
+  const isLastBot = msg.type === "bot" && idx === chatHistory.length - 1;
+  return (
+    <div key={idx} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+      {/* Avatar */}
+      {msg.type === "bot" && (
+        <div className="flex items-end mr-2">
+          <Bot className="w-5 h-5 text-gray-400" />
         </div>
       )}
+
+      {/* Message bubble */}
+      <div
+        className={`max-w-[80%] px-4 py-3 text-sm ${
+          msg.type === "user"
+            ? "bg-purple-600 text-white rounded-2xl rounded-br-none"
+            : "bg-gray-100 text-gray-800 rounded-2xl rounded-bl-none"
+        }`}
+      >
+        <div>{msg.text}</div>
+        <div className="text-[10px] text-gray-400 text-right mt-1">
+          {msg.time.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+
+        {/* Sources under latest bot message only */}
+        {isLastBot && sources && sources.length > 0 && (
+          <div className="mt-4 border-t border-gray-300 pt-3 text-xs text-gray-600 space-y-3">
+            <h4 className="font-semibold text-gray-700 mb-1">Sources</h4>
+            {sources.map((source, sidx) => (
+              <details
+                key={sidx}
+                className="bg-gray-50 border border-gray-200 rounded-lg p-2"
+              >
+                <summary className="cursor-pointer font-medium text-purple-700">
+                  📄 {source.metadata?.source || "Unnamed Document"}
+                  {source.metadata?.page && ` — Page ${source.metadata.page}`}
+                </summary>
+                <div className="mt-2 whitespace-pre-wrap">
+                  {source.content.slice(0, 800)}
+                  {source.content.length > 800 && " ..."}
+                </div>
+              </details>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* User icon */}
+      {msg.type === "user" && (
+        <div className="flex items-end ml-2">
+          <UserCircle className="w-5 h-5 text-purple-600" />
+        </div>
+      )}
+    </div>
+  );
+})
+
+        )}
+        <div ref={chatEndRef} />
+      </main>
+
+      {/* Chat Input */}
+      <footer className="border-t px-6 py-3 bg-white">
+        <form
+          className="flex items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            submitQuestion();
+          }}
+        >
+          <textarea
+            rows={1}
+            value={question}
+            onChange={onQuestionChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask a question about your documents..."
+            className="flex-1 resize-none rounded-full border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none"
+          />
+          <button
+            type="submit"
+            className="p-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 12h14M12 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </form>
+        <p className="text-[10px] text-gray-400 mt-1">
+          Press Enter to send, Shift+Enter for a new line
+        </p>
+      </footer>
     </div>
   );
 }

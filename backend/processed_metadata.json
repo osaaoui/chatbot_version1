@@ -1,0 +1,26 @@
+[
+  {
+    "user_id": "osaaoui@gmail.com",
+    "filename": "chap1.pdf",
+    "processed_at": "2025-07-05T04:12:22.010079",
+    "total_chunks": 36
+  },
+  {
+    "user_id": "osaaoui@gmail.com",
+    "filename": "cs-rolesem5mai2025.pdf",
+    "processed_at": "2025-07-05T04:13:22.741253",
+    "total_chunks": 9
+  },
+  {
+    "user_id": "osaaoui@gmail.com",
+    "filename": "adjectives.pdf",
+    "processed_at": "2025-07-05T04:54:35.489343",
+    "total_chunks": 20
+  },
+  {
+    "user_id": "osaaoui@gmail.com",
+    "filename": "Bromodomain.pdf",
+    "processed_at": "2025-07-05T14:08:14.923109",
+    "total_chunks": 28
+  }
+]

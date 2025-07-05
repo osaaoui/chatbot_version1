@@ -1,11 +1,20 @@
 import os
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@router.get("/files")
+def list_user_files(user_id: str = Query(...)):
+    user_files = []
+    for filename in os.listdir(UPLOAD_DIR):
+        if filename.startswith(user_id + "__"):
+            user_files.append(filename.split("__", 1)[1])  # Remove user_id from filename
+    return {"files": user_files}
+
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
