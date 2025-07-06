@@ -10,7 +10,7 @@ class ChatRequest(BaseModel):
     user_id: str = "default"
 
 class SourceDocument(BaseModel):
-    content: str
+    snippet: str
     metadata: dict
 
 class ChatResponse(BaseModel):
@@ -19,19 +19,13 @@ class ChatResponse(BaseModel):
     sources: list[SourceDocument]
     user_id: str
 
-from app.api.chat import SourceDocument  # already defined
-
 @router.post("/", response_model=ChatResponse)
 def chat_endpoint(req: ChatRequest):
-    answer, raw_sources = get_answer(req.question, req.user_id)
-
-    # Convert raw dicts to Pydantic models
-    sources = [SourceDocument(**s) for s in raw_sources]
+    answer, sources = get_answer(req.question, req.user_id)  # ✅ already cleaned
 
     return {
         "question": req.question,
         "answer": answer,
-        "sources": sources,
+        "sources": sources,  # ✅ no transformation here
         "user_id": req.user_id,
     }
-

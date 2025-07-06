@@ -2,9 +2,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { UserCircle, Bot, PanelLeft } from "lucide-react"; // Icons
 
-function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSidebar }) {
+function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSidebar,setSelectedSource }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [openSourceStates, setOpenSourceStates] = useState([]);
+
+
+
   const chatEndRef = useRef(null);
 
   // Auto-scroll on new message
@@ -18,6 +21,18 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSi
       setOpenSourceStates(Array(sources.length).fill(false));
     }
   }, [sources]);
+
+  const handleSourceClick = (source) => {
+  console.log("Clicked source:", source);
+
+  setSelectedSource({
+    filename: source.metadata?.source,
+    page: source.metadata?.page,
+    snippet: source.snippet || source.content || ""  // ✅ use the actual text, fallback if needed
+  });
+};
+
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -93,7 +108,23 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSi
             : "bg-gray-100 text-gray-800 rounded-2xl rounded-bl-none"
         }`}
       >
-        <div>{msg.text}</div>
+        <div>
+  {msg.text}
+  {isLastBot && sources && sources.length > 0 && (
+    <span className="ml-1">
+      {sources.map((source, sidx) => (
+        <button
+          key={sidx}
+          onClick={() => handleSourceClick(source)}
+          className="text-purple-600 hover:text-purple-800 text-xs ml-1 underline"
+        >
+          [{sidx + 1}]
+        </button>
+      ))}
+    </span>
+  )}
+</div>
+
         <div className="text-[10px] text-gray-400 text-right mt-1">
           {msg.time.toLocaleTimeString([], {
             hour: "2-digit",
@@ -101,27 +132,8 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSi
           })}
         </div>
 
-        {/* Sources under latest bot message only */}
-        {isLastBot && sources && sources.length > 0 && (
-          <div className="mt-4 border-t border-gray-300 pt-3 text-xs text-gray-600 space-y-3">
-            <h4 className="font-semibold text-gray-700 mb-1">Sources</h4>
-            {sources.map((source, sidx) => (
-              <details
-                key={sidx}
-                className="bg-gray-50 border border-gray-200 rounded-lg p-2"
-              >
-                <summary className="cursor-pointer font-medium text-purple-700">
-                  📄 {source.metadata?.source || "Unnamed Document"}
-                  {source.metadata?.page && ` — Page ${source.metadata.page}`}
-                </summary>
-                <div className="mt-2 whitespace-pre-wrap">
-                  {source.content.slice(0, 800)}
-                  {source.content.length > 800 && " ..."}
-                </div>
-              </details>
-            ))}
-          </div>
-        )}
+       
+
       </div>
 
       {/* User icon */}

@@ -5,6 +5,7 @@ import ChatPane from "./components/ChatPane";
 import AuthForm from "./components/AuthForm";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthProvider"; // Auth context hook
+import DocumentViewer from "./components/DocumentViewer";
 
 export default function App() {
   const { token, user, logout, loaded } = useAuth(); // Auth state
@@ -12,10 +13,17 @@ export default function App() {
   const [answer, setAnswer] = useState("");
   const [file, setFile] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [sources, setSources] = useState([]);
+  const [sources, setSources] = useState([
+    {
+    content: "This is a fake source for testing.",
+    metadata: { source: "test.pdf", page: 2 }
+  }
+  ]);
   const [stagedFiles, setStagedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedSource, setSelectedSource] = useState(null); 
+
 
 
   // ✅ Always call hooks at the top-level – this one stays here
@@ -35,6 +43,7 @@ export default function App() {
             },
           }
         );
+        
 
         // Normalize the backend metadata into the expected structure
         const formattedFiles = response.data.map(entry => ({
@@ -49,7 +58,10 @@ export default function App() {
         console.error("Failed to fetch uploaded files:", error);
       }
     }
+   
+
   };
+
 
   fetchFiles();
 }, [token, user]);
@@ -153,9 +165,13 @@ export default function App() {
           },
         }
       );
+      console.log("Sources returned:", res.data.sources);
 
       setAnswer(res.data.answer);
       setSources(res.data.sources || []);
+      setSources(res.data.sources || []);
+      console.log("Cleaned sources in frontend:", res.data.sources);
+
       setQuestion("");
     } catch (err) {
       setAnswer("Failed to get answer.");
@@ -196,8 +212,29 @@ export default function App() {
           onQuestionChange={(e) => setQuestion(e.target.value)}
           onSend={sendQuestion}
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          setSelectedSource={setSelectedSource}
+
         />
+           {/* Document Viewer */}
+{selectedSource && (
+  <>
+    {console.log("📄 Selected source snippet:", selectedSource.snippet)}
+    <DocumentViewer
+      source={{
+        metadata: {
+          source: selectedSource.filename,
+          page: selectedSource.page
+        },
+        snippet: "BRDs may be categorized into nine primary groups"
+
+      }}
+      onClose={() => setSelectedSource(null)}
+    />
+  </>
+)}
+
       </div>
+
     </div>
   );
 }

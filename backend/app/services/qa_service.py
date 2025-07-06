@@ -9,6 +9,9 @@ from ..core.config import settings  # Loads env vars like OPENAI_API_KEY
 logger = logging.getLogger(__name__)
 #logging.basicConfig(level=settings.LOG_LEVEL)
 
+import nltk
+from nltk.tokenize import sent_tokenize
+
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -48,10 +51,20 @@ def deduplicate_and_rerank_sources(answer: str, sources: list[dict]) -> list[dic
         (src, float(score)) for src, score in zip(unique_sources, scores)
         if score > 0.6  # Filter low-relevance
     ]
-
     # Sort descending by score
     reranked = sorted(scored_sources, key=lambda x: -x[1])
-    return [item[0] for item in reranked[:4]]  # Keep top 4
+
+# Convert to cleaned format for frontend
+    cleaned_sources = []
+    for src, score in reranked:
+        sentences = sent_tokenize(src["content"])
+        best_sentence = sentences[0] if sentences else src["content"][:200]
+        cleaned_sources.append({
+            "snippet": best_sentence.strip(),
+            "metadata": src["metadata"]
+        })
+
+    return cleaned_sources[:4]
 
 # Initialize LLM using environment-based API key and model name
 try:
