@@ -205,6 +205,7 @@ export default function App() {
           isProcessing={isProcessing}
         />
         )}
+        
         <ChatPane
           question={question}
           answer={answer}
@@ -225,7 +226,7 @@ export default function App() {
           source: selectedSource.filename,
           page: selectedSource.page
         },
-        snippet: "BRDs may be categorized into nine primary groups"
+        snippet: selectedSource.snippet
 
       }}
       onClose={() => setSelectedSource(null)}

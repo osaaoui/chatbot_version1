@@ -17,84 +17,108 @@ function DocumentViewer({ source, onClose }) {
   const snippet = source?.snippet || "";
 
   useEffect(() => {
-    setHighlight(null); // reset on page or file change
+  setHighlight(null); // reset on page or file change
 
-    async function renderPdf() {
-      if (!filename) return;
+  async function renderPdf() {
+    if (!filename) return;
 
-      const url = `http://localhost:8000/files/${filename}`;
+    const url = `http://localhost:8000/files/${filename}`;
 
-      try {
-        setLoading(true);
-        setError(null);
+    try {
+      setLoading(true);
+      setError(null);
 
-        const pdf = await getDocument(url).promise;
-        setTotalPages(pdf.numPages);
+      const pdf = await getDocument(url).promise;
+      setTotalPages(pdf.numPages);
 
-        const page = await pdf.getPage(pageNumber);
-        const viewport = page.getViewport({ scale: 1.5, rotation: page.rotate });
+      const page = await pdf.getPage(pageNumber);
 
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-        const context = canvas.getContext("2d");
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+      const container = canvas.parentElement;
+      if (!container) return;
 
-        console.log("📄 Rendering page:", pageNumber);
-        console.log("📎 Snippet:", snippet);
-        console.log("🖼 Canvas size:", canvas.width, canvas.height);
+      const dpi = window.devicePixelRatio || 1;
 
-        if (renderTaskRef.current) {
-          renderTaskRef.current.cancel();
-        }
+      // Dynamically calculate scale based on container width
+      const unscaledViewport = page.getViewport({ scale: 1 });
+      const baseScale = container.offsetWidth / unscaledViewport.width;
+      const finalScale = baseScale;
 
-        const renderTask = page.render({ canvasContext: context, viewport });
-        renderTaskRef.current = renderTask;
+      const viewport = page.getViewport({ scale: finalScale });
 
-        await renderTask.promise;
+      // Resize canvas for high-DPI display
+      canvas.width = viewport.width * dpi;
+      canvas.height = viewport.height * dpi;
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
 
-        if (snippet && snippet.length > 20) {
-          try {
-            console.log("🔎 Requesting highlight for:", snippet);
-            const response = await fetch(
-              `http://localhost:8000/api/highlight-snippet?file=${filename}&text=${encodeURIComponent(snippet)}`
-            );
-            const data = await response.json();
-            console.log("📦 Highlight box from API:", data.highlight);
-            const box = data.highlight;
+      const context = canvas.getContext("2d");
+      if (!context) return;
 
-            if (box && box.page === pageNumber) {
-              setHighlight(box);
-            } else {
-              setHighlight(null);
-            }
-          } catch (highlightErr) {
-            console.warn("Highlight fetch failed", highlightErr);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load PDF.");
-      } finally {
-        setLoading(false);
-      }
-    }
+      // Adjust for high DPI rendering
+      context.setTransform(dpi, 0, 0, dpi, 0, 0);
 
-    renderPdf();
+      console.log("📄 Rendering page:", pageNumber);
+      console.log("📎 Snippet:", snippet);
+      console.log("🖼 Canvas size (CSS):", canvas.style.width, canvas.style.height);
+      console.log("🖼 Canvas size (pixels):", canvas.width, canvas.height);
 
-    return () => {
+      // Cancel any ongoing render task
       if (renderTaskRef.current) {
         renderTaskRef.current.cancel();
       }
-    };
-  }, [filename, pageNumber, snippet]);
+
+      // Render PDF page to canvas
+      const renderTask = page.render({ canvasContext: context, viewport });
+      renderTaskRef.current = renderTask;
+      await renderTask.promise;
+
+      // Try to fetch and display highlight box
+      if (snippet && snippet.length > 20) {
+        try {
+          console.log("🔎 Requesting highlight for:", snippet);
+          const response = await fetch(
+            `http://localhost:8000/api/highlight-snippet?file=${filename}&text=${encodeURIComponent(snippet)}`
+          );
+          const data = await response.json();
+          console.log("📦 Highlight box from API:", data.highlight);
+
+          const box = data.highlight;
+          if (box && box.page === pageNumber) {
+            setHighlight(box);
+          } else {
+            setHighlight(null);
+          }
+        } catch (highlightErr) {
+          console.warn("Highlight fetch failed", highlightErr);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load PDF.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  renderPdf();
+
+  return () => {
+    if (renderTaskRef.current) {
+      renderTaskRef.current.cancel();
+    }
+  };
+}, [filename, pageNumber, snippet]);
+
+
 
   const goPrev = () => setPageNumber((p) => Math.max(1, p - 1));
   const goNext = () => setPageNumber((p) => Math.min(totalPages, p + 1));
 
   return (
-    <div className="w-[40%] h-full border-l bg-white flex flex-col shadow-lg z-10">
+    <div className="w-[50%] h-full border-l bg-white flex flex-col shadow-lg z-10">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b bg-gray-50">
         <h2 className="text-sm font-semibold text-gray-700 truncate">
@@ -113,15 +137,20 @@ function DocumentViewer({ source, onClose }) {
         {loading && <p className="italic text-gray-400">Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
         <div className="relative">
-          <canvas ref={canvasRef} className="border shadow" />
+          <canvas ref={canvasRef} className="border shadow max-w-full h-auto block" />
+
           {highlight && canvasRef.current ? (
   (() => {
     const canvas = canvasRef.current;
     const scale = 1.5;
 
     const top = (canvas.height - (highlight.y + highlight.height)) / scale;
-    const left = highlight.x / scale;
-    const width = highlight.width / scale;
+    const offset = 0.5 * highlight.width; // Move left by ~30% of the box width
+    const left = (highlight.x - offset) / scale
+    
+
+
+    const width = (highlight.width - offset) / scale; // ✅ match shrink on right
     const height = Math.max(highlight.height / scale, 16);
 
     console.log("🟡 Canvas height:", canvas.height);
