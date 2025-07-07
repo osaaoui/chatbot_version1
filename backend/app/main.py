@@ -27,7 +27,7 @@ app.include_router(chat.router, prefix="/api/v2/chat")
 app.include_router(upload.router, prefix="/api/v2/documents")
 app.include_router(processing.router, prefix="/api/v2/documents")
 app.include_router(auth_endpoint.router, prefix="/api/auth", tags=["auth"])
-app.include_router(list_files.router)  # ← include here
+app.include_router(list_files.router, prefix="/api")
 app.include_router(viewer.router)  # ✅ register the router
 
 

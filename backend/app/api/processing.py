@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import os
 from fastapi.responses import JSONResponse
 
-from app.services.vectorstore_service import process_document
+from app.services.vectorstore_service import process_documents_for_user
 from typing import List
 from app.services.metadata_store import (
     has_already_been_processed,

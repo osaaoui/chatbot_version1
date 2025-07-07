@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import axios from "axios";
 import { DocumentIcon, ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
 
 /**
  * Sidebar handles:
@@ -19,8 +20,45 @@ const Sidebar = ({
   onFileSelected,
   isProcessing,
 }) => {
-  
+
   const fileInputRef = useRef(null);
+
+  // 👇 Fetch persisted document names on first load
+  useEffect(() => {
+    console.log("Sidebar mounted. email =", email);
+    const fetchPersistedDocs = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/user-documents", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (Array.isArray(response.data)) {
+          const existingNames = new Set(stagedFiles.map((f) => f.name));
+          const docsToAdd = response.data.filter((name) => !existingNames.has(name));
+
+          const restored = docsToAdd.map((name) => ({
+            name,
+            original: name,
+            status: "processed", // Already embedded in Chroma
+          }));
+
+          setStagedFiles((prev) => [...restored, ...prev]);
+        } else {
+          console.warn("Unexpected response from /user-documents:", response.data);
+        }
+      } catch (error) {
+        console.error("Failed to load user documents:", error);
+      }
+    };
+
+    if (email) {
+      fetchPersistedDocs();
+    }
+  }, [email]);  // Run once after login
+
+
 
   // When user picks a file using the input element
   const handleFileChange = (event) => {

@@ -1,15 +1,17 @@
 import os
 import re
+import tempfile
 import camelot
 import pytesseract
+from typing import List
 from pdf2image import convert_from_path
+from fastapi import UploadFile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain.docstore.document import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from app.core.config import settings
-from app.services.metadata_store import mark_as_processed  # <-- Make sure this is implemented
+from app.services.metadata_store import mark_as_processed
 
 CHROMA_DIR = "chroma_store"
 
@@ -31,28 +33,23 @@ def split_by_sections(text):
         "Works Cited", "Appendices", "Appendix", "Supplementary Materials",
         "Supporting Information", "Glossary", "Abbreviations", "Index"
     ]
-
-    section_pattern = re.compile(
+    pattern = re.compile(
         r"\n\s*(\d{0,2}[\.\)]?\s*)?(" + "|".join(map(re.escape, section_keywords)) + r")\s*\n",
         re.IGNORECASE
     )
-
-    splits = section_pattern.split(text)
-
-    structured_sections = []
+    splits = pattern.split(text)
+    structured = []
     for i in range(2, len(splits), 3):
-        section_title = splits[i].strip()
-        section_text = splits[i + 1].strip() if i + 1 < len(splits) else ""
-        if section_text:
-            structured_sections.append((section_title.title(), section_text))
-    return structured_sections
+        title = splits[i].strip()
+        content = splits[i + 1].strip() if i + 1 < len(splits) else ""
+        if content:
+            structured.append((title.title(), content))
+    return structured
 
 def chunk_table_rows(df, rows_per_chunk=10):
     chunks = []
-    num_chunks = (len(df) + rows_per_chunk - 1) // rows_per_chunk
-    for i in range(num_chunks):
-        chunk_df = df.iloc[i*rows_per_chunk:(i+1)*rows_per_chunk]
-        md_chunk = chunk_df.to_markdown(index=False)
+    for i in range(0, len(df), rows_per_chunk):
+        md_chunk = df.iloc[i:i + rows_per_chunk].to_markdown(index=False)
         chunks.append(md_chunk)
     return chunks
 
@@ -60,13 +57,11 @@ def extract_tables_from_pdf(file_path, original_filename):
     tables_text = []
     try:
         tables = camelot.read_pdf(file_path, pages='all', strip_text='\n')
-        if len(tables) == 0:
+        if not tables:
             raise ValueError("No tables found with Camelot, trying OCR fallback...")
-
         for i, table in enumerate(tables):
             df = table.df
-            chunks = chunk_table_rows(df)
-            for j, chunk in enumerate(chunks):
+            for j, chunk in enumerate(chunk_table_rows(df)):
                 tables_text.append({
                     "content": chunk,
                     "metadata": {
@@ -76,12 +71,11 @@ def extract_tables_from_pdf(file_path, original_filename):
                         "chunk_id": j
                     }
                 })
-    except Exception as e:
+    except Exception:
         try:
-            images = convert_from_path(file_path)
-            for i, image in enumerate(images):
+            for i, image in enumerate(convert_from_path(file_path)):
                 text = pytesseract.image_to_string(image)
-                if "|" in text or "+" in text or "---" in text:
+                if any(sym in text for sym in ["|", "+", "---"]):
                     tables_text.append({
                         "content": text.strip(),
                         "metadata": {
@@ -94,41 +88,69 @@ def extract_tables_from_pdf(file_path, original_filename):
             print(f"OCR extraction failed: {ocr_e}")
     return tables_text
 
-def process_document(file_path: str, user_id: str):
+def process_documents_for_user(files: List[UploadFile], user_id: str) -> int:
     documents = []
-    original_filename = os.path.basename(file_path)
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     os.makedirs(user_store_dir, exist_ok=True)
     collection_name = safe_collection_name(user_id)
 
-    try:
-        loader = PyPDFLoader(file_path)
-        raw_docs = loader.load()
+    existing_sources = set()
+    if os.path.exists(os.path.join(user_store_dir, "chroma.sqlite3")):
+        try:
+            vectorstore = Chroma(
+                embedding_function=OpenAIEmbeddings(
+                    model="text-embedding-3-large",
+                    openai_api_key=settings.OPENAI_API_KEY
+                ),
+                persist_directory=user_store_dir,
+                collection_name=collection_name
+            )
+            existing_sources = {
+                meta.get("source")
+                for meta in vectorstore.get(include=["metadatas"])['metadatas']
+            }
+        except Exception as e:
+            print(f"Failed to load existing vectorstore: {e}")
 
-        for doc in raw_docs:
-            sections = split_by_sections(doc.page_content)
-            if sections:
-                for section_title, section_text in sections:
+    for file in files:
+        if file.filename in existing_sources:
+            continue
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            tmp.write(file.file.read())
+            tmp_path = tmp.name
+
+        try:
+            loader = PyPDFLoader(tmp_path)
+            raw_docs = loader.load()
+
+            for doc in raw_docs:
+                sections = split_by_sections(doc.page_content)
+                if sections:
+                    for title, text in sections:
+                        documents.append(Document(
+                            page_content=f"# {title}\n\n{text}",
+                            metadata={**doc.metadata, "section": title, "source": file.filename}
+                        ))
+                else:
                     documents.append(Document(
-                        page_content=f"# {section_title}\n\n{section_text}",
-                        metadata={**doc.metadata, "section": section_title, "source": original_filename}
+                        page_content=doc.page_content,
+                        metadata={**doc.metadata, "source": file.filename}
                     ))
-            else:
+
+            for item in extract_tables_from_pdf(tmp_path, file.filename):
                 documents.append(Document(
-                    page_content=doc.page_content,
-                    metadata={**doc.metadata, "source": original_filename}
+                    page_content=item["content"],
+                    metadata=item["metadata"]
                 ))
 
-        table_chunks = extract_tables_from_pdf(file_path, original_filename)
-        for item in table_chunks:
-            documents.append(Document(
-                page_content=item["content"],
-                metadata=item["metadata"]
-            ))
+            mark_as_processed(user_id, file.filename, len(documents))
 
-    except Exception as e:
-        print(f"Error during document parsing: {e}")
-        raise e
+        finally:
+            os.unlink(tmp_path)
+
+    if not documents:
+        return 0
 
     vectorstore = Chroma.from_documents(
         documents=documents,
@@ -141,11 +163,7 @@ def process_document(file_path: str, user_id: str):
     )
     vectorstore.persist()
 
-    # ✅ Store document as processed
-    #mark_as_processed(user_id, original_filename, len(documents))
-
     return len(documents)
-
 def get_vectorstore(user_id):
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     return Chroma(
@@ -166,3 +184,4 @@ def get_retriever(user_id, search_kwargs=None):
     except Exception as e:
         print(f"[RAG] Failed to load retriever for user {user_id}: {e}")
         return None
+
