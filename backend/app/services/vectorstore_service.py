@@ -88,7 +88,7 @@ def extract_tables_from_pdf(file_path, original_filename):
             print(f"OCR extraction failed: {ocr_e}")
     return tables_text
 
-def process_documents_for_user(files: List[UploadFile], user_id: str) -> int:
+def process_documents_for_user(filepaths: List[str], user_id: str) -> int:
     documents = []
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     os.makedirs(user_store_dir, exist_ok=True)
@@ -112,16 +112,14 @@ def process_documents_for_user(files: List[UploadFile], user_id: str) -> int:
         except Exception as e:
             print(f"Failed to load existing vectorstore: {e}")
 
-    for file in files:
-        if file.filename in existing_sources:
+    for filepath in filepaths:
+        filename = os.path.basename(filepath)
+
+        if filename in existing_sources:
             continue
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(file.file.read())
-            tmp_path = tmp.name
-
         try:
-            loader = PyPDFLoader(tmp_path)
+            loader = PyPDFLoader(filepath)
             raw_docs = loader.load()
 
             for doc in raw_docs:
@@ -130,24 +128,24 @@ def process_documents_for_user(files: List[UploadFile], user_id: str) -> int:
                     for title, text in sections:
                         documents.append(Document(
                             page_content=f"# {title}\n\n{text}",
-                            metadata={**doc.metadata, "section": title, "source": file.filename}
+                            metadata={**doc.metadata, "section": title, "source": filename}
                         ))
                 else:
                     documents.append(Document(
                         page_content=doc.page_content,
-                        metadata={**doc.metadata, "source": file.filename}
+                        metadata={**doc.metadata, "source": filename}
                     ))
 
-            for item in extract_tables_from_pdf(tmp_path, file.filename):
+            for item in extract_tables_from_pdf(filepath, filename):
                 documents.append(Document(
                     page_content=item["content"],
                     metadata=item["metadata"]
                 ))
 
-            mark_as_processed(user_id, file.filename, len(documents))
+            mark_as_processed(user_id, filename, len(documents))
 
-        finally:
-            os.unlink(tmp_path)
+        except Exception as e:
+            print(f"Failed to process {filename}: {e}")
 
     if not documents:
         return 0
@@ -164,6 +162,7 @@ def process_documents_for_user(files: List[UploadFile], user_id: str) -> int:
     vectorstore.persist()
 
     return len(documents)
+
 def get_vectorstore(user_id):
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     return Chroma(

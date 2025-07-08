@@ -47,7 +47,8 @@ def process_documents(req: ProcessRequest):
         if has_already_been_processed(req.user_id, filename):
             continue  # skip previously processed files
 
-        chunks = process_document(filepath, req.user_id)
+        chunks = process_documents_for_user([filepath], req.user_id)
+
         mark_as_processed(req.user_id, filename, chunks)
         total_chunks += chunks
         processed_files.append(filename)
