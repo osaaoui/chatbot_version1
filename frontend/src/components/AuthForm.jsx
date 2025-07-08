@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthProvider";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // ✅ Correct
+
 
 const AuthForm = () => {
   const { login } = useAuth();
@@ -9,16 +11,21 @@ const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState("login");
   const [error, setError] = useState(null);
+  const [role, setRole] = useState("reader"); // default to reader
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    try {
+  e.preventDefault();
+  setError(null);
+  try {
+    if (mode === "login") {
       await handleLogin();
-    } catch (err) {
-      setError("Failed to authenticate.");
+    } else {
+      await handleSignup();
     }
-  };
+  } catch (err) {
+    setError("Failed to authenticate.");
+  }
+};
 
   const handleLogin = async () => {
     try {
@@ -31,6 +38,30 @@ const AuthForm = () => {
       console.error("Login failed", err);
     }
   };
+
+  const handleSignup = async () => {
+  try {
+    const res = await axios.post("http://localhost:8000/api/auth/signup", {
+      email,
+      password,
+      role,
+    });
+
+    const token = res.data.access_token;
+    const decoded = jwtDecode(token);
+
+    const user = {
+      email: decoded.sub,
+      role: decoded.role,
+    };
+
+    login(token, user); // sets context + localStorage
+  } catch (err) {
+    console.error("Signup failed", err);
+    alert("Signup failed");
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -55,6 +86,17 @@ const AuthForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {mode === "signup" && (
+  <select
+    value={role}
+    onChange={(e) => setRole(e.target.value)}
+    className="w-full px-4 py-2 border border-gray-300 rounded"
+  >
+    <option value="reader">Reader</option>
+    <option value="admin">Admin</option>
+  </select>
+)}
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"

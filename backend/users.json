@@ -2,5 +2,9 @@
   "osaaoui@gmail.com": {
     "email": "osaaoui@gmail.com",
     "hashed_password": "$2b$12$9MOnIg2fQjvQMrwPkKTu5uwP55x8DzgAYJF/UsbI0jLG7gQ09nCeC"
+  },
+  "omar_reader@gmail.com": {
+    "email": "omar_reader@gmail.com",
+    "hashed_password": "$2b$12$EtVJnaDcNXTGjOZstDhPx.Xc76S.nNlXeFvrK0EzxrGousbdiXbD6"
   }
 }
