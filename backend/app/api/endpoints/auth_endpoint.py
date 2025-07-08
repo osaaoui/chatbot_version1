@@ -5,7 +5,16 @@ from app.services.auth_service import (
     authenticate_user,
     create_access_token
 )
+
+from pydantic import BaseModel, EmailStr
+
 from app.services.user_store import load_users, save_users  # JSON file-based store
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    role: str  # <-- add this
 
 router = APIRouter()
 
@@ -16,13 +25,15 @@ def register(user: UserCreate):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     users[user.email] = {
-        "email": user.email,
-        "hashed_password": get_password_hash(user.password)
-    }
+    "email": user.email,
+    "hashed_password": get_password_hash(user.password),
+    "role": user.role  # <-- store the role
+}
+
 
     save_users(users)
 
-    token = create_access_token({"sub": user.email})
+    token = create_access_token({"sub": user.email, "role": user.role})
     return {"access_token": token, "token_type": "bearer"}
 
 @router.post("/login", response_model=Token)

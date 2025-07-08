@@ -24,39 +24,53 @@ const Sidebar = ({
   const fileInputRef = useRef(null);
 
   // 👇 Fetch persisted document names on first load
-  useEffect(() => {
-    console.log("Sidebar mounted. email =", email);
-    const fetchPersistedDocs = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/user-documents", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+useEffect(() => {
+  console.log("Sidebar mounted. email =", email);
 
-        if (Array.isArray(response.data)) {
-          const existingNames = new Set(stagedFiles.map((f) => f.name));
-          const docsToAdd = response.data.filter((name) => !existingNames.has(name));
+  const fetchPersistedDocs = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/user-documents", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-          const restored = docsToAdd.map((name) => ({
-            name,
-            original: name,
-            status: "processed", // Already embedded in Chroma
-          }));
+      if (Array.isArray(response.data)) {
+        const existingNames = new Set(
+          stagedFiles.flatMap((f) => [f.name, f.original])
+        );
 
-          setStagedFiles((prev) => [...restored, ...prev]);
-        } else {
-          console.warn("Unexpected response from /user-documents:", response.data);
-        }
-      } catch (error) {
-        console.error("Failed to load user documents:", error);
+        const docsToAdd = response.data.filter(
+          (name) => !existingNames.has(name)
+        );
+
+        const restored = docsToAdd.map((name) => ({
+          name,
+          original: name,
+          status: "processed", // Already embedded in Chroma
+        }));
+
+        const merged = [...restored, ...stagedFiles];
+
+        // ✅ Final deduplication
+        const deduplicated = Array.from(
+          new Map(merged.map((f) => [f.name, f])).values()
+        );
+
+        setStagedFiles(deduplicated);
+      } else {
+        console.warn("Unexpected response from /user-documents:", response.data);
       }
-    };
-
-    if (email) {
-      fetchPersistedDocs();
+    } catch (error) {
+      console.error("Failed to load user documents:", error);
     }
-  }, [email]);  // Run once after login
+  };
+
+  if (email) {
+    fetchPersistedDocs();
+  }
+}, [email]);
+
 
 
 
@@ -95,7 +109,7 @@ const Sidebar = ({
       formData.append("user_id", email);
 
       const response = await axios.post(
-        "http://localhost:8000/api/v2/documents/upload/",
+        "http://localhost:8000/api/v2/uploads/upload/",
         formData,
         {
           headers: {
@@ -215,7 +229,11 @@ const Sidebar = ({
 {/* Process Documents button */}
 {stagedFiles.length > 0 && (
   <button
-    onClick={onProcess}
+    onClick={() => {
+  console.log("🟢 Sidebar: Process button clicked");
+  onProcess();
+}}
+    
     disabled={isProcessing}
     className={`mt-4 w-full px-4 py-2 text-sm text-white rounded transition ${
       isProcessing

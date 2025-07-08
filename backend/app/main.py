@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 app.include_router(chat.router, prefix="/api/v2/chat")
-app.include_router(upload.router, prefix="/api/v2/documents")
+app.include_router(upload.router, prefix="/api/v2/uploads")
 app.include_router(processing.router, prefix="/api/v2/documents")
 app.include_router(auth_endpoint.router, prefix="/api/auth", tags=["auth"])
 app.include_router(list_files.router, prefix="/api")

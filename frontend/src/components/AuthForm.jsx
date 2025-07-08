@@ -58,6 +58,7 @@ const AuthForm = () => {
     login(token, user); // sets context + localStorage
   } catch (err) {
     console.error("Signup failed", err);
+    console.error("Server says:", err.response.data); // <-- key info
     alert("Signup failed");
   }
 };

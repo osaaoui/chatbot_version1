@@ -1,10 +1,7 @@
 {
   "osaaoui@gmail.com": {
     "email": "osaaoui@gmail.com",
-    "hashed_password": "$2b$12$9MOnIg2fQjvQMrwPkKTu5uwP55x8DzgAYJF/UsbI0jLG7gQ09nCeC"
-  },
-  "omar_reader@gmail.com": {
-    "email": "omar_reader@gmail.com",
-    "hashed_password": "$2b$12$EtVJnaDcNXTGjOZstDhPx.Xc76S.nNlXeFvrK0EzxrGousbdiXbD6"
+    "hashed_password": "$2b$12$7/KcWgGY2/gzsEUfHa2Nm.gau2HytWuFaFzs721VuVX/RA6.IIRGi",
+    "role": "admin"
   }
 }

@@ -79,74 +79,60 @@ export default function App() {
     }
   };
 
-  // Upload the selected file to the backend
-  const handleUpload = async () => {
-    if (!file || !token || !user) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("user_id", user.email);
+ // Process uploaded files
+const handleProcess = async () => {
+  console.log("🟣 handleProcess called");
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/v2/documents/upload/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  // ✅ Filter out already processed files
+  const filesToProcess = stagedFiles.filter((f) => f.status !== "processed");
+  console.log("🟣 Sending to process:", filesToProcess.map((f) => f.name));
 
-      const uploadedName = response.data.filename || file.name;
-      setUploadedFiles((prev) => [...prev, uploadedName]);
-    } catch (error) {
-      console.error("Upload failed", error);
-    }
-  };
+  if (!filesToProcess.length || !token || !user) return;
 
-  // Process uploaded files
-  const handleProcess = async () => {
-    if (!stagedFiles.length || !token || !user) return;
+  setIsProcessing(true);
 
-    setIsProcessing(true);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/v2/documents/process/",
-        {
-          user_id: user.email,
-          filenames: stagedFiles.map((f) => f.name),
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/v2/documents/process/",
+      {
+        user_id: user.email,
+        filenames: filesToProcess.map((f) => f.name),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      }
+    );
 
-      const processed = response.data.processed_files || [file.name];
+    const processed = response.data.processed_files || [];
+    console.log("🟣 Backend response:", response.data);
 
-      // Update file status to processed
-      setStagedFiles((prev) =>
-        prev.map((f) =>
-          processed.includes(f.name) ? { ...f, status: "processed" } : f
-        )
-      );
+    // ✅ Update and deduplicate staged files
+    const updated = stagedFiles.map((f) =>
+      processed.includes(f.name) ? { ...f, status: "processed" } : f
+    );
 
-      alert(
-        `✅ ${response.data.overall_message || "Processing completed"}: ${
-          response.data.total_chunks || "?"
-        } chunks`
-      );
-    } catch (err) {
-      alert("❌ Failed to process file(s)");
-      console.error(err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+    const deduplicated = Array.from(
+      new Map(updated.map((f) => [f.name, f])).values()
+    );
+
+    setStagedFiles(deduplicated);
+
+    alert(
+      `✅ ${response.data.overall_message || "Processing completed"}: ${
+        response.data.total_chunks || "?"
+      } chunks`
+    );
+  } catch (err) {
+    alert("❌ Failed to process file(s)");
+    console.error(err);
+  } finally {
+    setIsProcessing(false);
+  }
+};
+
 
   // Submit user question to chat endpoint
   const sendQuestion = async () => {
@@ -197,7 +183,6 @@ export default function App() {
           stagedFiles={stagedFiles}
           setStagedFiles={setStagedFiles}
           onFileChange={handleFileChange}
-          onUpload={handleUpload}
           onProcess={handleProcess}
           uploadedFiles={uploadedFiles}
           email={user?.email}

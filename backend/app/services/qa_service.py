@@ -49,7 +49,7 @@ def deduplicate_and_rerank_sources(answer: str, sources: list[dict]) -> list[dic
     scores = cosine_similarity(answer_emb, sources_emb).flatten()
     scored_sources = [
         (src, float(score)) for src, score in zip(unique_sources, scores)
-        if score > 0.6  # Filter low-relevance
+        if score > 0.0  # Filter low-relevance
     ]
     # Sort descending by score
     reranked = sorted(scored_sources, key=lambda x: -x[1])
@@ -63,6 +63,10 @@ def deduplicate_and_rerank_sources(answer: str, sources: list[dict]) -> list[dic
             "snippet": best_sentence.strip(),
             "metadata": src["metadata"]
         })
+    if not reranked:
+        print("[⚠️] No relevant sources above threshold — returning fallback top sources.")
+        reranked = [(src, 0.0) for src in unique_sources[:2]]
+
 
     return cleaned_sources[:4]
 
@@ -109,6 +113,14 @@ def get_answer(question, user_id):
         return "Could not access your documents to answer the question.", []
 
     try:
+        # 🔍 Manually test retrieval BEFORE building the chain
+        retrieved_docs = retriever.get_relevant_documents(question)
+        for d in retrieved_docs:
+            print(f"→ {d.metadata.get('source')} | {len(d.page_content)} chars | {d.page_content[:100]}")
+
+        print(f"[DEBUG] Retrieved {len(retrieved_docs)} documents for: '{question}'")
+        for d in retrieved_docs:
+            print(f"→ {d.metadata.get('source')} | {d.page_content[:80]}")
         qa_chain = RetrievalQA.from_chain_type(
             llm=llm,
             chain_type="stuff",
@@ -124,6 +136,8 @@ def get_answer(question, user_id):
         result = qa_chain.invoke({"query": question})
         answer = result.get("result")
         sources = []
+        logger.debug(f"LLM raw answer: {answer}")
+
 
         raw_sources = [
         {
@@ -132,6 +146,8 @@ def get_answer(question, user_id):
         } for doc in result.get("source_documents", [])
             ]
         sources = deduplicate_and_rerank_sources(result["result"], raw_sources)
+        if answer.strip().lower().startswith("je n'ai pas trouvé la réponse"):
+            sources = []
 
         logger.info(f"Answer length: {len(answer) if answer else 0}. Sources: {len(sources)}")
         return answer, sources

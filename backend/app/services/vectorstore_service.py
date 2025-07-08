@@ -89,28 +89,36 @@ def extract_tables_from_pdf(file_path, original_filename):
     return tables_text
 
 def process_documents_for_user(filepaths: List[str], user_id: str) -> int:
+    print(f"[PROCESS] Starting document processing for user: {user_id}")
+
+
     documents = []
     user_store_dir = os.path.join(CHROMA_DIR, user_id)
     os.makedirs(user_store_dir, exist_ok=True)
     collection_name = safe_collection_name(user_id)
+    print(f"[RAG] Using vectorstore: {user_store_dir}, collection: {collection_name}")
+    print(f"[PROCESS] Saving {len(documents)} documents to vectorstore at {user_store_dir}")
+
+
 
     existing_sources = set()
     if os.path.exists(os.path.join(user_store_dir, "chroma.sqlite3")):
-        try:
-            vectorstore = Chroma(
-                embedding_function=OpenAIEmbeddings(
+            print(f"[SKIP] Found existing chroma.sqlite3 for {user_id}, checking for duplicates")
+            try:
+                vectorstore = Chroma(
+                    embedding_function=OpenAIEmbeddings(
                     model="text-embedding-3-large",
                     openai_api_key=settings.OPENAI_API_KEY
                 ),
                 persist_directory=user_store_dir,
                 collection_name=collection_name
             )
-            existing_sources = {
-                meta.get("source")
-                for meta in vectorstore.get(include=["metadatas"])['metadatas']
-            }
-        except Exception as e:
-            print(f"Failed to load existing vectorstore: {e}")
+                existing_sources = {
+                    meta.get("source")
+                    for meta in vectorstore.get(include=["metadatas"])['metadatas']
+                }
+            except Exception as e:
+                print(f"Failed to load existing vectorstore: {e}")
 
     for filepath in filepaths:
         filename = os.path.basename(filepath)
@@ -120,7 +128,14 @@ def process_documents_for_user(filepaths: List[str], user_id: str) -> int:
 
         try:
             loader = PyPDFLoader(filepath)
-            raw_docs = loader.load()
+            try:
+                raw_docs = loader.load()
+                print(f"[LOAD] Loaded {len(raw_docs)} raw pages from {filepath}")
+            except Exception as e:
+                print(f"[LOAD] Failed to load {filepath} with PyPDFLoader, trying fallback: {e}")
+                print(f"[LOAD] Failed to load {filepath} with PyPDFLoader: {e}")
+                return 0
+
 
             for doc in raw_docs:
                 sections = split_by_sections(doc.page_content)
@@ -173,6 +188,9 @@ def get_vectorstore(user_id):
             openai_api_key=settings.OPENAI_API_KEY
         )
     )
+    
+    print(f"[RAG] Using vectorstore: {user_store_dir}, collection: {collection_name}")
+
 
 def get_retriever(user_id, search_kwargs=None):
     if search_kwargs is None:

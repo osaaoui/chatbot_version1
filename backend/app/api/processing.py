@@ -12,6 +12,7 @@ from app.services.metadata_store import (
     get_total_chunks,
     load_metadata
 )
+print("[BOOT] Registered /api/v2/documents/process route")
 
 UPLOAD_DIR = "uploaded_files"
 
@@ -33,6 +34,8 @@ def get_user_documents(user_id: str):
 
 @router.post("/process")
 def process_documents(req: ProcessRequest):
+    print(f"[API] 🔄 Called process_documents for user={req.user_id}")
+    print(f"[API] 🔄 Filenames: {req.filenames}")
     if not req.filenames:
         raise HTTPException(status_code=400, detail="No filenames provided")
 
