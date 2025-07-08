@@ -5,6 +5,7 @@ from app.api.endpoints import auth_endpoint
 from app.api import viewer  # ✅ correct import
 from fastapi.staticfiles import StaticFiles
 import os
+from app.api.delete import router as delete_router
 
 app = FastAPI()
 
@@ -29,6 +30,8 @@ app.include_router(processing.router, prefix="/api/v2/documents")
 app.include_router(auth_endpoint.router, prefix="/api/auth", tags=["auth"])
 app.include_router(list_files.router, prefix="/api")
 app.include_router(viewer.router)  # ✅ register the router
+app.include_router(delete_router, prefix="/api/v2/documents")
+
 
 
 

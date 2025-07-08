@@ -28,16 +28,27 @@ const AuthForm = () => {
 };
 
   const handleLogin = async () => {
-    try {
-      const res = await axios.post("http://localhost:8000/api/auth/login", {
-        email,
-        password,
-      });
-      login(res.data.access_token, { email });
-    } catch (err) {
-      console.error("Login failed", err);
-    }
-  };
+  try {
+    const res = await axios.post("http://localhost:8000/api/auth/login", {
+      email,
+      password,
+    });
+
+    const token = res.data.access_token;
+    const decoded = jwtDecode(token);
+    console.log("Decoded JWT:", decoded); // ✅ Add this
+
+    const user = {
+      email: decoded.sub,
+      role: decoded.role, // ✅ Make sure this exists
+    };
+
+    login(token, user); // sets context + localStorage
+  } catch (err) {
+    console.error("Login failed", err);
+  }
+};
+
 
   const handleSignup = async () => {
   try {
@@ -49,6 +60,7 @@ const AuthForm = () => {
 
     const token = res.data.access_token;
     const decoded = jwtDecode(token);
+    console.log("Decoded JWT:", decoded);
 
     const user = {
       email: decoded.sub,

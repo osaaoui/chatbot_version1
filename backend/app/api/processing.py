@@ -26,8 +26,13 @@ class ProcessRequest(BaseModel):
 @router.get("/user-documents/{user_id}")
 def get_user_documents(user_id: str):
     metadata = load_metadata()
-    user_docs = [entry for entry in metadata if entry["user_id"] == user_id]
+    user_docs = [
+        entry for entry in metadata
+        if entry["user_id"] == user_id
+        and os.path.exists(os.path.join(UPLOAD_DIR, f"{user_id}__{entry['filename']}"))  # ✅ File must still exist
+    ]
     return JSONResponse(content=user_docs)
+
 
 
 

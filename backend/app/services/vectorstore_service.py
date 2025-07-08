@@ -12,6 +12,9 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.docstore.document import Document
 from app.core.config import settings
 from app.services.metadata_store import mark_as_processed
+from langchain_community.embeddings import HuggingFaceEmbeddings
+
+
 
 CHROMA_DIR = "chroma_store"
 
@@ -91,38 +94,36 @@ def extract_tables_from_pdf(file_path, original_filename):
 def process_documents_for_user(filepaths: List[str], user_id: str) -> int:
     print(f"[PROCESS] Starting document processing for user: {user_id}")
 
-
     documents = []
-    user_store_dir = os.path.join(CHROMA_DIR, user_id)
-    os.makedirs(user_store_dir, exist_ok=True)
     collection_name = safe_collection_name(user_id)
+    user_store_dir = os.path.join(CHROMA_DIR, collection_name)  # ✅ safe path
+
+    os.makedirs(user_store_dir, exist_ok=True)
+
     print(f"[RAG] Using vectorstore: {user_store_dir}, collection: {collection_name}")
     print(f"[PROCESS] Saving {len(documents)} documents to vectorstore at {user_store_dir}")
 
-
-
     existing_sources = set()
     if os.path.exists(os.path.join(user_store_dir, "chroma.sqlite3")):
-            print(f"[SKIP] Found existing chroma.sqlite3 for {user_id}, checking for duplicates")
-            try:
-                vectorstore = Chroma(
-                    embedding_function=OpenAIEmbeddings(
+        print(f"[SKIP] Found existing chroma.sqlite3 for {user_id}, checking for duplicates")
+        try:
+            vectorstore = Chroma(
+                embedding_function=OpenAIEmbeddings(
                     model="text-embedding-3-large",
                     openai_api_key=settings.OPENAI_API_KEY
                 ),
                 persist_directory=user_store_dir,
                 collection_name=collection_name
             )
-                existing_sources = {
-                    meta.get("source")
-                    for meta in vectorstore.get(include=["metadatas"])['metadatas']
-                }
-            except Exception as e:
-                print(f"Failed to load existing vectorstore: {e}")
+            existing_sources = {
+                meta.get("source")
+                for meta in vectorstore.get(include=["metadatas"])['metadatas']
+            }
+        except Exception as e:
+            print(f"Failed to load existing vectorstore: {e}")
 
     for filepath in filepaths:
         filename = os.path.basename(filepath)
-
         if filename in existing_sources:
             continue
 
@@ -133,9 +134,7 @@ def process_documents_for_user(filepaths: List[str], user_id: str) -> int:
                 print(f"[LOAD] Loaded {len(raw_docs)} raw pages from {filepath}")
             except Exception as e:
                 print(f"[LOAD] Failed to load {filepath} with PyPDFLoader, trying fallback: {e}")
-                print(f"[LOAD] Failed to load {filepath} with PyPDFLoader: {e}")
                 return 0
-
 
             for doc in raw_docs:
                 sections = split_by_sections(doc.page_content)
@@ -178,8 +177,14 @@ def process_documents_for_user(filepaths: List[str], user_id: str) -> int:
 
     return len(documents)
 
+def load_vectorstore(user_id: str):
+    user_dir = os.path.join(CHROMA_DIR, safe_collection_name(user_id))  # ✅ safe path
+    embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+    return Chroma(persist_directory=user_dir, embedding_function=embeddings)
+
+
 def get_vectorstore(user_id):
-    user_store_dir = os.path.join(CHROMA_DIR, user_id)
+    user_store_dir = os.path.join(CHROMA_DIR, safe_collection_name(user_id))  # ✅ safe path
     return Chroma(
         collection_name=safe_collection_name(user_id),
         persist_directory=user_store_dir,
@@ -188,8 +193,7 @@ def get_vectorstore(user_id):
             openai_api_key=settings.OPENAI_API_KEY
         )
     )
-    
-    print(f"[RAG] Using vectorstore: {user_store_dir}, collection: {collection_name}")
+
 
 
 def get_retriever(user_id, search_kwargs=None):
@@ -202,3 +206,27 @@ def get_retriever(user_id, search_kwargs=None):
         print(f"[RAG] Failed to load retriever for user {user_id}: {e}")
         return None
 
+def delete_file_chunks(user_id: str, filename: str):
+    collection_name = safe_collection_name(user_id)
+    persist_directory = os.path.join(CHROMA_DIR, collection_name)  # ✅ safe path
+
+    embedding_function = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+    vectorstore = Chroma(
+        collection_name=collection_name,
+        embedding_function=embedding_function,
+        persist_directory=persist_directory,
+    )
+
+    results = vectorstore.get()
+
+    to_delete = []
+    for i, meta in enumerate(results["metadatas"]):
+        if meta.get("source") == filename:
+            to_delete.append(results["ids"][i])
+
+    if not to_delete:
+        print(f"[INFO] No chunks found for {filename}")
+        return
+
+    vectorstore.delete(ids=to_delete)
+    print(f"[INFO] Deleted {len(to_delete)} chunks for {filename}")

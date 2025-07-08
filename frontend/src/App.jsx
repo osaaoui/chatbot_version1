@@ -168,7 +168,7 @@ const handleProcess = async () => {
   const handleFileSelected = (file) => {
     setFile(file);
   };
-
+console.log("🧠 App user.role =", user?.role);
   return (
     <div>
       <Header onLogout={logout} />
@@ -179,6 +179,7 @@ const handleProcess = async () => {
 >
 
         {sidebarOpen && (
+          
         <Sidebar
           stagedFiles={stagedFiles}
           setStagedFiles={setStagedFiles}
@@ -188,6 +189,7 @@ const handleProcess = async () => {
           email={user?.email}
           onFileSelected={handleFileSelected}
           isProcessing={isProcessing}
+          userRole={user?.role}
         />
         )}
         
