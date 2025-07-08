@@ -23,11 +23,16 @@ const Sidebar = ({
 
     const fetchPersistedDocs = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/user-documents", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await axios.get(
+  `http://localhost:8000/api/v2/documents/user-documents/${encodeURIComponent(email)}`,
+  {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  }
+  
+);
+console.log(response.data)
 
         if (Array.isArray(response.data)) {
           const existingNames = new Set(
@@ -47,8 +52,16 @@ const Sidebar = ({
           const merged = [...restored, ...stagedFiles];
 
           const deduplicated = Array.from(
-            new Map(merged.map((f) => [f.name, f])).values()
-          );
+  merged.reduce((map, file) => {
+    const existing = map.get(file.name);
+    if (!existing || file.status === "processed") {
+      map.set(file.name, file);
+    }
+    return map;
+  }, new Map())
+  .values()
+);
+
 
           setStagedFiles(deduplicated);
         } else {
@@ -125,6 +138,8 @@ const Sidebar = ({
   };
 
   const handleDelete = async (filename) => {
+    const confirmed = window.confirm(`Are you sure you want to delete "${filename}"?`);
+    if (!confirmed) return; // ❌ User cancelled
   if (!filename || !email) return;
 
   try {
@@ -140,6 +155,7 @@ const Sidebar = ({
     console.log("✅ Deleted:", res.data);
     // Update UI
     setStagedFiles((prev) => prev.filter((f) => f.name !== filename));
+    // ✅ Show success toast
   } catch (err) {
     console.error("❌ Failed to delete file:", err);
     alert("Failed to delete file.");
