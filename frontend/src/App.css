@@ -1,21 +1,31 @@
+/* File: src/App.css */
+
+body{
+    font-family: var(--font-family);
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--spacing-xl);
   text-align: center;
+  background-color: var(--bg-app);
+  min-height: 100vh;
 }
 
 .logo {
   height: 6em;
-  padding: 1.5em;
+  padding: var(--spacing-lg);
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em var(--color-primary));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em var(--color-info));
 }
 
 @keyframes logo-spin {
@@ -34,9 +44,31 @@
 }
 
 .card {
-  padding: 2em;
+  @apply card;
 }
 
 .read-the-docs {
-  color: #888;
+  @apply text-caption;
+}
+
+/* Clases específicas de la aplicación */
+.app-header {
+  @apply bg-header;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.app-main {
+  padding: var(--spacing-xl) 0;
+  background-color: var(--bg-app);
+}
+
+.app-footer {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border-light);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
 }

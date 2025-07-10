@@ -1,0 +1,124 @@
+{
+  "header": {
+    "company": "Company",
+    "teams": "Teams",
+    "yourPlan": "Your plan"
+  },
+  "avatar": {
+    "myAccount": "My account",
+    "myProfile": "My Profile",
+    "textOnly": "Text only",
+    "logout": "Sign out",
+    "language": "Language"
+  },
+  "modal": {
+    "close": "Close",
+    "edit": "Edit",
+    "save": "Save",
+    "addTeam": "Add Team"
+  },
+  "profile": {
+    "title": "My Profile",
+    "email": "Email:",
+    "status": "Status:",
+    "active": "Active"
+  },
+  "languages": {
+    "spanish": "Español",
+    "english": "English",
+    "french": "Français"
+  },
+  "common": {
+    "processing": "Processing...",
+    "failed": "Failed",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "active": "Active",
+    "inactive": "Inactive",
+    "prev": "Prev",
+    "next": "Next",
+    "close": "Close"
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login",
+    "signupButton": "Signup",
+    "noAccount": "No account?",
+    "hasAccount": "Already have one?",
+    "switchToSignup": "Signup",
+    "switchToLogin": "Login",
+    "authenticationFailed": "Failed to authenticate.",
+    "signupFailed": "Signup failed",
+    "loginFailed": "Login failed",
+    "selectRole": "Select role",
+    "reader": "Reader",
+    "admin": "Admin"
+  },
+  "chat": {
+    "askToStart": "Ask a question to get started...",
+    "askAboutDocuments": "Ask a question about your documents...",
+    "enterToSend": "Press Enter to send, Shift+Enter for a new line",
+    "toggleSidebar": "Toggle Sidebar",
+    "source": "Source"
+  },
+  "teams": {
+    "title": "Work Teams",
+    "totalTeams": "Total Teams",
+    "activeTeams": "Active",
+    "totalMembers": "Members",
+    "leader": "Leader:",
+    "members": "members",
+    "member": "member"
+  },
+  "documents": {
+    "title": "Documents",
+    "dropHere": "Drop your document here",
+    "orClickToBrowse": "or click to browse",
+    "chooseFile": "Choose File",
+    "noDocuments": "No documents uploaded",
+    "processDocuments": "Process Documents",
+    "processingDocuments": "Processing documents...",
+    "failedToLoad": "Failed to load PDF.",
+    "pageOf": "Page {{current}} of {{total}}",
+    "page": "Page"
+  },
+  "fileStatus": {
+    "uploaded": "uploaded",
+    "uploading": "uploading",
+    "processed": "processed",
+    "error": "error"
+  },
+  "company": {
+    "title": "Company Profile",
+    "companyName": "Company name",
+    "companyNameRequired": "Company name *",
+    "companyEmail": "Company email",
+    "companyWebsite": "Company website",
+    "taxId": "Tax identification number",
+    "country": "Country",
+    "logo": "Logo",
+    "changeLogo": "Change logo",
+    "removeLogo": "Remove logo",
+    "noLogo": "No logo",
+    "logoAlt": "Company logo",
+    "placeholders": {
+      "companyName": "Enter your company name",
+      "companyEmail": "📧 email@company.com",
+      "companyWebsite": "🌐 https://yourcompany.com",
+      "taxId": "🏢 Tax ID or fiscal number",
+      "selectCountry": "🌍 Select a country"
+    },
+    "errors": {
+      "savingData": "Error saving company data",
+      "loadingData": "Error loading company data"
+    },
+    "success": {
+      "dataSaved": "Company data saved successfully"
+    }
+  }
+}

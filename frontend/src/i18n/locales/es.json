@@ -1,0 +1,124 @@
+{
+  "header": {
+    "company": "Empresa",
+    "teams": "Equipos",
+    "yourPlan": "Tu plan"
+  },
+  "avatar": {
+    "myAccount": "Mi cuenta",
+    "myProfile": "Mi Perfil",
+    "textOnly": "Solo texto",
+    "logout": "Cerrar sesión",
+    "language": "Idioma"
+  },
+  "modal": {
+    "close": "Cerrar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "addTeam": "Agregar Equipo"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "email": "Email:",
+    "status": "Estado:",
+    "active": "Activo"
+  },
+  "languages": {
+    "spanish": "Español",
+    "english": "English",
+    "french": "Français"
+  },
+  "common": {
+    "processing": "Procesando...",
+    "failed": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "loading": "Cargando...",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "close": "Cerrar"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "email": "Email",
+    "password": "Contraseña",
+    "loginButton": "Iniciar Sesión",
+    "signupButton": "Registrarse",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "switchToSignup": "Registro",
+    "switchToLogin": "Iniciar Sesión",
+    "authenticationFailed": "Error al autenticar.",
+    "signupFailed": "Error al registrarse",
+    "loginFailed": "Error al iniciar sesión",
+    "selectRole": "Seleccionar rol",
+    "reader": "Lector",
+    "admin": "Administrador"
+  },
+  "chat": {
+    "askToStart": "Haz una pregunta para comenzar...",
+    "askAboutDocuments": "Haz una pregunta sobre tus documentos...",
+    "enterToSend": "Presiona Enter para enviar, Shift+Enter para nueva línea",
+    "toggleSidebar": "Alternar barra lateral",
+    "source": "Fuente"
+  },
+  "teams": {
+    "title": "Equipos de Trabajo",
+    "totalTeams": "Total de Equipos",
+    "activeTeams": "Activos",
+    "totalMembers": "Miembros",
+    "leader": "Líder:",
+    "members": "miembros",
+    "member": "miembro"
+  },
+  "documents": {
+    "title": "Documentos",
+    "dropHere": "Suelta tu documento aquí",
+    "orClickToBrowse": "o haz clic para navegar",
+    "chooseFile": "Elegir Archivo",
+    "noDocuments": "No hay documentos subidos",
+    "processDocuments": "Procesar Documentos",
+    "processingDocuments": "Procesando documentos...",
+    "failedToLoad": "Error al cargar PDF.",
+    "pageOf": "Página {{current}} de {{total}}",
+    "page": "Página"
+  },
+  "fileStatus": {
+    "uploaded": "subido",
+    "uploading": "subiendo",
+    "processed": "procesado",
+    "error": "error"
+  },
+  "company": {
+    "title": "Perfil empresa",
+    "companyName": "Nombre de la empresa",
+    "companyNameRequired": "Nombre de la empresa *",
+    "companyEmail": "Email de la empresa",
+    "companyWebsite": "Sitio web de la empresa",
+    "taxId": "Número de identificación fiscal",
+    "country": "País",
+    "logo": "Logo",
+    "changeLogo": "Cambiar logo",
+    "removeLogo": "Eliminar logo",
+    "noLogo": "Sin logo",
+    "logoAlt": "Logo de la empresa",
+    "placeholders": {
+      "companyName": "Ingresa el nombre de tu empresa",
+      "companyEmail": "📧 email@empresa.com",
+      "companyWebsite": "🌐 https://tuempresa.com",
+      "taxId": "🏢 NIT o número fiscal",
+      "selectCountry": "🌍 Selecciona un país"
+    },
+    "errors": {
+      "savingData": "Error al guardar los datos de la empresa",
+      "loadingData": "Error al cargar los datos de la empresa"
+    },
+    "success": {
+      "dataSaved": "Datos de la empresa guardados correctamente"
+    }
+  }
+}

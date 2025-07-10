@@ -24,9 +24,9 @@ export const SourceList = ({ sources }) => {
   return (
     <div className="space-y-3">
       {Object.entries(grouped).map(([groupKey, groupSources]) => (
-        <div key={groupKey} className="border rounded-md">
+        <div key={groupKey} className="border border-border-light rounded-md">
           <button
-            className="w-full text-left p-3 bg-gray-100 hover:bg-gray-200 font-medium"
+            className="w-full text-left p-3 bg-bg-secondary hover:bg-bg-tertiary font-medium text-heading transition-colors"
             onClick={() => toggleGroup(groupKey)}
           >
             {groupKey}
@@ -36,7 +36,7 @@ export const SourceList = ({ sources }) => {
               {groupSources.map((src, idx) => (
                 <div
                   key={idx}
-                  className="bg-white border rounded p-2 text-sm whitespace-pre-wrap"
+                  className="bg-card rounded p-2 text-sm text-body whitespace-pre-wrap"
                 >
                   {src.content}
                 </div>

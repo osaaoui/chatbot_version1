@@ -1,133 +1,120 @@
 // src/components/AuthForm.jsx
 import React, { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "../context/AuthProvider";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // ✅ Correct
-
+import { jwtDecode } from "jwt-decode";
 
 const AuthForm = () => {
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState("login");
   const [error, setError] = useState(null);
   const [role, setRole] = useState("reader"); // default to reader
-
+  
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(null);
-  try {
-    if (mode === "login") {
-      await handleLogin();
-    } else {
-      await handleSignup();
+    e.preventDefault();
+    setError(null);
+    try {
+      if (mode === "login") {
+        await handleLogin();
+      } else {
+        await handleSignup();
+      }
+    } catch (err) {
+      setError(`${t('auth.authenticationFailed')} ${err.response?.data?.message || ""}`);
     }
-  } catch (err) {
-    setError("Failed to authenticate.");
-  }
-};
-
+  };
+  
   const handleLogin = async () => {
-  try {
-    const res = await axios.post("http://localhost:8000/api/auth/login", {
-      email,
-      password,
-    });
-
-    const token = res.data.access_token;
-    const decoded = jwtDecode(token);
-    console.log("Decoded JWT:", decoded); // ✅ Add this
-
-    const user = {
-      email: decoded.sub,
-      role: decoded.role, // ✅ Make sure this exists
-    };
-
-    login(token, user); // sets context + localStorage
-  } catch (err) {
-    console.error("Login failed", err);
-  }
-};
-
-
+    try {
+      const res = await axios.post("http://localhost:8001/api/auth/login", {
+        email,
+        password,
+      });
+      login(res.data.access_token, { email });
+    } catch (err) {
+      console.error(t('auth.loginFailed'), err);
+      throw err;
+    }
+  };
+  
   const handleSignup = async () => {
-  try {
-    const res = await axios.post("http://localhost:8000/api/auth/signup", {
-      email,
-      password,
-      role,
-    });
-
-    const token = res.data.access_token;
-    const decoded = jwtDecode(token);
-    console.log("Decoded JWT:", decoded);
-
-    const user = {
-      email: decoded.sub,
-      role: decoded.role,
-    };
-
-    login(token, user); // sets context + localStorage
-  } catch (err) {
-    console.error("Signup failed", err);
-    console.error("Server says:", err.response.data); // <-- key info
-    alert("Signup failed");
-  }
-};
-
-
+    try {
+      const res = await axios.post("http://localhost:8001/api/auth/signup", {
+        email,
+        password,
+        role,
+      });
+      const token = res.data.access_token;
+      const decoded = jwtDecode(token);
+      const user = {
+        email: decoded.sub,
+        role: decoded.role,
+      };
+      login(token, user); // sets context + localStorage
+    } catch (err) {
+      console.error(t('auth.signupFailed'), err);
+      console.error("Server says:", err.response.data);
+      alert(t('auth.signupFailed'));
+      throw err;
+    }
+  };
+  
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 shadow-md rounded-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          {mode === "login" ? "Log In" : "Sign Up"}
+    <div className="flex justify-center items-center h-screen bg-app">
+      <div className="card w-full max-w-md">
+        <h2 className="text-heading text-2xl font-bold mb-4 text-center">
+          {mode === "login" ? t('auth.login') : t('auth.signup')}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            className="w-full px-4 py-2 border border-gray-300 rounded"
-            placeholder="Email"
+            className="input-base w-full"
+            placeholder={t('auth.email')}
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
-            className="w-full px-4 py-2 border border-gray-300 rounded"
-            placeholder="Password"
+            className="input-base w-full"
+            placeholder={t('auth.password')}
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           {mode === "signup" && (
-  <select
-    value={role}
-    onChange={(e) => setRole(e.target.value)}
-    className="w-full px-4 py-2 border border-gray-300 rounded"
-  >
-    <option value="reader">Reader</option>
-    <option value="admin">Admin</option>
-  </select>
-)}
-
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="input-base w-full"
+              aria-label={t('auth.selectRole')}
+            >
+              <option value="reader">{t('auth.reader')}</option>
+              <option value="admin">{t('auth.admin')}</option>
+            </select>
+          )}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+            className="btn-primary w-full"
           >
-            {mode === "login" ? "Login" : "Signup"}
+            {mode === "login" ? t('auth.loginButton') : t('auth.signupButton')}
           </button>
         </form>
-        <p className="text-center mt-4 text-sm">
-          {mode === "login" ? "No account?" : "Already have one?"}{" "}
+        <p className="text-center mt-4 text-sm text-body">
+          {mode === "login" ? t('auth.noAccount') : t('auth.hasAccount')}{" "}
           <button
-            className="text-blue-600 hover:underline"
+            className="text-dark hover:underline"
             onClick={() => setMode(mode === "login" ? "signup" : "login")}
           >
-            Switch to {mode === "login" ? "Signup" : "Login"}
+            {mode === "login" ? t('auth.switchToSignup') : t('auth.switchToLogin')}
           </button>
         </p>
         {error && (
-          <p className="text-red-500 text-center mt-2 text-sm">{error}</p>
+          <p className="error text-center mt-2 text-sm">{error}</p>
         )}
       </div>
     </div>

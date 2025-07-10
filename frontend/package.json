@@ -12,12 +12,15 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "axios": "^1.10.0",
+    "i18next": "^25.3.2",
+    "i18next-browser-languagedetector": "^8.2.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.525.0",
     "pdfjs-dist": "^3.9.179",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
+    "react-i18next": "^15.6.0",
     "react-pdf": "^10.0.1"
   },
   "devDependencies": {
