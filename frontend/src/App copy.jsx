@@ -5,9 +5,7 @@ import ChatPane from "./components/ChatPane";
 import AuthForm from "./components/AuthForm";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthProvider"; // Auth context hook
-import PDFViewerComponent from "./components/PDFViewerComponent";
-
-
+import DocumentViewer from "./components/DocumentViewer";
 
 export default function App() {
   const { token, user, logout, loaded } = useAuth(); // Auth state
@@ -170,17 +168,18 @@ const handleProcess = async () => {
   const handleFileSelected = (file) => {
     setFile(file);
   };
-
-console.log("📄 selectedSource in App.jsx:", selectedSource);
-
+console.log("🧠 App user.role =", user?.role);
   return (
-  <div className="flex flex-col h-screen overflow-hidden bg-white">
-    {/* Top Header */}
-    <Header onLogout={logout} />
+    <div>
+      <Header onLogout={logout} />
+<div
+  className={`flex mt-[48px] h-[calc(100vh-48px)] transition-all duration-300 ${
+    sidebarOpen ? "ml-[280px]" : "ml-0"
+  }`}
+>
 
-    {/* Sidebar overlay */}
-    {sidebarOpen && (
-      <div className="fixed top-[48px] left-0 z-20 h-[calc(100vh-48px)] w-[280px] bg-white shadow-lg">
+        {sidebarOpen && (
+          
         <Sidebar
           stagedFiles={stagedFiles}
           setStagedFiles={setStagedFiles}
@@ -192,49 +191,38 @@ console.log("📄 selectedSource in App.jsx:", selectedSource);
           isProcessing={isProcessing}
           userRole={user?.role}
         />
-      </div>
-    )}
-
-    {/* Main content area */}
-    <div
-      className={`mt-[48px] h-[calc(100vh-48px)] transition-all duration-300 ${
-        sidebarOpen ? "ml-[280px]" : ""
-      }`}
-    >
-      <div className="flex w-full h-full">
-        {/* ChatPane: full width if no PDF, half otherwise */}
-        <div
-          className={`${
-            selectedSource ? "w-1/2" : "w-full"
-          } h-full flex flex-col transition-all duration-300`}
-        >
-          <ChatPane
-            question={question}
-            answer={answer}
-            sources={sources}
-            onQuestionChange={(e) => setQuestion(e.target.value)}
-            onSend={sendQuestion}
-            toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-            setSelectedSource={setSelectedSource}
-          />
-        </div>
-
-        {/* PDF Viewer */}
-        {selectedSource && (
-          <div className="w-1/2 h-full overflow-hidden">
-            <PDFViewerComponent
-              source={{
-                filename: selectedSource.filename,
-                snippet: selectedSource.snippet,
-                page: selectedSource.page ?? 0,
-              }}
-              onClose={() => setSelectedSource(null)}
-            />
-          </div>
         )}
-      </div>
-    </div>
-  </div>
-);
+        
+        <ChatPane
+          question={question}
+          answer={answer}
+          sources={sources}
+          onQuestionChange={(e) => setQuestion(e.target.value)}
+          onSend={sendQuestion}
+          toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          setSelectedSource={setSelectedSource}
 
+        />
+           {/* Document Viewer */}
+{selectedSource && (
+  <>
+    {console.log("📄 Selected source snippet:", selectedSource.snippet)}
+    <DocumentViewer
+      source={{
+        metadata: {
+          source: selectedSource.filename,
+          page: selectedSource.page
+        },
+        snippet: selectedSource.snippet
+
+      }}
+      onClose={() => setSelectedSource(null)}
+    />
+  </>
+)}
+
+      </div>
+
+    </div>
+  );
 }

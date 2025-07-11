@@ -115,15 +115,7 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSi
       {sources.map((source, sidx) => (
         <button
           key={sidx}
-          onClick={() => {
-  console.log("Clicked source:", source);
-  setSelectedSource({
-    filename: source.metadata.source,
-    page: source.metadata.page,
-    snippet: source.snippet,
-  });
-}}
-
+          onClick={() => handleSourceClick(source)}
           className="text-purple-600 hover:text-purple-800 text-xs ml-1 underline"
         >
           [{sidx + 1}]

@@ -3,5 +3,10 @@
     "email": "osaaoui@gmail.com",
     "hashed_password": "$2b$12$7/KcWgGY2/gzsEUfHa2Nm.gau2HytWuFaFzs721VuVX/RA6.IIRGi",
     "role": "admin"
+  },
+  "omar_reader@gmail.com": {
+    "email": "omar_reader@gmail.com",
+    "hashed_password": "$2b$12$.ehYg/x8JvFzp4BWsX8nLOVxOvPstZ7MKYC1L.PtQQGWWj.LG.0Qa",
+    "role": "reader"
   }
 }
