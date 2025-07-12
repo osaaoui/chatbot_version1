@@ -1,4 +1,3 @@
-// src/components/DocumentBase/DocumentBaseCard.js
 import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useFolders } from '../../context/FoldersContext';
@@ -9,11 +8,13 @@ const DocumentBaseCard = ({ documentBase }) => {
   const [shouldLoadFolders, setShouldLoadFolders] = useState(false);
   const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [folderName, setFolderName] = useState('');
+  const [isDragOverRoot, setIsDragOverRoot] = useState(false);
   
   const { 
     getFoldersForDocumentBase,
     fetchFolders,
     createFolder,
+    updateFolder,
     getFoldersHierarchy,
     error 
   } = useFolders();
@@ -51,7 +52,7 @@ const DocumentBaseCard = ({ documentBase }) => {
       const data = {
         folder_name: folderName.trim(),
         document_base_id: documentBase.document_base_id,
-        parent_folder_id: null // Root folder
+        parent_folder_id: null
       };
       
       const response = await createFolder(data);
@@ -78,7 +79,47 @@ const DocumentBaseCard = ({ documentBase }) => {
     }
   };
 
-  // Load folders when expanding for the first time
+  const handleRootDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleRootDragEnter = (e) => {
+    e.preventDefault();
+    setIsDragOverRoot(true);
+  };
+
+  const handleRootDragLeave = (e) => {
+    e.preventDefault();
+    // Only remove drag over if leaving the root zone
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragOverRoot(false);
+    }
+  };
+
+  const handleRootDrop = async (e) => {
+    e.preventDefault();
+    setIsDragOverRoot(false);
+
+    try {
+      const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+      const { folderId: draggedFolderId, documentBaseId } = dragData;
+
+      const response = await updateFolder(
+        draggedFolderId,
+        documentBaseId,
+        undefined,
+        null  // Move to root level
+      );
+
+      if (!response.success) {
+        console.error('Failed to move folder to root');
+      }
+    } catch (err) {
+      console.error('Error moving folder to root:', err);
+    }
+  };
+
   useEffect(() => {
     if (shouldLoadFolders && folders.length === 0) {
       fetchFolders(documentBase.document_base_id);
@@ -87,7 +128,6 @@ const DocumentBaseCard = ({ documentBase }) => {
 
   return (
     <div className="w-full bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
-      {/* Document Base Header */}
       <div 
         className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 transition"
         onClick={handleToggleExpand}
@@ -112,7 +152,6 @@ const DocumentBaseCard = ({ documentBase }) => {
           </div>
         </div>
 
-        {/* Create Folder Button */}
         {isExpanded && (
           <button
             onClick={handleCreateFolderClick}
@@ -124,10 +163,22 @@ const DocumentBaseCard = ({ documentBase }) => {
         )}
       </div>
 
-      {/* Folders Section - Solo se renderiza cuando está expandido */}
       {isExpanded && (
-        <div className="border-t border-gray-200 bg-white">
-          {/* Create Folder Input */}
+        <div 
+          className={`border-t border-gray-200 bg-white transition ${
+            isDragOverRoot ? 'bg-blue-50' : ''
+          }`}
+          onDragOver={handleRootDragOver}
+          onDragEnter={handleRootDragEnter}
+          onDragLeave={handleRootDragLeave}
+          onDrop={handleRootDrop}
+        >
+          {isDragOverRoot && (
+            <div className="p-2 m-2 border-2 border-dashed border-blue-300 bg-blue-100 rounded-md text-center text-sm text-blue-600">
+              Soltar aquí para mover a nivel raíz
+            </div>
+          )}
+
           {showCreateFolder && (
             <div className="p-3 border-b border-gray-100">
               <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
@@ -161,11 +212,14 @@ const DocumentBaseCard = ({ documentBase }) => {
             </div>
           )}
 
-          {/* Folders List */}
           {hasFolders ? (
             <div className="p-3 space-y-2">
               {folderHierarchy.map((folder) => (
-                <FolderCard key={folder.folder_id} folder={folder} />
+                <FolderCard 
+                  key={folder.folder_id} 
+                  folder={folder} 
+                  allFolders={folders}
+                />
               ))}
             </div>
           ) : !showCreateFolder ? (
@@ -174,7 +228,6 @@ const DocumentBaseCard = ({ documentBase }) => {
             </div>
           ) : null}
 
-          {/* Error Display */}
           {error && (
             <div className="p-3 text-sm text-red-500 bg-red-50 border-t border-red-100">
               {error}

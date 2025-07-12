@@ -13,7 +13,7 @@ const normalizeText = (text) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const PDFViewerComponent = ({ source, onClose }) => {
+const PDFViewerComponent = ({ source }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   useEffect(() => {
@@ -44,12 +44,12 @@ const PDFViewerComponent = ({ source, onClose }) => {
         const spans = Array.from(textLayer.querySelectorAll("span"));
         const fullTextRaw = spans.map((s) => s.textContent).join(" ");
         
-        // Extract meaningful chunks (paragraphs or sections)
-        const chunks = fullTextRaw.split(/\n\s*\n/); // Split by double newlines
+        // Split by double newlines to get meaningful chunks
+        const chunks = fullTextRaw.split(/\n\s*\n/);
         const targetNorm = normalizeText(targetText);
         const targetKeywords = targetNorm.split(/\s+/).filter(w => w.length > 3);
         
-        // Find the best matching chunk
+        // Find best matching chunk using keyword scoring
         let bestChunk = null;
         let bestScore = 0;
         let bestChunkIndex = 0;
@@ -58,12 +58,9 @@ const PDFViewerComponent = ({ source, onClose }) => {
           const chunkNorm = normalizeText(chunk);
           let score = 0;
           
-          // Score based on keyword matches
           targetKeywords.forEach(keyword => {
             if (chunkNorm.includes(keyword)) {
-              score += keyword.length * 2; // Longer keywords get more weight
-              
-              // Bonus for exact phrase matches
+              score += keyword.length * 2;
               if (chunkNorm.includes(targetNorm)) {
                 score += targetNorm.length * 3;
               }
@@ -77,19 +74,16 @@ const PDFViewerComponent = ({ source, onClose }) => {
           }
         });
 
-        if (!bestChunk || bestScore < targetKeywords.length * 3) {
-          console.warn("No strong match found. Best score:", bestScore);
-          return;
-        }
+        if (!bestChunk || bestScore < targetKeywords.length * 3) return;
 
-        // Find the position of this chunk in the full text
+        // Calculate chunk position in full text
         let chunkStart = 0;
         for (let i = 0; i < bestChunkIndex; i++) {
-          chunkStart += chunks[i].length + 2; // +2 for the newlines
+          chunkStart += chunks[i].length + 2;
         }
         const chunkEnd = chunkStart + bestChunk.length;
 
-        // Highlight the matching spans
+        // Highlight matching spans
         let charCount = 0;
         let firstHighlightedSpan = null;
         
@@ -98,12 +92,7 @@ const PDFViewerComponent = ({ source, onClose }) => {
           const spanEnd = charCount + span.textContent.length;
           
           if (spanEnd > chunkStart && spanStart < chunkEnd) {
-            span.innerHTML = `<mark style="
-              background-color: rgba(255, 255, 0, 0.6);
-              border-radius: 2px;
-              padding: 0 2px;
-              transition: background-color 0.3s;
-            ">${span.textContent}</mark>`;
+            span.innerHTML = `<mark class="pdf-highlight">${span.textContent}</mark>`;
             
             if (!firstHighlightedSpan) {
               firstHighlightedSpan = span;
@@ -114,13 +103,13 @@ const PDFViewerComponent = ({ source, onClose }) => {
 
         if (firstHighlightedSpan) {
           scrollToHighlight(firstHighlightedSpan);
-          // Smooth highlight effect
           setTimeout(() => {
-            firstHighlightedSpan.querySelector('mark').style.backgroundColor = 'rgba(255, 255, 0, 0.8)';
+            const mark = firstHighlightedSpan.querySelector('mark');
+            if (mark) {
+              mark.classList.add('pdf-highlight-active');
+            }
           }, 300);
         }
-
-        console.log("Best match:", bestChunk);
         
       } catch (err) {
         console.error("Highlighting error:", err);
@@ -137,20 +126,15 @@ const PDFViewerComponent = ({ source, onClose }) => {
   const fileUrl = `http://localhost:8001/api/files/${source.filename}`;
 
   return (
-    <div className="relative h-full w-full">
-      <button
-        className="absolute top-2 right-2 z-10 bg-gray-200 px-2 py-1 rounded text-sm"
-        onClick={onClose}
-      >
-        Close
-      </button>
-
+    <div className="pdf-viewer-container h-full w-full overflow-hidden border-l border-border-light">
       <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-        <Viewer
-          fileUrl={fileUrl}
-          defaultScale={SpecialZoomLevel.PageFit}
-          plugins={[defaultLayoutPluginInstance]}
-        />
+        <div className="h-full w-full">
+          <Viewer
+            fileUrl={fileUrl}
+            defaultScale={SpecialZoomLevel.PageFit}
+            plugins={[defaultLayoutPluginInstance]}
+          />
+        </div>
       </Worker>
     </div>
   );

@@ -43,9 +43,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         role: str = payload.get("role")  # ✅ extract role
+        fullName: str = payload.get("fullName")  # Optional, if you store it
         if not email or not role:
             raise HTTPException(status_code=401, detail="Invalid token payload")
-        return {"email": email, "role": role}  # ✅ include role in return
+        return {"email": email, "role": role, "fullName": fullName}  # ✅ include fullName in return
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 

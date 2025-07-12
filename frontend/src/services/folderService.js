@@ -48,11 +48,26 @@ export const folderService = {
   },
 
   // Actualizar carpeta
-  updateFolder: async (folderId, folderName) => {
+  updateFolder: async (folderId, folderName = null, parentFolderId = undefined) => {
     try {
+      const params = {};
+      
+      // Agregar folder_name si no es null
+      if (folderName !== null) {
+        params.folder_name = folderName;
+      }
+      
+      // Manejar parent_folder_id y change_parent flag
+      if (parentFolderId !== undefined) {
+        params.parent_folder_id = parentFolderId; // null se enviará como empty string
+        params.change_parent = true; // ⭐ NUEVO: Indicar que queremos cambiar el parent explícitamente
+      }
+
+      console.log('Updating folder with params:', params); // Debug
+
       const response = await axios.put(`${BASE_URL}/${folderId}`, null, {
         headers: getAuthHeaders(),
-        params: { folder_name: folderName }
+        params: params
       });
       return response.data;
     } catch (error) {

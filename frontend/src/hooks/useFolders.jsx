@@ -1,4 +1,3 @@
-// src/hooks/useFolders.js
 import { useState, useEffect, useCallback } from 'react';
 import { folderService } from '../services/folderService';
 
@@ -8,7 +7,6 @@ export const useFolders = (documentBaseId = null) => {
   const [error, setError] = useState(null);
 
   const fetchFolders = useCallback(async () => {
-    // 🔧 No hacer fetch si no hay documentBaseId
     if (!documentBaseId) {
       setFolders([]);
       return;
@@ -20,10 +18,7 @@ export const useFolders = (documentBaseId = null) => {
       const response = await folderService.getFolders();
       if (response.success) {
         let foldersData = response.data || [];
-        
-        // Filter by document_base_id
         foldersData = foldersData.filter(folder => folder.document_base_id === documentBaseId);
-        
         setFolders(foldersData);
       } else {
         setError(response.message || 'Error fetching folders');
@@ -41,11 +36,10 @@ export const useFolders = (documentBaseId = null) => {
     try {
       const response = await folderService.createFolder(data);
       if (response.success) {
-        // 🔧 Actualización optimista - agregar a la lista existente
         if (response.data && documentBaseId && response.data.document_base_id === documentBaseId) {
           setFolders(prevFolders => [...prevFolders, response.data]);
         } else {
-          await fetchFolders(); // Fallback a refetch
+          await fetchFolders();
         }
         return response;
       } else {
@@ -67,7 +61,6 @@ export const useFolders = (documentBaseId = null) => {
     try {
       const response = await folderService.updateFolder(folderId, folderName);
       if (response.success) {
-        // 🔧 Actualización optimista - actualizar en la lista existente
         if (response.data) {
           setFolders(prevFolders => 
             prevFolders.map(folder => 
@@ -75,7 +68,7 @@ export const useFolders = (documentBaseId = null) => {
             )
           );
         } else {
-          await fetchFolders(); // Fallback a refetch
+          await fetchFolders();
         }
         return response;
       } else {
@@ -97,7 +90,6 @@ export const useFolders = (documentBaseId = null) => {
     try {
       const response = await folderService.deleteFolder(folderId);
       if (response.success) {
-        // 🔧 Actualización optimista - remover de la lista existente
         setFolders(prevFolders => 
           prevFolders.filter(folder => folder.folder_id !== folderId)
         );
@@ -115,17 +107,14 @@ export const useFolders = (documentBaseId = null) => {
     }
   }, []);
 
-  // Helper function to organize folders in hierarchy
   const getFoldersHierarchy = useCallback(() => {
     const folderMap = new Map();
     const rootFolders = [];
 
-    // Create map of all folders
     folders.forEach(folder => {
       folderMap.set(folder.folder_id, { ...folder, children: [] });
     });
 
-    // Build hierarchy
     folders.forEach(folder => {
       if (folder.parent_folder_id) {
         const parent = folderMap.get(folder.parent_folder_id);
@@ -140,7 +129,6 @@ export const useFolders = (documentBaseId = null) => {
     return rootFolders;
   }, [folders]);
 
-  // 🔧 Solo hacer fetch automático si hay documentBaseId
   useEffect(() => {
     if (documentBaseId) {
       fetchFolders();
@@ -151,7 +139,7 @@ export const useFolders = (documentBaseId = null) => {
     folders,
     loading,
     error,
-    fetchFolders, // 🔧 Exponer fetchFolders para uso manual
+    fetchFolders,
     createFolder,
     updateFolder,
     deleteFolder,

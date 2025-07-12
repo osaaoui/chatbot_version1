@@ -1,4 +1,3 @@
-// src/contexts/DocumentBasesContext.js
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { documentBaseService } from '../services/documentBaseService';
 
@@ -14,7 +13,7 @@ export const useDocumentBases = () => {
 
 export const DocumentBasesProvider = ({ children }) => {
   const [documentBases, setDocumentBases] = useState([]);
-  const [initialLoading, setInitialLoading] = useState(true); // Solo para carga inicial
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchDocumentBases = useCallback(async () => {
@@ -40,9 +39,10 @@ export const DocumentBasesProvider = ({ children }) => {
       const response = await documentBaseService.createDocumentBase(data);
       
       if (response.success) {
-        if (response.data && response.data.base_name) {
+        if (response.data?.base_name) {
           setDocumentBases(prevBases => [...prevBases, response.data]);
-        } else if (response.data && response.data.document_base_id) {
+        } else if (response.data?.document_base_id) {
+          // Create complete document object when backend returns minimal data
           const completeDocument = {
             document_base_id: response.data.document_base_id,
             base_name: data.base_name,

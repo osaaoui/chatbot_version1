@@ -3,11 +3,9 @@ import { useTranslation } from 'react-i18next';
 import axios from "axios";
 import { 
   DocumentIcon, 
-  ArrowUpTrayIcon, 
-  TrashIcon,
-  ChevronDownIcon,
-  ChevronRightIcon 
+  ArrowUpTrayIcon
 } from "@heroicons/react/24/outline";
+import { PanelLeft } from "lucide-react";
 import DocumentBaseManager from './DocumentBase/DocumentBaseManager';
 
 const Sidebar = ({
@@ -17,14 +15,13 @@ const Sidebar = ({
   onProcess,
   onFileSelected,
   isProcessing,
+  toggleSidebar,
 }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef(null);
-  const [activeTab, setActiveTab] = useState('uploads'); // 'uploads' or 'bases'
+  const [activeTab, setActiveTab] = useState('uploads');
   
-  // 👇 Fetch persisted document names on first load
   useEffect(() => {
-    console.log("Sidebar mounted. email =", email);
     const fetchPersistedDocs = async () => {
       try {
         const response = await axios.get("http://localhost:8001/api/user-documents", {
@@ -45,6 +42,7 @@ const Sidebar = ({
             status: "processed",
           }));
           const merged = [...restored, ...stagedFiles];
+          // Deduplicate by name, preferring processed status
           const deduplicated = Array.from(
             merged.reduce((map, file) => {
               const existing = map.get(file.name);
@@ -56,8 +54,6 @@ const Sidebar = ({
             .values()
           );
           setStagedFiles(deduplicated);
-        } else {
-          console.warn("Unexpected response from /user-documents:", response.data);
         }
       } catch (error) {
         console.error("Failed to load user documents:", error);
@@ -68,13 +64,11 @@ const Sidebar = ({
     }
   }, [email]);
   
-  // When user picks a file using the input element
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     handleUpload(files);
   };
   
-  // Drag & drop behavior
   const handleDrop = (event) => {
     event.preventDefault();
     const files = Array.from(event.dataTransfer.files);
@@ -85,7 +79,6 @@ const Sidebar = ({
     event.preventDefault();
   };
   
-  // Upload each file to the backend and update UI state
   const handleUpload = async (files) => {
     for (const file of files) {
       const tempRecord = {
@@ -93,7 +86,6 @@ const Sidebar = ({
         original: file.name,
         status: "uploading",
       };
-      // Immediately show file with 'uploading' status
       setStagedFiles((prev) => [...prev, tempRecord]);
       try {
         const formData = new FormData();
@@ -110,7 +102,6 @@ const Sidebar = ({
           }
         );
         const uploadedName = response.data.filename || file.name;
-        // Update file record to 'uploaded'
         setStagedFiles((prev) =>
           prev.map((f) =>
             f.name === file.name
@@ -122,7 +113,6 @@ const Sidebar = ({
           onFileSelected({ name: uploadedName, original: file.name });
       } catch (err) {
         console.error("Error uploading file:", file.name, err);
-        // Mark the file as failed
         setStagedFiles((prev) =>
           prev.map((f) =>
             f.name === file.name ? { ...f, status: "error" } : f
@@ -132,28 +122,36 @@ const Sidebar = ({
     }
   };
 
-  // Function to get localized status text
   const getStatusText = (status) => {
     return t(`fileStatus.${status}`, { defaultValue: status });
   };
 
   return (
-    <div className="bg-app fixed left-0 top-[48px] flex flex-col items-center w-[320px] h-[calc(100vh-48px)] px-4 pt-6 pb-6 border-r border-border-light">
-      {/* Header with tabs */}
+    <div className="bg-bg-secondary flex flex-col items-center w-80 h-full px-4 pt-6 pb-6 border-r border-border-light flex-shrink-0">
       <div className="w-full mb-6">
-        <h2 className="flex items-center gap-2 text-base font-semibold text-body mb-4 justify-center">
-          <DocumentIcon className="w-5 h-5 text-tertiary" />
-          {t('documents.title')}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-text-secondary">
+            <DocumentIcon className="w-5 h-5 text-text-tertiary" />
+            {t('documents.title')}
+          </h2>
+          
+          <button
+            onClick={toggleSidebar}
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-bg-tertiary text-text-secondary h-7 w-7"
+            title={t('chat.toggleSidebar')}
+          >
+            <PanelLeft />
+            <span className="sr-only">{t('chat.toggleSidebar')}</span>
+          </button>
+        </div>
         
-        {/* Tab navigation */}
-        <div className="flex bg-gray-100 rounded-lg p-1">
+        <div className="flex bg-bg-tertiary rounded-lg p-1">
           <button
             onClick={() => setActiveTab('uploads')}
             className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition ${
               activeTab === 'uploads'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-bg-primary text-text-primary shadow-soft'
+                : 'text-text-secondary hover:text-text-primary'
             }`}
           >
             Subidas
@@ -162,8 +160,8 @@ const Sidebar = ({
             onClick={() => setActiveTab('bases')}
             className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition ${
               activeTab === 'bases'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-bg-primary text-text-primary shadow-soft'
+                : 'text-text-secondary hover:text-text-primary'
             }`}
           >
             Bases
@@ -171,19 +169,17 @@ const Sidebar = ({
         </div>
       </div>
 
-      {/* Content based on active tab */}
       <div className="w-full flex-1 overflow-y-auto">
         {activeTab === 'uploads' ? (
           <div className="flex flex-col h-full">
-            {/* Upload area */}
             <div
-              className="w-full border-2 border-dashed border-border-medium rounded-lg p-4 text-center cursor-pointer hover:border-primary transition mb-6"
+              className="w-full border-2 border-dashed border-border-medium rounded-lg p-4 text-center cursor-pointer hover:border-primary-dark transition mb-6"
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onClick={() => fileInputRef.current.click()}
             >
-              <ArrowUpTrayIcon className="mx-auto w-6 h-6 text-caption mb-2" />
-              <p className="text-body text-sm">
+              <ArrowUpTrayIcon className="mx-auto w-6 h-6 text-text-tertiary mb-2" />
+              <p className="text-text-secondary text-sm">
                 {t('documents.dropHere')} <br /> {t('documents.orClickToBrowse')}
               </p>
               <button className="btn-secondary mt-2">
@@ -198,10 +194,9 @@ const Sidebar = ({
               />
             </div>
             
-            {/* Uploaded files */}
-            <div className="text-sm text-body flex-1 overflow-y-auto">
+            <div className="text-sm text-text-secondary flex-1 overflow-y-auto">
               {stagedFiles.length === 0 ? (
-                <div className="flex flex-col items-center text-caption mt-4">
+                <div className="flex flex-col items-center text-text-tertiary mt-4">
                   <DocumentIcon className="w-5 h-5 mb-1" />
                   <span>{t('documents.noDocuments')}</span>
                 </div>
@@ -210,18 +205,18 @@ const Sidebar = ({
                   {stagedFiles.map((file, index) => (
                     <li
                       key={index}
-                      className="flex justify-between items-center py-2 px-3 hover:bg-bg-tertiary rounded"
+                      className="flex justify-between items-center py-2 px-3 hover:bg-bg-tertiary rounded-md"
                     >
                       <span className="truncate text-sm">{file.original}</span>
                       <span
                         className={`ml-2 text-xs font-medium ${
                           file.status === "uploaded"
-                            ? "success"
+                            ? "text-success"
                             : file.status === "uploading"
-                            ? "warning"
+                            ? "text-warning"
                             : file.status === "processed"
                             ? "text-text-primary font-semibold"
-                            : "error"
+                            : "text-error"
                         }`}
                       >
                         {getStatusText(file.status)}
@@ -232,11 +227,10 @@ const Sidebar = ({
               )}
             </div>
 
-            {/* Visual Processing Bar */}
             {isProcessing && (
               <div className="w-full my-4">
-                <div className="relative w-full h-2 bg-bg-tertiary rounded overflow-hidden">
-                  <div className="absolute inset-0 bg-bg-green animate-pulse w-1/2 rounded"></div>
+                <div className="relative w-full h-2 bg-bg-tertiary rounded-md overflow-hidden">
+                  <div className="absolute inset-0 bg-success animate-pulse w-1/2 rounded-md"></div>
                 </div>
                 <p className="text-xs text-center text-text-primary mt-2">
                   {t('documents.processingDocuments')}
@@ -244,13 +238,9 @@ const Sidebar = ({
               </div>
             )}
             
-            {/* Process Documents button */}
             {stagedFiles.length > 0 && (
               <button
-                onClick={() => {
-                  console.log("🟢 Sidebar: Process button clicked");
-                  onProcess();
-                }}
+                onClick={onProcess}
                 disabled={isProcessing}
                 className={`mt-4 w-full transition ${
                   isProcessing
@@ -263,7 +253,6 @@ const Sidebar = ({
             )}
           </div>
         ) : (
-          /* Document Bases Tab */
           <div className="w-full h-full overflow-y-auto">
             <DocumentBaseManager />
           </div>

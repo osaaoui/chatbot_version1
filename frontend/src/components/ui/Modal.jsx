@@ -11,7 +11,7 @@ const Modal = ({ isOpen, onClose, children, buttons = [], size = 'default' }) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ zIndex: 1000 }}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className={`bg-card shadow-strong ${sizeClasses[size]} w-full mx-4 max-h-[90vh] overflow-auto`}>
         <div className="flex justify-end p-4 pb-0">
           <button

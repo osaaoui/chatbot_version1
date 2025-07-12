@@ -8,11 +8,13 @@ import { jwtDecode } from "jwt-decode";
 const AuthForm = () => {
   const { login } = useAuth();
   const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState("login");
   const [error, setError] = useState(null);
   const [role, setRole] = useState("reader"); // default to reader
+  const [fullName, setFullName] = useState("");
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +36,9 @@ const AuthForm = () => {
         email,
         password,
       });
-      login(res.data.access_token, { email });
+      const token = res.data.access_token;
+      const decoded = jwtDecode(token);
+      login(res.data.access_token, { email, fullName: decoded.fullName, role: decoded.role });
     } catch (err) {
       console.error(t('auth.loginFailed'), err);
       throw err;
@@ -44,6 +48,7 @@ const AuthForm = () => {
   const handleSignup = async () => {
     try {
       const res = await axios.post("http://localhost:8001/api/auth/signup", {
+        fullName,
         email,
         password,
         role,
@@ -53,6 +58,7 @@ const AuthForm = () => {
       const user = {
         email: decoded.sub,
         role: decoded.role,
+        fullName: decoded.fullName,
       };
       login(token, user); // sets context + localStorage
     } catch (err) {
@@ -70,6 +76,16 @@ const AuthForm = () => {
           {mode === "login" ? t('auth.login') : t('auth.signup')}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === "signup" && (
+            <input
+              className="input-base w-full"
+              placeholder={t('auth.fullName')}
+              type="text"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+          )}
           <input
             className="input-base w-full"
             placeholder={t('auth.email')}

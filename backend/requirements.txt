@@ -1,1 +1,42 @@
-asyncpg==0.29.0
+# Web framework
+fastapi
+uvicorn[standard]
+
+# Base de datos PostgreSQL
+asyncpg
+psycopg2-binary  # útil si usas SQLAlchemy también
+
+# Autenticación
+python-jose
+passlib[bcrypt]
+
+# Carga de variables de entorno
+python-dotenv
+
+# PDF y procesamiento de texto
+camelot-py[cv]
+pdf2image
+pytesseract
+PyMuPDF  # (fitz)
+nltk
+
+# Procesamiento de lenguaje y embeddings
+sentence-transformers
+scikit-learn
+torch
+numpy
+
+# LangChain y OpenAI
+langchain
+langchain-openai
+langchain-community
+
+# Validaciones y modelos
+pydantic
+
+# Utilidades varias
+requests
+
+python-multipart
+"pydantic[email]"
+chromadb

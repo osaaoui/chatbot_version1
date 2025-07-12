@@ -43,16 +43,24 @@ class FolderService(BaseService):
             raise
         except Exception as e:
             raise ServiceError(f"Failed to retrieve folders: {str(e)}")
-    
-    async def update_folder(self, folder_id: str, folder_name: str, user_email: str) -> bool:
-        """Update folder name"""
+
+    async def update_folder(
+        self, 
+        folder_id: str, 
+        user_email: str, 
+        folder_name: Optional[str] = None, 
+        parent_folder_id: Optional[str] = None,
+        change_parent: bool = False 
+    ) -> bool:
         try:
             user_id = await self.get_user_id_by_email(user_email)
             
+            print(f"Updating folder {folder_id}: name={folder_name}, parent={parent_folder_id}, change_parent={change_parent}")
+            
             async with self.get_connection() as conn:
                 await conn.execute(
-                    "SELECT SP_UpdateFolder($1, $2, $3, NULL, NULL)",
-                    folder_id, user_id, folder_name
+                    "SELECT SP_UpdateFolder($1, $2, $3, $4, NULL, $5)",
+                    folder_id, user_id, folder_name, parent_folder_id, change_parent
                 )
                 return True
         except ServiceError:

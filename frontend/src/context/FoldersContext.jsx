@@ -1,4 +1,3 @@
-// src/contexts/FoldersContext.js
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { folderService } from '../services/folderService';
 
@@ -28,8 +27,6 @@ export const FoldersProvider = ({ children }) => {
       const response = await folderService.getFolders();
       if (response.success) {
         let foldersData = response.data || [];
-        
-        // Filter by document_base_id
         foldersData = foldersData.filter(folder => folder.document_base_id === documentBaseId);
         
         setFoldersByDocumentBase(prev => ({
@@ -49,7 +46,6 @@ export const FoldersProvider = ({ children }) => {
     try {
       const response = await folderService.createFolder(data);
       if (response.success) {
-        // Hacer fetch completo para obtener los datos actualizados
         await fetchFolders(data.document_base_id);
         return response;
       } else {
@@ -63,20 +59,12 @@ export const FoldersProvider = ({ children }) => {
     }
   }, [fetchFolders]);
 
-  const updateFolder = useCallback(async (folderId, folderName, documentBaseId) => {
+  const updateFolder = useCallback(async (folderId, documentBaseId, folderName = null, parentFolderId = undefined) => {
     setError(null);
     try {
-      const response = await folderService.updateFolder(folderId, folderName);
+      const response = await folderService.updateFolder(folderId, folderName, parentFolderId);
       if (response.success) {
-        // Actualización optimista
-        if (response.data && documentBaseId) {
-          setFoldersByDocumentBase(prev => ({
-            ...prev,
-            [documentBaseId]: (prev[documentBaseId] || []).map(folder => 
-              folder.folder_id === folderId ? response.data : folder
-            )
-          }));
-        }
+        await fetchFolders(documentBaseId);
         return response;
       } else {
         setError(response.message || 'Error updating folder');
@@ -87,20 +75,14 @@ export const FoldersProvider = ({ children }) => {
       setError(errorMessage);
       throw err;
     }
-  }, []);
+  }, [fetchFolders]);
 
   const deleteFolder = useCallback(async (folderId, documentBaseId) => {
     setError(null);
     try {
       const response = await folderService.deleteFolder(folderId);
       if (response.success) {
-        // Actualización optimista
-        if (documentBaseId) {
-          setFoldersByDocumentBase(prev => ({
-            ...prev,
-            [documentBaseId]: (prev[documentBaseId] || []).filter(folder => folder.folder_id !== folderId)
-          }));
-        }
+        await fetchFolders(documentBaseId);
         return response;
       } else {
         setError(response.message || 'Error deleting folder');
@@ -111,20 +93,18 @@ export const FoldersProvider = ({ children }) => {
       setError(errorMessage);
       throw err;
     }
-  }, []);
+  }, [fetchFolders]);
 
-  // Helper function to organize folders in hierarchy for a specific document base
+  // Build hierarchical folder structure from flat array
   const getFoldersHierarchy = useCallback((documentBaseId) => {
     const folders = getFoldersForDocumentBase(documentBaseId);
     const folderMap = new Map();
     const rootFolders = [];
 
-    // Create map of all folders
     folders.forEach(folder => {
       folderMap.set(folder.folder_id, { ...folder, children: [] });
     });
 
-    // Build hierarchy
     folders.forEach(folder => {
       if (folder.parent_folder_id) {
         const parent = folderMap.get(folder.parent_folder_id);

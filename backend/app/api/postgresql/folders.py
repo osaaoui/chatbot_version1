@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import List
+from fastapi import APIRouter, HTTPException, Depends, status, Query
+from typing import List, Optional
 from app.models.postgresql.folder import *
 from app.services.postgresql.folder_service import *
 from app.core.base_service import APIResponse, ServiceError
@@ -57,12 +57,22 @@ async def get_user_folders(current_user: dict = Depends(get_current_user)):
 @router.put("/{folder_id}", response_model=APIResponse)
 async def update_folder(
     folder_id: str,
-    folder_name: str,
+    folder_name: Optional[str] = Query(None),
+    parent_folder_id: Optional[str] = Query(None),
+    change_parent: bool = Query(False),
     current_user: dict = Depends(get_current_user)
 ):
-    """Update folder name"""
     try:
-        await folder_service.update_folder(folder_id, folder_name, current_user["email"])
+        if parent_folder_id == "":
+            parent_folder_id = None
+            
+        await folder_service.update_folder(
+            folder_id, 
+            current_user["email"], 
+            folder_name, 
+            parent_folder_id,
+            change_parent
+        )
         return folder_service.success_response("Folder updated successfully")
     except ServiceError as e:
         handle_service_error(e)
