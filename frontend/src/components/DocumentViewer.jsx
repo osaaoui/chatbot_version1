@@ -46,6 +46,8 @@ function DocumentViewer({ source, onClose, headerHeight = 64 }) {
 
       [...container.querySelectorAll(".textLayer")].forEach((el) => el.remove());
 
+      [...container.querySelectorAll(".textLayer")].forEach((el) => el.remove());
+
       const dpi = window.devicePixelRatio || 1;
       const unscaledViewport = page.getViewport({ scale: 1 });
       const scale = container.offsetWidth / unscaledViewport.width;

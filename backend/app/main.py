@@ -42,6 +42,11 @@ app.include_router(documents.router, prefix="/api/v2/documentsv1", tags=["docume
 app.include_router(serve_files_router, prefix="/api")
 
 
+# this is for the version with pdf-viewer-core
+
+app.include_router(serve_files_router, prefix="/api")
+
+
 
 
 
