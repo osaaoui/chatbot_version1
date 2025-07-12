@@ -1,11 +1,16 @@
-// src/components/DocumentBase/DocumentBaseManager.js
 import React from 'react';
 import { DocumentBasesProvider } from '../../context/DocumentBasesContext';
 import { FoldersProvider } from '../../context/FoldersContext';
 import CreateDocumentBase from './CreateDocumentBase';
 import DocumentBaseList from './DocumentBaseList';
 
-const DocumentBaseManager = () => {
+const DocumentBaseManager = ({ 
+  onProcessFiles,
+  isProcessing = false,
+  stagedFiles = [],
+  setStagedFiles,
+  userEmail 
+}) => {
   return (
     <DocumentBasesProvider>
       <FoldersProvider>
@@ -17,7 +22,13 @@ const DocumentBaseManager = () => {
           
           {/* List of document bases */}
           <div className="flex-1 overflow-y-auto">
-            <DocumentBaseList />
+            <DocumentBaseList 
+              onProcessFiles={onProcessFiles}
+              isProcessing={isProcessing}
+              stagedFiles={stagedFiles}
+              setStagedFiles={setStagedFiles}
+              userEmail={userEmail}
+            />
           </div>
         </div>
       </FoldersProvider>

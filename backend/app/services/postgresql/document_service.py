@@ -5,13 +5,29 @@ from app.models.postgresql.document import DocumentCreate, DocumentResponse
 
 class DocumentService(BaseService):
     
-    async def create_document(self, document_data: DocumentCreate, user_email: str) -> str:
+    async def create_document(self, document_data: DocumentCreate, user_email: str, file_content: bytes = None) -> str:
+        """
+        Create a new document in PostgreSQL
+        
+        Args:
+            document_data: Document creation data
+            user_email: Email of the user creating the document
+            file_content: Binary content of the file (optional)
+            
+        Returns:
+            str: Document ID
+        """
         try:
             user_id = await self.get_user_id_by_email(user_email)
             
+            # Convert file content to base64 if provided
+            base64_file = None
+            if file_content:
+                base64_file = file_content
+            
             async with self.get_connection() as conn:
                 document_id = await conn.fetchval(
-                    "SELECT SP_CreateDocument($1, $2, $3, $4, $5, $6, $7, $8)",
+                    "SELECT SP_CreateDocument($1, $2, $3, $4, $5, $6, $7, $8, $9)",
                     document_data.document_name,
                     document_data.document_base_id,
                     document_data.storage_url,
@@ -19,9 +35,11 @@ class DocumentService(BaseService):
                     document_data.size_mb,
                     user_id,
                     document_data.folder_id,
-                    document_data.num_pages
+                    document_data.num_pages,
+                    base64_file
                 )
                 return str(document_id)
+                
         except ServiceError:
             raise
         except Exception as e:

@@ -93,6 +93,10 @@
     "processed": "processed",
     "error": "error"
   },
+  "sidebar": {
+    "uploads": "Uploads",
+    "bases": "Bases"
+  },
   "company": {
     "title": "Company Profile",
     "companyName": "Company name",
@@ -120,5 +124,20 @@
     "success": {
       "dataSaved": "Company data saved successfully"
     }
+  },
+  "document_base": {
+    "created": "Created",
+    "create_folder": "Create folder",
+    "drop_here_root": "Drop here to move to root level",
+    "folder_name_placeholder": "Folder name",
+    "no_folders": "No folders in this document base",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "folder": {
+    "deleteConfirm": "Delete?",
+    "created": "Created"
   }
 }

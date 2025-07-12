@@ -80,6 +80,10 @@ const Sidebar = ({
   };
   
   const handleUpload = async (files) => {
+    // 🔥 CAMBIA ESTOS UUIDs POR LOS DE TU BASE DE DATOS 🔥
+    const DOCUMENT_BASE_ID = "49bd7249-ed70-47d4-9660-67775b674f3e"; 
+    const FOLDER_ID = "db82cde7-40ac-46ce-97d7-2f1826cff46b"; 
+    
     for (const file of files) {
       const tempRecord = {
         name: file.name,
@@ -87,10 +91,21 @@ const Sidebar = ({
         status: "uploading",
       };
       setStagedFiles((prev) => [...prev, tempRecord]);
+      
       try {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("user_id", email);
+        formData.append("document_base_id", DOCUMENT_BASE_ID);
+        
+        // Solo agregar folder_id si no es null
+        if (FOLDER_ID) {
+          formData.append("folder_id", FOLDER_ID);
+        }
+        
+        // Para PDFs, podrías calcular o estimar las páginas
+        // Por ahora lo dejamos opcional
+        // formData.append("num_pages", estimatedPages);
+        
         const response = await axios.post(
           "http://localhost:8001/api/v2/uploads/upload/",
           formData,
@@ -101,16 +116,18 @@ const Sidebar = ({
             },
           }
         );
-        const uploadedName = response.data.filename || file.name;
+        
         setStagedFiles((prev) =>
           prev.map((f) =>
             f.name === file.name
-              ? { ...f, name: uploadedName, status: "uploaded" }
+              ? { ...f, status: "uploaded", documentId: response.data.document_id }
               : f
           )
         );
+        
         if (onFileSelected)
-          onFileSelected({ name: uploadedName, original: file.name });
+          onFileSelected({ name: file.name, original: file.name, documentId: response.data.document_id });
+          
       } catch (err) {
         console.error("Error uploading file:", file.name, err);
         setStagedFiles((prev) =>
@@ -154,7 +171,7 @@ const Sidebar = ({
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            Subidas
+            {t('sidebar.uploads')}
           </button>
           <button
             onClick={() => setActiveTab('bases')}
@@ -164,7 +181,7 @@ const Sidebar = ({
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            Bases
+            {t('sidebar.bases')}
           </button>
         </div>
       </div>
@@ -254,7 +271,13 @@ const Sidebar = ({
           </div>
         ) : (
           <div className="w-full h-full overflow-y-auto">
-            <DocumentBaseManager />
+            <DocumentBaseManager 
+              onProcessFiles={onProcess}
+              isProcessing={isProcessing}
+              stagedFiles={stagedFiles}
+              setStagedFiles={setStagedFiles}
+              userEmail={email}
+            />
           </div>
         )}
       </div>

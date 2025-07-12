@@ -93,6 +93,10 @@
     "processed": "procesado",
     "error": "error"
   },
+  "sidebar": {
+    "uploads": "Subidas",
+    "bases": "Bases"
+  },
   "company": {
     "title": "Perfil empresa",
     "companyName": "Nombre de la empresa",
@@ -120,5 +124,20 @@
     "success": {
       "dataSaved": "Datos de la empresa guardados correctamente"
     }
+  },
+  "document_base": {
+    "created": "Creado",
+    "create_folder": "Crear carpeta",
+    "drop_here_root": "Soltar aquí para mover a nivel raíz",
+    "folder_name_placeholder": "Nombre de la carpeta",
+    "no_folders": "No hay carpetas en esta base de documentos",
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
+  },
+   "folder": {
+    "deleteConfirm": "Eliminar?",
+    "created": "Creado"
   }
 }

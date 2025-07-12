@@ -3,7 +3,13 @@ import React from 'react';
 import { useDocumentBases } from '../../context/DocumentBasesContext';
 import DocumentBaseCard from './DocumentBaseCard';
 
-const DocumentBaseList = () => {
+const DocumentBaseList = ({ 
+  onProcessFiles,
+  isProcessing = false,
+  stagedFiles = [],
+  setStagedFiles,
+  userEmail 
+}) => {
   const { documentBases, initialLoading, error } = useDocumentBases();
 
   if (initialLoading) {
@@ -35,7 +41,12 @@ const DocumentBaseList = () => {
       {documentBases.map((documentBase) => (
         <DocumentBaseCard 
           key={documentBase.document_base_id} 
-          documentBase={documentBase} 
+          documentBase={documentBase}
+          onProcessFiles={onProcessFiles}
+          isProcessing={isProcessing}
+          stagedFiles={stagedFiles}
+          setStagedFiles={setStagedFiles}
+          userEmail={userEmail}
         />
       ))}
     </div>

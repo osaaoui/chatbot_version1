@@ -82,6 +82,8 @@ export default function App() {
   return (
     <div className="bg-bg-secondary h-screen overflow-hidden">
       <Header onLogout={logout} />
+      
+      
       <div className="flex h-full pt-[57px]">
         {sidebarOpen && (
           <div className="h-full flex-shrink-0">

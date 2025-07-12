@@ -93,6 +93,10 @@
     "processed": "traité",
     "error": "erreur"
   },
+  "sidebar": {
+    "uploads": "Téléchargements",
+    "bases": "Socles"
+  },
   "company": {
     "title": "Profil de l'Entreprise",
     "companyName": "Nom de l'entreprise",
@@ -120,5 +124,20 @@
     "success": {
       "dataSaved": "Données de l'entreprise sauvegardées avec succès"
     }
+  },
+  "document_base": {
+    "created": "Créé",
+    "create_folder": "Créer un dossier",
+    "drop_here_root": "Déposer ici pour déplacer au niveau racine",
+    "folder_name_placeholder": "Nom du dossier",
+    "no_folders": "Aucun dossier dans cette base de documents",
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    }
+  },
+   "folder": {
+    "deleteConfirm": "Éliminer?",
+    "created": "Créé"
   }
 }

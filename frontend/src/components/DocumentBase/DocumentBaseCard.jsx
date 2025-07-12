@@ -1,14 +1,26 @@
+// src/components/DocumentBase/DocumentBaseCard.js
 import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useFolders } from '../../context/FoldersContext';
+import { useLanguage } from '../../hooks/useLanguaje';
 import FolderCard from './FolderCard';
 
-const DocumentBaseCard = ({ documentBase }) => {
+const DocumentBaseCard = ({ 
+  documentBase,
+  // Nuevas props para pasar a FolderCard
+  onProcessFiles,
+  isProcessing = false,
+  stagedFiles = [],
+  setStagedFiles,
+  userEmail
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [shouldLoadFolders, setShouldLoadFolders] = useState(false);
   const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [folderName, setFolderName] = useState('');
   const [isDragOverRoot, setIsDragOverRoot] = useState(false);
+  
+  const { t } = useLanguage();
   
   const { 
     getFoldersForDocumentBase,
@@ -52,7 +64,7 @@ const DocumentBaseCard = ({ documentBase }) => {
       const data = {
         folder_name: folderName.trim(),
         document_base_id: documentBase.document_base_id,
-        parent_folder_id: null
+        parent_folder_id: null // Root folder
       };
       
       const response = await createFolder(data);
@@ -143,11 +155,11 @@ const DocumentBaseCard = ({ documentBase }) => {
             {documentBase.base_name}
           </h3>
           <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-            <span>Creado: {formatDate(documentBase.creation_date)}</span>
+            <span>{t('document_base.created')}: {formatDate(documentBase.creation_date)}</span>
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
               documentBase.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
             }`}>
-              {documentBase.status}
+              {t(`document_base.status.${documentBase.status.toLowerCase()}`)}
             </span>
           </div>
         </div>
@@ -156,7 +168,7 @@ const DocumentBaseCard = ({ documentBase }) => {
           <button
             onClick={handleCreateFolderClick}
             className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition"
-            title="Crear carpeta"
+            title={t('document_base.create_folder')}
           >
             <PlusIcon className="w-4 h-4" />
           </button>
@@ -175,7 +187,7 @@ const DocumentBaseCard = ({ documentBase }) => {
         >
           {isDragOverRoot && (
             <div className="p-2 m-2 border-2 border-dashed border-blue-300 bg-blue-100 rounded-md text-center text-sm text-blue-600">
-              Soltar aquí para mover a nivel raíz
+              {t('document_base.drop_here_root')}
             </div>
           )}
 
@@ -187,7 +199,7 @@ const DocumentBaseCard = ({ documentBase }) => {
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  placeholder="Nombre de la carpeta"
+                  placeholder={t('document_base.folder_name_placeholder')}
                   className="flex-1 bg-transparent border-none outline-none text-sm placeholder-gray-500"
                   autoFocus
                 />
@@ -219,12 +231,17 @@ const DocumentBaseCard = ({ documentBase }) => {
                   key={folder.folder_id} 
                   folder={folder} 
                   allFolders={folders}
+                  userEmail={userEmail}
+                  onProcessFiles={onProcessFiles}
+                  isProcessing={isProcessing}
+                  stagedFiles={stagedFiles}
+                  setStagedFiles={setStagedFiles}
                 />
               ))}
             </div>
           ) : !showCreateFolder ? (
             <div className="p-4 text-center text-sm text-gray-500">
-              No hay carpetas en esta base de documentos
+              {t('document_base.no_folders')}
             </div>
           ) : null}
 
