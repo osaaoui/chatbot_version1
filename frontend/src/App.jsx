@@ -6,7 +6,9 @@ import ChatPane from "./components/ChatPane";
 import AuthForm from "./components/AuthForm";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthProvider";
-import DocumentViewer from "./components/DocumentViewer";
+import PDFViewerComponent from "./components/PDFViewerComponent";
+
+
 
 export default function App() {
   const { token, user, logout, loaded } = useAuth();
@@ -173,34 +175,43 @@ export default function App() {
     setFile(file);
   };
 
-  // ✅ Función mejorada para manejar selección manual de fuentes
-  const handleSourceSelection = (sourceData) => {
-    setSelectedSource({
-      ...sourceData,
-      autoSelected: false // ✅ Indicar que fue selección manual
-    });
-  };
+console.log("📄 selectedSource in App.jsx:", selectedSource);
 
   return (
-    <div className="bg-app h-screen overflow-hidden">
-      <Header onLogout={logout} />
-      <div className="flex h-full pt-[48px]">
-        {sidebarOpen && (
-          <div className="w-[280px] h-full">
-            <Sidebar
-              stagedFiles={stagedFiles}
-              setStagedFiles={setStagedFiles}
-              onFileChange={handleFileChange}
-              onProcess={handleProcess}
-              uploadedFiles={uploadedFiles}
-              email={user?.email}
-              onFileSelected={handleFileSelected}
-              isProcessing={isProcessing}
-            />
-          </div>
-        )}
-        
-        <div className="flex-1 h-full">
+  <div className="flex flex-col h-screen overflow-hidden bg-white">
+    {/* Top Header */}
+    <Header onLogout={logout} />
+
+    {/* Sidebar overlay */}
+    {sidebarOpen && (
+      <div className="fixed top-[48px] left-0 z-20 h-[calc(100vh-48px)] w-[280px] bg-white shadow-lg">
+        <Sidebar
+          stagedFiles={stagedFiles}
+          setStagedFiles={setStagedFiles}
+          onFileChange={handleFileChange}
+          onProcess={handleProcess}
+          uploadedFiles={uploadedFiles}
+          email={user?.email}
+          onFileSelected={handleFileSelected}
+          isProcessing={isProcessing}
+          userRole={user?.role}
+        />
+      </div>
+    )}
+
+    {/* Main content area */}
+    <div
+      className={`mt-[48px] h-[calc(100vh-48px)] transition-all duration-300 ${
+        sidebarOpen ? "ml-[280px]" : ""
+      }`}
+    >
+      <div className="flex w-full h-full">
+        {/* ChatPane: full width if no PDF, half otherwise */}
+        <div
+          className={`${
+            selectedSource ? "w-1/2" : "w-full"
+          } h-full flex flex-col transition-all duration-300`}
+        >
           <ChatPane
             question={question}
             answer={answer}
@@ -208,29 +219,26 @@ export default function App() {
             onQuestionChange={(e) => setQuestion(e.target.value)}
             onSend={sendQuestion}
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-            setSelectedSource={handleSourceSelection} // ✅ Usar la función mejorada
+            setSelectedSource={setSelectedSource}
           />
         </div>
-        
-        {/* Document Viewer mejorado */}
+
+        {/* PDF Viewer */}
         {selectedSource && (
-          <>
-            {console.log("📄 Selected source snippet:", selectedSource.snippet)}
-            <DocumentViewer
+          <div className="w-1/2 h-full overflow-hidden">
+            <PDFViewerComponent
               source={{
-                metadata: {
-                  source: selectedSource.filename,
-                  page: selectedSource.page
-                },
+                filename: selectedSource.filename,
                 snippet: selectedSource.snippet,
-                autoSelected: selectedSource.autoSelected // ✅ Pasar flag de auto-selección
+                page: selectedSource.page ?? 0,
               }}
               onClose={() => setSelectedSource(null)}
-              headerHeight={60} // Altura del header
             />
-          </>
+          </div>
         )}
       </div>
     </div>
-  );
-} 
+  </div>
+);
+
+}

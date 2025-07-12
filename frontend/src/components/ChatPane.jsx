@@ -79,7 +79,7 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources, toggleS
       </div>
       
       {/* Chat Messages */}
-      <main className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      <main className="flex-1 overflow-y-auto px-20 py-4 space-y-">
         {chatHistory.length === 0 ? (
           <p className="text-caption italic">{t('chat.askToStart')}</p>
         ) : (

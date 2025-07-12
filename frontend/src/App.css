@@ -43,10 +43,6 @@ body{
   }
 }
 
-.card {
-  @apply card;
-}
-
 .read-the-docs {
   @apply text-caption;
 }
@@ -71,4 +67,12 @@ body{
   background-color: var(--bg-primary);
   color: var(--text-secondary);
   font-size: var(--text-sm);
+}
+
+mark {
+  background-color: #fff59d; /* Soft yellow */
+  color: inherit;
+  padding: 0.05em 0.2em;
+  border-radius: 0.15rem;
+  font-weight: 500;
 }

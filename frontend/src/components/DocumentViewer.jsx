@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+import * as pdfjsLib from "pdfjs-dist";
+import "pdfjs-dist/web/pdf_viewer.css";
 
 // PDF.js worker setup
 GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.min.js";
@@ -11,7 +13,6 @@ function DocumentViewer({ source, onClose, headerHeight = 64 }) {
   const renderTaskRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [highlight, setHighlight] = useState(null);
 
   const filename = source?.metadata?.source;
   const [pageNumber, setPageNumber] = useState((source?.metadata?.page || 0) + 1);
@@ -19,10 +20,12 @@ function DocumentViewer({ source, onClose, headerHeight = 64 }) {
   const snippet = source?.snippet || "";
 
   useEffect(() => {
-    setHighlight(null); // reset on page or file change
-
-    async function renderPdf() {
-      if (!filename) return;
+  async function renderPdf() {
+    if (!filename) return;
+    if (!snippet || snippet.length < 10) {
+      console.warn("🛑 Skipping render: empty or too short snippet");
+      return;
+    }
 
       const url = `http://localhost:8001/files/${filename}`;
 
@@ -41,78 +44,150 @@ function DocumentViewer({ source, onClose, headerHeight = 64 }) {
         const container = canvas.parentElement;
         if (!container) return;
 
-        const dpi = window.devicePixelRatio || 1;
+      [...container.querySelectorAll(".textLayer")].forEach((el) => el.remove());
 
-        // Dynamically calculate scale based on container width
-        const unscaledViewport = page.getViewport({ scale: 1 });
-        const baseScale = container.offsetWidth / unscaledViewport.width;
-        const finalScale = baseScale;
+      const dpi = window.devicePixelRatio || 1;
+      const unscaledViewport = page.getViewport({ scale: 1 });
+      const scale = container.offsetWidth / unscaledViewport.width;
+      const viewport = page.getViewport({ scale });
 
-        const viewport = page.getViewport({ scale: finalScale });
+      canvas.width = viewport.width * dpi;
+      canvas.height = viewport.height * dpi;
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
 
-        // Resize canvas for high-DPI display
-        canvas.width = viewport.width * dpi;
-        canvas.height = viewport.height * dpi;
-        canvas.style.width = `${viewport.width}px`;
-        canvas.style.height = `${viewport.height}px`;
+      const context = canvas.getContext("2d");
+      if (!context) return;
+      context.setTransform(dpi, 0, 0, dpi, 0, 0);
 
-        const context = canvas.getContext("2d");
-        if (!context) return;
+      if (renderTaskRef.current) renderTaskRef.current.cancel();
+      const renderTask = page.render({ canvasContext: context, viewport });
+      renderTaskRef.current = renderTask;
+      await renderTask.promise;
 
-        // Adjust for high DPI rendering
-        context.setTransform(dpi, 0, 0, dpi, 0, 0);
+      const textLayerDiv = document.createElement("div");
+      textLayerDiv.className = "textLayer";
+      Object.assign(textLayerDiv.style, {
+        position: "absolute",
+        top: "0px",
+        left: "0px",
+        width: `${viewport.width}px`,
+        height: `${viewport.height}px`,
+        zIndex: 10,
+        pointerEvents: "none",
+      });
+      textLayerDiv.style.setProperty("--scale-factor", viewport.scale.toString());
+      container.appendChild(textLayerDiv);
 
-        console.log("📄 Rendering page:", pageNumber);
-        console.log("📎 Snippet:", snippet);
-        console.log("🖼 Canvas size (CSS):", canvas.style.width, canvas.style.height);
-        console.log("🖼 Canvas size (pixels):", canvas.width, canvas.height);
+      const textContent = await page.getTextContent();
+      const rawStrings = textContent.items.map(item => item.str);
 
-        // Cancel any ongoing render task
-        if (renderTaskRef.current) {
-          renderTaskRef.current.cancel();
+      const normalize = (text) =>
+  text
+    .replace(/([a-z])([A-Z])/g, '$1 $2') // 👈 insert space in camelCase
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[^\w\s.,;:!?]/g, "")
+    .trim();
+
+let rawMatch = null;
+let anchor = null;
+
+// Try full sentence match
+const snippetSentences = snippet.split(/[.?!]\s?/);
+for (const sentence of snippetSentences) {
+  const wordCount = sentence.split(/\s+/).length;
+  if (wordCount < 5) continue; // 🚫 Skip trivial or numeric snippets
+
+  const candidate = normalize(sentence);
+  const found = textContent.items.find(item =>
+    normalize(item.str).includes(candidate)
+  );
+  if (found) {
+    rawMatch = sentence.trim();
+    anchor = candidate;
+    break;
+  }
+}
+
+
+      // Fallback
+      if (!anchor) {
+        const fallback = normalize(snippet).split(" ").slice(0, 8).join(" ");
+        if (fallback.length > 10) {
+          anchor = fallback;
+          rawMatch = snippet;
         }
-
-        // Render PDF page to canvas
-        const renderTask = page.render({ canvasContext: context, viewport });
-        renderTaskRef.current = renderTask;
-        await renderTask.promise;
-
-        // Try to fetch and display highlight box
-        if (snippet && snippet.length > 20) {
-          try {
-            console.log("🔎 Requesting highlight for:", snippet);
-            const response = await fetch(
-              `http://localhost:8001/api/highlight-snippet?file=${filename}&text=${encodeURIComponent(snippet)}`
-            );
-            const data = await response.json();
-            console.log("📦 Highlight box from API:", data.highlight);
-
-            const box = data.highlight;
-            if (box && box.page === pageNumber) {
-              setHighlight(box);
-            } else {
-              setHighlight(null);
-            }
-          } catch (highlightErr) {
-            console.warn("Highlight fetch failed", highlightErr);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-        setError(t('documents.failedToLoad'));
-      } finally {
-        setLoading(false);
       }
+
+      console.log("🪝 Anchor phrase to match:", anchor);
+      console.log("🎯 Full sentence to highlight:", rawMatch);
+
+      await pdfjsLib.renderTextLayer({
+        textContent,
+        container: textLayerDiv,
+        viewport,
+        textDivs: [],
+        enhanceTextSelection: true,
+      });
+
+      if (!anchor || !rawMatch) {
+        console.warn("⚠️ Skipping highlight: no anchor/rawMatch.");
+        return;
+      }
+
+      const fullPageNorm = normalize(rawStrings.join(" "));
+      const anchorTokens = new Set(anchor.split(" "));
+const pageTokens = new Set(fullPageNorm.split(" "));
+
+const overlap = [...anchorTokens].filter(t => pageTokens.has(t));
+if (overlap.length < Math.floor(anchorTokens.size * 0.6)) {
+  console.log("🚫 Not enough token overlap for anchor match.");
+  return;
+}
+
+
+      const textLayerRaw = textLayerDiv.innerText;
+      const normTextLayer = normalize(textLayerRaw);
+
+      let highlighted = false;
+      if (anchor && normTextLayer.includes(anchor)) {
+        const safeAnchorRegex = new RegExp(
+          anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          "i"
+        );
+
+        textLayerDiv.innerHTML = textLayerDiv.innerHTML.replace(
+          safeAnchorRegex,
+          `<span style="background-color: #facc15; color: black; font-weight: bold; padding: 0 2px; border-radius: 2px;">$&</span>`
+        );
+        console.log("✅ Highlighted anchor across full text layer.");
+        highlighted = true;
+      }
+
+      if (!highlighted) {
+        console.log("⚠️ No matching span found for anchor.");
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load PDF.");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    renderPdf();
+  renderPdf();
 
-    return () => {
-      if (renderTaskRef.current) {
-        renderTaskRef.current.cancel();
-      }
-    };
-  }, [filename, pageNumber, snippet, t]);
+  return () => {
+    if (renderTaskRef.current) {
+      renderTaskRef.current.cancel();
+    }
+  };
+}, [filename, pageNumber, snippet]);
+
+
+
 
   const goPrev = () => setPageNumber((p) => Math.max(1, p - 1));
   const goNext = () => setPageNumber((p) => Math.min(totalPages, p + 1));
@@ -138,63 +213,17 @@ function DocumentViewer({ source, onClose, headerHeight = 64 }) {
         </button>
       </div>
 
-      {/* Canvas + Highlight Overlay */}
       <div className="flex-1 overflow-y-auto relative p-4">
         {loading && <p className="italic text-gray-400">{t('common.loading')}</p>}
         {error && <p className="text-red-500">{error}</p>}
         <div className="relative">
           <canvas ref={canvasRef} className="border shadow max-w-full h-auto block" />
-
-          {highlight && canvasRef.current ? (
-            (() => {
-              const canvas = canvasRef.current;
-              const scale = 1.5;
-
-              const top = (canvas.height - (highlight.y + highlight.height)) / scale;
-              const offset = 0.5 * highlight.width; // Move left by ~30% of the box width
-              const left = (highlight.x - offset) / scale
-              
-              const width = (highlight.width - offset) / scale; // ✅ match shrink on right
-              const height = Math.max(highlight.height / scale, 16);
-
-              console.log("🟡 Canvas height:", canvas.height);
-              console.log("🟡 Raw highlight box:", highlight);
-              console.log("🟡 Converted box:", { top, left, width, height });
-
-              return (
-                <div
-                  className="absolute border-2 border-yellow-500 bg-yellow-300 bg-opacity-50 pointer-events-none"
-                  style={{
-                    top: `${top}px`,
-                    left: `${left}px`,
-                    width: `${width}px`,
-                    height: `${height}px`,
-                  }}
-                />
-              );
-            })()
-          ) : null}
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="flex items-center justify-between px-4 py-2 border-t bg-gray-50 text-sm">
-        <button
-          onClick={goPrev}
-          disabled={pageNumber <= 1}
-          className="text-purple-600 disabled:text-gray-400"
-          title={t('common.prev')}
-        >
-          ◀ {t('common.prev')}
-        </button>
-        <button
-          onClick={goNext}
-          disabled={totalPages && pageNumber >= totalPages}
-          className="text-purple-600 disabled:text-gray-400"
-          title={t('common.next')}
-        >
-          {t('common.next')} ▶
-        </button>
+        <button onClick={goPrev} disabled={pageNumber <= 1} className="text-purple-600 disabled:text-gray-400">◀ Prev</button>
+        <button onClick={goNext} disabled={totalPages && pageNumber >= totalPages} className="text-purple-600 disabled:text-gray-400">Next ▶</button>
       </div>
     </div>
   );

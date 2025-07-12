@@ -222,3 +222,6 @@
   .shadow-medium { box-shadow: var(--shadow-md); }
   .shadow-strong { box-shadow: var(--shadow-lg); }
 }
+.bg-yellow-200 {
+  background-color: #fde68a;
+}
