@@ -14,7 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useFolders } from '../../context/FoldersContext';
 import { useLanguage } from '../../hooks/useLanguaje';
-import DocumentList from './DocumentList';
+import DocumentList from '../Document/DocumentList';
 
 const FolderCard = ({ 
   folder, 

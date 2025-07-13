@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useFolders } from '../../context/FoldersContext';
 import { useLanguage } from '../../hooks/useLanguaje';
-import FolderCard from './FolderCard';
+import FolderCard from '../Folder/FolderCard';
 
 const DocumentBaseCard = ({ 
   documentBase,

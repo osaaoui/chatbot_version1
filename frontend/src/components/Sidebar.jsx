@@ -138,10 +138,6 @@ const Sidebar = ({
     }
   };
 
-  const getStatusText = (status) => {
-    return t(`fileStatus.${status}`, { defaultValue: status });
-  };
-
   return (
     <div className="bg-bg-secondary flex flex-col items-center w-80 h-full px-4 pt-6 pb-6 border-r border-border-light flex-shrink-0">
       <div className="w-full mb-6">
