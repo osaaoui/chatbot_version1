@@ -44,6 +44,7 @@
   "auth": {
     "login": "Iniciar Sesión",
     "signup": "Registrarse",
+    "fullName" : "Nombre Completo",
     "email": "Email",
     "password": "Contraseña",
     "loginButton": "Iniciar Sesión",

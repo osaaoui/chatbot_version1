@@ -150,15 +150,6 @@ const Sidebar = ({
             <DocumentIcon className="w-5 h-5 text-text-tertiary" />
             {t('sidebar.bases')}
           </h2>
-          
-          <button
-            onClick={toggleSidebar}
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-bg-tertiary text-text-secondary h-7 w-7"
-            title={t('chat.toggleSidebar')}
-          >
-            <PanelLeft />
-            <span className="sr-only">{t('chat.toggleSidebar')}</span>
-          </button>
         </div>
       </div>
 

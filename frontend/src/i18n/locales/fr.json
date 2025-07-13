@@ -44,6 +44,7 @@
   "auth": {
     "login": "Se connecter",
     "signup": "S'inscrire",
+    "fullName" : "Nom et prénom",
     "email": "Email",
     "password": "Mot de passe",
     "loginButton": "Se connecter",

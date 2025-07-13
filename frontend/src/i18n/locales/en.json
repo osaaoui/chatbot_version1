@@ -44,6 +44,7 @@
   "auth": {
     "login": "Log In",
     "signup": "Sign Up",
+    "fullName" : "Full Name",
     "email": "Email",
     "password": "Password",
     "loginButton": "Login",

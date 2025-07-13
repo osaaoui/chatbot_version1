@@ -9,8 +9,12 @@ import PDFViewerComponent from "./components/PDFViewerComponent";
 import { useFileManagement } from "./hooks/app/useFileManagement";
 import { useChatLogic } from "./hooks/app/useChatLogic";
 
-const Layout = ({ selectedSource, children }) => (
+const Layout = ({ selectedSource, onClosePDF, children }) => (
   <div className="flex-1 h-full flex">
+    <div className={`h-full ${selectedSource ? 'w-1/2' : 'w-full'}`}>
+      {children}
+    </div>
+    
     {selectedSource && (
       <div className="h-full w-1/2">
         <PDFViewerComponent
@@ -19,14 +23,13 @@ const Layout = ({ selectedSource, children }) => (
             snippet: selectedSource.snippet,
             page: selectedSource.page ?? 0,
           }}
+          onClosePDF={onClosePDF}
         />
       </div>
     )}
-    <div className={`h-full ${selectedSource ? 'w-1/2' : 'w-full'}`}>
-      {children}
-    </div>
   </div>
 );
+
 
 export default function App() {
   const { token, user, logout, loaded } = useAuth();
@@ -43,14 +46,23 @@ export default function App() {
     handleProcess: processFiles
   } = useFileManagement(user, token, t);
 
+    const handleAutoSourceSelection = useCallback((sourceData) => {
+    if (sourceData?.autoSelected !== false) {
+      return;
+    }
+    setSelectedSource(sourceData);
+  }, []);
+
   const {
     question,
     answer,
     sources,
     setQuestion,
     sendQuestion
-  } = useChatLogic(user, token, t, setSelectedSource);
+  } = useChatLogic(user, token, t, handleAutoSourceSelection);
 
+
+  
   const handleFileChange = useCallback((e) => {
     if (e.target.files?.length > 0) {
       setFile(e.target.files[0]);
@@ -102,7 +114,7 @@ export default function App() {
           </div>
         )}
         
-        <Layout sidebarOpen={sidebarOpen} selectedSource={selectedSource}>
+        <Layout selectedSource={selectedSource} onClosePDF={closePDF}>
           <ChatPane
             question={question}
             answer={answer}

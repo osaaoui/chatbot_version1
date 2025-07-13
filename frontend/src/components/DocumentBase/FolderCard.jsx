@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { 
   ChevronDownIcon, 
@@ -14,14 +14,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { useFolders } from '../../context/FoldersContext';
 import { useLanguage } from '../../hooks/useLanguaje';
-import DocumentList from './DocumentList'; // NUEVA IMPORTACIÓN
+import DocumentList from './DocumentList';
 
 const FolderCard = ({ 
   folder, 
   level = 0, 
   allFolders = [], 
   userEmail,
-  // Nuevas props para unificar con Sidebar
   onProcessFiles,
   isProcessing = false,
   stagedFiles = [],
@@ -40,11 +39,47 @@ const FolderCard = ({
   const [processedFiles, setProcessedFiles] = useState([]);
   
   const fileInputRef = useRef(null);
+  const documentListRef = useRef(null);
   const { createFolder, updateFolder, deleteFolder } = useFolders();
   const { t } = useLanguage();
   
   const hasChildren = folder.children && folder.children.length > 0;
   const paddingLeft = level * 16;
+
+  // Sincronizar estado local con stagedFiles cuando se procesan desde el sidebar
+  useEffect(() => {
+    if (stagedFiles && stagedFiles.length > 0) {
+      const folderStagedFiles = stagedFiles.filter(f => f.folderId === folder.folder_id);
+      
+      setProcessedFiles(prev => {
+        const updatedFiles = prev.map(localFile => {
+          const stagedFile = folderStagedFiles.find(sf => 
+            sf.documentId === localFile.documentId || 
+            (sf.name === localFile.name && sf.folderId === localFile.folderId)
+          );
+          
+          if (stagedFile) {
+            if (stagedFile.status === "processed") {
+              return { ...localFile, status: "processed" };
+            }
+            if (stagedFile.status === "processing") {
+              return { ...localFile, status: "processing" };
+            }
+          }
+          
+          return localFile;
+        });
+        
+        return updatedFiles;
+      });
+      
+      setTimeout(() => {
+        setProcessedFiles(prev => 
+          prev.filter(f => f.status !== "processed")
+        );
+      }, 1000);
+    }
+  }, [stagedFiles, folder.folder_id]);
 
   // =================== FUNCIONES DE UTILIDAD ===================
   const isDescendantOf = (childId, parentId) => {
@@ -71,12 +106,16 @@ const FolderCard = ({
     const currentFolderUploads = uploadingFiles.filter(f => f.folderId === folder.folder_id);
     const currentFolderProcessed = processedFiles.filter(f => f.folderId === folder.folder_id);
     
-    // También incluir archivos del stagedFiles que pertenezcan a esta carpeta
     const stagedFilesForFolder = stagedFiles.filter(f => 
       f.folderId === folder.folder_id && (f.status === "uploaded" || f.status === "ready_to_process")
     );
     
-    const allFilesToProcess = [...currentFolderProcessed.filter(f => f.status === "ready_to_process"), ...stagedFilesForFolder];
+    const localFilesToProcess = currentFolderProcessed.filter(f => 
+      f.status === "ready_to_process" && 
+      !stagedFiles.some(sf => sf.documentId === f.documentId && sf.status === "processed")
+    );
+    
+    const allFilesToProcess = [...localFilesToProcess, ...stagedFilesForFolder];
     const processingFiles = currentFolderProcessed.filter(f => f.status === "processing");
     
     return {
@@ -92,15 +131,6 @@ const FolderCard = ({
   // =================== FUNCIONES DE MANEJO DE ARCHIVOS ===================
   const handleFileUpload = async (files) => {
     for (const file of files) {
-      const fileRecord = {
-        name: file.name,
-        original: file.name,
-        status: "uploading",
-        folderId: folder.folder_id
-      };
-      
-      setUploadingFiles(prev => [...prev, fileRecord]);
-      
       try {
         const formData = new FormData();
         formData.append("file", file);
@@ -118,16 +148,9 @@ const FolderCard = ({
           }
         );
         
-        // Actualizar estado del archivo a exitoso
-        setUploadingFiles(prev => 
-          prev.map(f => 
-            f.name === file.name && f.folderId === folder.folder_id
-              ? { ...f, status: "uploaded", documentId: response.data.document_id }
-              : f
-          )
-        );
+        console.log(`Documento subido exitosamente: ${file.name}, ID: ${response.data.document_id}`);
         
-        // Agregar archivo al stagedFiles para que use la lógica unificada
+        // Agregar archivo al stagedFiles para la lógica unificada
         const newStagedFile = {
           name: response.data.filename || file.name,
           original: file.name,
@@ -139,7 +162,6 @@ const FolderCard = ({
         if (setStagedFiles) {
           setStagedFiles(prev => [...prev, newStagedFile]);
         } else {
-          // Fallback a la lógica local si no se puede usar stagedFiles
           setProcessedFiles(prev => [...prev, {
             name: response.data.filename || file.name,
             original: file.name,
@@ -149,33 +171,16 @@ const FolderCard = ({
           }]);
         }
         
-        // Remover el archivo de la lista de uploading después de 3 segundos
+        // Refrescar la lista de documentos con un pequeño delay
         setTimeout(() => {
-          setUploadingFiles(prev => 
-            prev.filter(f => !(f.name === file.name && f.folderId === folder.folder_id))
-          );
-        }, 3000);
-        
-        console.log(`Documento subido exitosamente: ${file.name}, ID: ${response.data.document_id}`);
+          if (documentListRef.current) {
+            console.log("Refreshing document list after upload");
+            documentListRef.current.refreshDocuments();
+          }
+        }, 500);
         
       } catch (err) {
         console.error("Error uploading file:", file.name, err);
-        
-        // Actualizar estado del archivo a error
-        setUploadingFiles(prev => 
-          prev.map(f => 
-            f.name === file.name && f.folderId === folder.folder_id
-              ? { ...f, status: "error" }
-              : f
-          )
-        );
-        
-        // Remover el archivo de la lista después de 5 segundos
-        setTimeout(() => {
-          setUploadingFiles(prev => 
-            prev.filter(f => !(f.name === file.name && f.folderId === folder.folder_id))
-          );
-        }, 5000);
       }
     }
   };
@@ -192,10 +197,8 @@ const FolderCard = ({
     console.log("🟣 FolderCard processFiles called");
     console.log("🟣 Sending to process:", filesToProcess.map((f) => f.name));
 
-    // Si tenemos la función unificada, la usamos
     if (onProcessFiles && typeof onProcessFiles === 'function') {
       try {
-        // Preparar archivos en el formato que espera la función unificada
         const filesToProcessForUnified = filesToProcess.map(f => ({
           name: f.name || f.original,
           original: f.original || f.name,
@@ -204,7 +207,6 @@ const FolderCard = ({
           folderId: f.folderId
         }));
         
-        // Marcar archivos como procesando en stagedFiles
         if (setStagedFiles) {
           setStagedFiles(prev =>
             prev.map(f =>
@@ -217,10 +219,17 @@ const FolderCard = ({
         
         await onProcessFiles(filesToProcessForUnified);
         
+        setTimeout(() => {
+          setProcessedFiles(prev =>
+            prev.filter(f => 
+              !(f.folderId === folder.folder_id && (f.status === "processed" || f.status === "processing"))
+            )
+          );
+        }, 1000);
+        
       } catch (err) {
         console.error("Error processing files with unified function:", err);
         
-        // Revertir estado en caso de error
         if (setStagedFiles) {
           setStagedFiles(prev =>
             prev.map(f =>
@@ -230,12 +239,19 @@ const FolderCard = ({
             )
           );
         }
+        
+        setProcessedFiles(prev =>
+          prev.map(f =>
+            f.folderId === folder.folder_id && f.status === "processing"
+              ? { ...f, status: "process_error" }
+              : f
+          )
+        );
       }
       return;
     }
 
-    // Fallback a la lógica original si no hay función unificada
-    // Marcar todos los archivos como procesando
+    // Fallback a la lógica original
     setProcessedFiles(prev =>
       prev.map(f =>
         f.folderId === folder.folder_id && f.status === "ready_to_process"
@@ -261,7 +277,6 @@ const FolderCard = ({
       const processed = response.data.processed_files || [];
       console.log("🟣 Backend response:", response.data);
 
-      // Actualizar archivos procesados exitosamente
       setProcessedFiles(prev =>
         prev.map(f => {
           if (f.folderId === folder.folder_id && processed.includes(f.name)) {
@@ -271,28 +286,25 @@ const FolderCard = ({
         })
       );
 
-      // Mostrar mensaje de éxito
       alert(
         `✅ ${response.data.overall_message || "Processing completed"}: ${
           response.data.total_chunks || "?"
         } chunks`
       );
 
-      // Limpiar archivos procesados después de 2 segundos
       setTimeout(() => {
         setProcessedFiles(prev =>
           prev.filter(f => 
             !(f.folderId === folder.folder_id && f.status === "processed")
           )
         );
-      }, 2000);
+      }, 1000);
 
       console.log(`Archivos procesados exitosamente en carpeta: ${folder.folder_name}`);
         
     } catch (err) {
       console.error("Error processing files:", err);
       
-      // Actualizar estado a error de procesamiento
       setProcessedFiles(prev =>
         prev.map(f =>
           f.folderId === folder.folder_id && f.status === "processing"
@@ -513,7 +525,6 @@ const FolderCard = ({
     }
   };
 
-  // Obtener archivos de la carpeta actual
   const {
     currentFolderUploads,
     currentFolderProcessed,
@@ -591,7 +602,6 @@ const FolderCard = ({
                   {t('folder.created')}: {formatDate(folder.creation_date)}
                 </span>
               )}
-              {/* Mostrar contadores de archivos */}
               {(hasFilesToProcess || isProcessingFiles) && (
                 <div className="text-xs text-gray-500 mt-1">
                   {hasFilesToProcess && (
@@ -692,7 +702,6 @@ const FolderCard = ({
         </div>
       </div>
 
-      {/* Input file oculto */}
       <input
         type="file"
         ref={fileInputRef}
@@ -701,67 +710,6 @@ const FolderCard = ({
         className="hidden"
         multiple
       />
-
-      {/* Mostrar archivos que se están subiendo */}
-      {currentFolderUploads.length > 0 && (
-        <div className="mt-1 space-y-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
-          {currentFolderUploads.map((file, index) => (
-            <div key={`uploading-${file.name}-${index}`} className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-md">
-              <div className="flex-1">
-                <span className="text-xs text-gray-700 truncate block">{file.name}</span>
-                <span className={`text-xs font-medium ${
-                  file.status === "uploaded"
-                    ? "text-green-600"
-                    : file.status === "uploading"
-                    ? "text-blue-600"
-                    : "text-red-600"
-                }`}>
-                  {file.status === "uploaded" ? "✓ Subido" : file.status === "uploading" ? "↑ Subiendo..." : "✗ Error"}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Mostrar archivos procesados */}
-      {currentFolderProcessed.length > 0 && (
-        <div className="mt-1 space-y-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
-          {currentFolderProcessed.map((file, index) => (
-            <div key={`processed-${file.name}-${index}`} className={`flex items-center gap-2 p-2 border rounded-md ${
-              file.status === "ready_to_process" 
-                ? "bg-blue-50 border-blue-200"
-                : file.status === "processing"
-                ? "bg-orange-50 border-orange-200"
-                : file.status === "processed"
-                ? "bg-green-50 border-green-200"
-                : "bg-red-50 border-red-200"
-            }`}>
-              <div className="flex-1">
-                <span className="text-xs text-gray-700 truncate block">{file.original}</span>
-                <span className={`text-xs font-medium ${
-                  file.status === "processed"
-                    ? "text-green-600"
-                    : file.status === "processing"
-                    ? "text-orange-600"
-                    : file.status === "ready_to_process"
-                    ? "text-blue-600"
-                    : "text-red-600"
-                }`}>
-                  {file.status === "processed" 
-                    ? "✓ Procesado" 
-                    : file.status === "processing" 
-                    ? "⚙️ Procesando..." 
-                    : file.status === "ready_to_process"
-                    ? "📁 Listo para procesar"
-                    : "✗ Error al procesar"
-                  }
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {isExpanded && (
         <div className="mt-1 space-y-1">
@@ -816,44 +764,11 @@ const FolderCard = ({
             </>
           )}
 
-          {/* NUEVA SECCIÓN: Lista de documentos de la carpeta */}
           <DocumentList 
+            ref={documentListRef}
             folderId={folder.folder_id} 
             level={level}
           />
-        </div>
-      )}
-
-      {/* Botón de procesar archivos al final - usando el estilo del Sidebar */}
-      {(hasFilesToProcess || isProcessingFiles) && level === 0 && (
-        <div className="w-full mt-3 pt-3 border-t border-gray-200">
-          {/* Loader cuando está procesando */}
-          {isProcessingFiles && (
-            <div className="w-full mb-4">
-              <div className="relative w-full h-2 bg-gray-200 rounded-md overflow-hidden">
-                <div className="absolute inset-0 bg-success animate-pulse w-1/2 rounded-md"></div>
-              </div>
-              <p className="text-xs text-center text-text-primary mt-2">
-                {t('documents.processingDocuments')}
-              </p>
-            </div>
-          )}
-
-          <button
-            onClick={handleProcessFiles}
-            disabled={!hasFilesToProcess || isProcessingFiles}
-            className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-              hasFilesToProcess && !isProcessingFiles
-                ? "btn-secondary"
-                : "btn-secondary opacity-50 cursor-not-allowed"
-            }`}
-          >
-            <CogIcon className={`w-4 h-4 ${isProcessingFiles ? 'animate-spin' : ''}`} />
-            {isProcessingFiles 
-              ? t('common.processing')
-              : `${t('documents.processDocuments')} (${filesToProcess.length})`
-            }
-          </button>
         </div>
       )}
     </div>

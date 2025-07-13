@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
-import { UserCircle, Bot, PanelLeft, X } from "lucide-react";
+import { UserCircle, Bot, PanelLeft} from "lucide-react";
 
 function ChatPane({ 
   question, 
@@ -9,10 +9,7 @@ function ChatPane({
   onSend, 
   sources, 
   toggleSidebar, 
-  setSelectedSource, 
-  selectedSource, 
-  onClosePDF,
-  sidebarOpen
+  setSelectedSource
 }) {
   const { t } = useTranslation();
   const [chatHistory, setChatHistory] = useState([]);
@@ -66,7 +63,6 @@ function ChatPane({
     <div className="chat-container flex flex-col h-full bg-bg-primary relative border-r border-border-light">
       <div className="flex-shrink-0 p-2 border-b border-border-light bg-bg-primary relative">
         <div className="flex items-center gap-2">
-          {!sidebarOpen && (
             <button
               onClick={toggleSidebar}
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-bg-tertiary text-text-secondary h-7 w-7"
@@ -75,18 +71,6 @@ function ChatPane({
               <PanelLeft />
               <span className="sr-only">{t('chat.toggleSidebar')}</span>
             </button>
-          )}
-
-          {selectedSource && (
-            <button
-              onClick={onClosePDF}
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-bg-tertiary text-text-secondary h-7 w-7"
-              title={t('chat.closePDF', 'Close PDF')}
-            >
-              <X />
-              <span className="sr-only">{t('chat.closePDF', 'Close PDF')}</span>
-            </button>
-          )}
         </div>
       </div>
       
