@@ -38,6 +38,15 @@ export const useFileManagement = (user, token, t) => {
     const filesToProcess = stagedFiles.filter(f => f.status !== "processed");
     if (!filesToProcess.length || !token || !user) return;
 
+    // Extraer document_id del primer archivo (todos deberían tener el mismo document_id)
+    const documentId = filesToProcess[0]?.document_id || filesToProcess[0]?.documentBaseId;
+
+    if (!documentId) {
+      console.error("No document_id found in staged files");
+      alert(`❌ ${t('common.failed')}: No document ID available`);
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -46,6 +55,7 @@ export const useFileManagement = (user, token, t) => {
         {
           user_id: user.email,
           filenames: filesToProcess.map(f => f.name),
+          document_id: documentId,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

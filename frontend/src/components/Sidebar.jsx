@@ -79,7 +79,6 @@ const Sidebar = ({
   };
   
   const handleUpload = async (files) => {
-    // 🔥 CAMBIA ESTOS UUIDs POR LOS DE TU BASE DE DATOS 🔥
     const DOCUMENT_BASE_ID = "49bd7249-ed70-47d4-9660-67775b674f3e"; 
     const FOLDER_ID = "db82cde7-40ac-46ce-97d7-2f1826cff46b"; 
     

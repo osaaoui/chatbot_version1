@@ -156,7 +156,9 @@ const FolderCard = ({
           original: file.name,
           documentId: response.data.document_id,
           status: "uploaded",
-          folderId: folder.folder_id
+          folderId: folder.folder_id,
+          document_id: folder.document_base_id, // ← AGREGAR ESTA LÍNEA
+          documentBaseId: folder.document_base_id 
         };
         
         if (setStagedFiles) {
@@ -167,7 +169,9 @@ const FolderCard = ({
             original: file.name,
             documentId: response.data.document_id,
             status: "ready_to_process",
-            folderId: folder.folder_id
+            folderId: folder.folder_id,
+            document_id: folder.document_base_id, // ← AGREGAR ESTA LÍNEA
+            documentBaseId: folder.document_base_id
           }]);
         }
         
@@ -204,7 +208,9 @@ const FolderCard = ({
           original: f.original || f.name,
           status: "uploaded",
           documentId: f.documentId,
-          folderId: f.folderId
+          folderId: f.folderId,
+          document_id: folder.document_base_id, // ← AGREGAR ESTA LÍNEA
+          documentBaseId: folder.document_base_id 
         }));
         
         if (setStagedFiles) {
@@ -266,6 +272,7 @@ const FolderCard = ({
         {
           user_id: userEmail || "default@email.com",
           filenames: filesToProcess.map((f) => f.name),
+          document_id : folder.document_base_id,
         },
         {
           headers: {

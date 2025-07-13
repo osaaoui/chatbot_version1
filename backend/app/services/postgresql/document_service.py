@@ -108,7 +108,6 @@ class DocumentService(BaseService):
             raise ServiceError(f"Failed to update document: {str(e)}")
     
     async def delete_document(self, document_id: str, user_email: str) -> bool:
-        """Soft delete document"""
         try:
             user_id = await self.get_user_id_by_email(user_email)
             
@@ -119,3 +118,23 @@ class DocumentService(BaseService):
             raise
         except Exception as e:
             raise ServiceError(f"Failed to delete document: {str(e)}")
+        
+    async def update_document_status(self, document_id: str, user_email: str, status: str) -> bool:
+        try:
+            user_id = await self.get_user_id_by_email(user_email)
+            
+            async with self.get_connection() as conn:
+                await conn.execute(
+                    "SELECT SP_UpdateDocument($1, $2, $3, $4, $5, $6)",
+                    document_id,    
+                    user_id,        
+                    None,          
+                    None,      
+                    status,      
+                    None        
+                )
+                return True
+        except ServiceError:
+            raise
+        except Exception as e:
+            raise ServiceError(f"Failed to update document status: {str(e)}")

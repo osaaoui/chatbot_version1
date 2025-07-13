@@ -5,6 +5,7 @@ import os
 from fastapi.responses import JSONResponse
 
 from app.services.vectorstore_service import process_documents_for_user
+from app.services.postgresql.document_service import DocumentService
 from typing import List
 from app.services.metadata_store import (
     has_already_been_processed,
@@ -16,12 +17,12 @@ print("[BOOT] Registered /api/v2/documents/process route")
 
 UPLOAD_DIR = "uploaded_files"
 
-
 router = APIRouter()
 
 class ProcessRequest(BaseModel):
     filenames: List[str]
     user_id: str
+    document_id: str
 
 @router.get("/user-documents/{user_id}")
 def get_user_documents(user_id: str):
@@ -33,16 +34,14 @@ def get_user_documents(user_id: str):
     ]
     return JSONResponse(content=user_docs)
 
-
-
-
-
 @router.post("/process")
-def process_documents(req: ProcessRequest):
-    print(f"[API] 🔄 Called process_documents for user={req.user_id}")
-    print(f"[API] 🔄 Filenames: {req.filenames}")
+async def process_documents(req: ProcessRequest):
+    
     if not req.filenames:
         raise HTTPException(status_code=400, detail="No filenames provided")
+    
+    if not req.document_id:
+        raise HTTPException(status_code=400, detail="Document ID is required")
 
     processed_files = []
     total_chunks = 0
@@ -50,10 +49,10 @@ def process_documents(req: ProcessRequest):
     for filename in req.filenames:
         filepath = os.path.join(UPLOAD_DIR, filename)
         if not os.path.isfile(filepath):
-            continue  # skip missing files
+            continue 
 
         if has_already_been_processed(req.user_id, filename):
-            continue  # skip previously processed files
+            continue  
 
         chunks = process_documents_for_user([filepath], req.user_id)
 
@@ -61,9 +60,21 @@ def process_documents(req: ProcessRequest):
         total_chunks += chunks
         processed_files.append(filename)
 
+    try:
+        document_service = DocumentService()
+        await document_service.update_document_status(
+            document_id=req.document_id,
+            user_email =req.user_id,
+            status="Upload"
+        )
+        print(f"[API] ✅ Document {req.document_id} status updated to 'Upload'")
+        status_updated = True
+    except Exception as e:
+        print(f"[API] ❌ Error updating document status: {str(e)}")
+        status_updated = False
+
     return {
         "processed_files": processed_files,
         "total_chunks": total_chunks,
         "overall_message": "Processing completed" if processed_files else "All files were already processed"
     }
-
