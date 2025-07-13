@@ -15,5 +15,29 @@
     "email": "admin@gmail.com",
     "hashed_password": "$2b$12$qlrIhYoET3M.jI50Jrt9Z./kL4HiM984nM6F7Zx31ynwav3u7rwF2",
     "role": "admin"
+  },
+  "juanvaldez@gmail.com": {
+    "fullName": "juanvaldez",
+    "email": "juanvaldez@gmail.com",
+    "hashed_password": "$2b$12$kFAfMSimxXXDKIzmM3ArIOJa7mhumapXt97O10uOeq.CXa9TvH3xy",
+    "role": "admin"
+  },
+  "juandavid@gmail.com": {
+    "fullName": "juan david",
+    "email": "juandavid@gmail.com",
+    "hashed_password": "$2b$12$.RZEGZXg9PXSAO9rIn3Ue.dOg5FWKxvAyn4xoZ63yLkvwxW5BI/wi",
+    "role": "admin"
+  },
+  "xavi@gmail.com": {
+    "fullName": "kjkjsddas",
+    "email": "xavi@gmail.com",
+    "hashed_password": "$2b$12$xGEMYaXIbXyOTqqMNaKq0.8z/XH50i44LYvG3GxQnJe7qDgtn/TE2",
+    "role": "admin"
+  },
+  "ignacio@gmail.com": {
+    "fullName": "ignacio siu",
+    "email": "ignacio@gmail.com",
+    "hashed_password": "$2b$12$Pj57Jrk4DNieCszW.r1R6eDys5ylJckudA3CSPyqwnwBNZUDMYr8W",
+    "role": "admin"
   }
 }
