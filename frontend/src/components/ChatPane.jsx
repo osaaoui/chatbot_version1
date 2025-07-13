@@ -13,6 +13,7 @@ function ChatPane({
 }) {
   const { t } = useTranslation();
   const [chatHistory, setChatHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef(null);
   
   useEffect(() => {
@@ -22,7 +23,7 @@ function ChatPane({
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     }
-  }, [chatHistory]);
+  }, [chatHistory, isLoading]);
   
   const handleSourceClick = (source) => {
     setSelectedSource({
@@ -47,11 +48,13 @@ function ChatPane({
       { type: "user", text: trimmed, time: new Date() },
     ]);
     onQuestionChange({ target: { value: "" } });
+    setIsLoading(true);
     onSend();
   };
   
   useEffect(() => {
     if (answer) {
+      setIsLoading(false);
       setChatHistory((prev) => [
         ...prev,
         { type: "bot", text: answer, time: new Date() },
@@ -127,6 +130,24 @@ function ChatPane({
             );
           })
         )}
+        
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="flex items-end mr-2">
+              <Bot className="w-5 h-5 text-text-tertiary" />
+            </div>
+            <div className="max-w-[80%] px-4 py-3 text-sm text-text-primary rounded-2xl rounded-bl-none">
+              <div className="loading-animation">
+                <div className="loading-dots">
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div ref={chatEndRef} />
       </main>
       
