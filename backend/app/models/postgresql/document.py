@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
+from datetime import datetime
 
 class DocumentCreate(BaseModel):
     document_name: str = Field(..., max_length=255)
@@ -29,3 +30,22 @@ class DocumentResponse(BaseModel):
 
 class DocumentUpdate(BaseModel):
     document_name: str = Field(..., min_length=1, max_length=255, description="New name for the document")
+
+
+class DocumentFolderResponse(BaseModel):
+    """Response model for documents from get_all_documents_by_folder function"""
+    document_id: UUID
+    document_name: str
+    file_type: str
+    size_mb: float
+    num_pages: Optional[int]
+    vectorization_status: str
+    status: str
+    creation_date: datetime
+    last_modification_date: datetime
+
+class DocumentListResponse(BaseModel):
+    """Response model for list of documents"""
+    documents: List[DocumentFolderResponse]
+    total_count: int
+    folder_id: UUID

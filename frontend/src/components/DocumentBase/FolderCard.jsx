@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useFolders } from '../../context/FoldersContext';
 import { useLanguage } from '../../hooks/useLanguaje';
+import DocumentList from './DocumentList'; // NUEVA IMPORTACIÓN
 
 const FolderCard = ({ 
   folder, 
@@ -814,6 +815,12 @@ const FolderCard = ({
               ))}
             </>
           )}
+
+          {/* NUEVA SECCIÓN: Lista de documentos de la carpeta */}
+          <DocumentList 
+            folderId={folder.folder_id} 
+            level={level}
+          />
         </div>
       )}
 

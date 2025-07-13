@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from app.models.postgresql.document import DocumentCreate
+from app.models.postgresql.document import DocumentCreate, DocumentListResponse
 from app.services.postgresql.document_service import DocumentService
 from app.core.base_service import APIResponse, ServiceError
 from app.services.auth_service import get_current_user
+from uuid import UUID
 
 router = APIRouter()
 document_service = DocumentService()
@@ -25,6 +26,31 @@ async def create_document(
         )
     except ServiceError as e:
         handle_service_error(e)
+
+
+@router.get("/folder/{folder_id}", response_model=APIResponse, status_code=status.HTTP_200_OK)
+async def get_documents_by_folder(
+    folder_id: UUID,
+    current_user: dict = Depends(get_current_user)
+):
+    try:
+        documents = await document_service.get_documents_by_folder(folder_id, current_user["email"])
+        total_count = len(documents)
+        
+        response_data = DocumentListResponse(
+            documents=documents,
+            total_count=total_count,
+            folder_id=folder_id
+        )
+        
+        return document_service.success_response(
+            f"Retrieved {total_count} documents from folder", 
+            response_data.dict()
+        )
+        
+    except ServiceError as e:
+        handle_service_error(e)
+
 
 @router.get("/{document_id}", response_model=APIResponse)
 async def get_document(

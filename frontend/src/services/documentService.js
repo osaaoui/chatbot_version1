@@ -34,6 +34,19 @@ export const documentService = {
     }
   },
 
+  // Obtener documentos por carpeta - NUEVA FUNCIÓN
+  getDocumentsByFolder: async (folderId) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/folder/${folderId}`, {
+        headers: getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching documents by folder:', error);
+      throw error;
+    }
+  },
+
   // Actualizar documento
   updateDocument: async (documentId, documentName) => {
     try {

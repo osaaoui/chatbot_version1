@@ -1,7 +1,7 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from app.core.base_service import BaseService, ServiceError
-from app.models.postgresql.document import DocumentCreate, DocumentResponse
-
+from app.models.postgresql.document import DocumentCreate, DocumentResponse, DocumentFolderResponse
+from uuid import UUID
 
 class DocumentService(BaseService):
     
@@ -44,6 +44,43 @@ class DocumentService(BaseService):
             raise
         except Exception as e:
             raise ServiceError(f"Failed to create document: {str(e)}")
+        
+
+        
+    async def get_documents_by_folder(self, folder_id: UUID, user_email: str) -> List[DocumentFolderResponse]:
+        try:
+            # Verify user has access to this folder/document base
+            await self.get_user_id_by_email(user_email)
+            
+            async with self.get_connection() as conn:
+                rows = await conn.fetch(
+                    "SELECT * FROM get_all_documents_by_folder($1)",
+                    folder_id
+                )
+                
+                documents = []
+                for row in rows:
+                    documents.append(DocumentFolderResponse(
+                        document_id=row['document_id'],
+                        document_name=row['document_name'],
+                        file_type=row['file_type'],
+                        size_mb=row['size_mb'],
+                        num_pages=row['num_pages'],
+                        vectorization_status=row['vectorization_status'],
+                        status=row['status'],
+                        creation_date=row['creation_date'],
+                        last_modification_date=row['last_modification_date']
+                    ))
+                
+                return documents
+                
+        except ServiceError:
+            raise
+        except Exception as e:
+            raise ServiceError(f"Failed to get documents from folder: {str(e)}")
+        
+
+
     
     async def get_document_by_id(self, document_id: str) -> Optional[Dict[str, Any]]:
         """Get document by ID"""

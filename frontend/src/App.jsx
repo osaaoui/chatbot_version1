@@ -9,7 +9,7 @@ import PDFViewerComponent from "./components/PDFViewerComponent";
 import { useFileManagement } from "./hooks/app/useFileManagement";
 import { useChatLogic } from "./hooks/app/useChatLogic";
 
-const Layout = ({ sidebarOpen, selectedSource, children }) => (
+const Layout = ({ selectedSource, children }) => (
   <div className="flex-1 h-full flex">
     {selectedSource && (
       <div className="h-full w-1/2">
@@ -31,7 +31,7 @@ const Layout = ({ sidebarOpen, selectedSource, children }) => (
 export default function App() {
   const { token, user, logout, loaded } = useAuth();
   const { t } = useTranslation();
-  const [file, setFile] = useState(null);
+  const [, setFile] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedSource, setSelectedSource] = useState(null);
 
