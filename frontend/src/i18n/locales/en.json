@@ -2,13 +2,13 @@
   "header": {
     "company": "Company",
     "teams": "Teams",
-    "yourPlan": "Your plan"
+    "yourPlan": "Your Plan"
   },
   "avatar": {
-    "myAccount": "My account",
+    "myAccount": "My Account",
     "myProfile": "My Profile",
-    "textOnly": "Text only",
-    "logout": "Sign out",
+    "textOnly": "Text Only",
+    "logout": "Logout",
     "language": "Language"
   },
   "modal": {
@@ -30,42 +30,43 @@
   },
   "common": {
     "processing": "Processing...",
-    "failed": "Failed",
+    "failed": "Error",
     "success": "Success",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "loading": "Loading...",
     "active": "Active",
     "inactive": "Inactive",
-    "prev": "Prev",
+    "prev": "Previous",
     "next": "Next",
     "close": "Close"
   },
   "auth": {
-    "login": "Log In",
+    "login": "Login",
     "signup": "Sign Up",
-    "fullName" : "Full Name",
+    "fullName": "Full Name",
     "email": "Email",
     "password": "Password",
     "loginButton": "Login",
-    "signupButton": "Signup",
-    "noAccount": "No account?",
-    "hasAccount": "Already have one?",
-    "switchToSignup": "Signup",
+    "signupButton": "Sign Up",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "switchToSignup": "Sign Up",
     "switchToLogin": "Login",
-    "authenticationFailed": "Failed to authenticate.",
-    "signupFailed": "Signup failed",
+    "authenticationFailed": "Authentication failed.",
+    "signupFailed": "Sign up failed",
     "loginFailed": "Login failed",
     "selectRole": "Select role",
     "reader": "Reader",
-    "admin": "Admin"
+    "admin": "Administrator"
   },
   "chat": {
     "askToStart": "Ask a question to get started...",
     "askAboutDocuments": "Ask a question about your documents...",
-    "enterToSend": "Press Enter to send, Shift+Enter for a new line",
-    "toggleSidebar": "Toggle Sidebar",
-    "source": "Source"
+    "enterToSend": "Press Enter to send, Shift+Enter for new line",
+    "toggleSidebar": "Toggle sidebar",
+    "source": "Source",
+    "title": "Chat with TIA"
   },
   "teams": {
     "title": "Work Teams",
@@ -96,15 +97,15 @@
   },
   "sidebar": {
     "uploads": "Uploads",
-    "bases": "Bases"
+    "bases": "Documents"
   },
   "company": {
     "title": "Company Profile",
-    "companyName": "Company name",
-    "companyNameRequired": "Company name *",
-    "companyEmail": "Company email",
-    "companyWebsite": "Company website",
-    "taxId": "Tax identification number",
+    "companyName": "Company Name",
+    "companyNameRequired": "Company Name *",
+    "companyEmail": "Company Email",
+    "companyWebsite": "Company Website",
+    "taxId": "Tax ID Number",
     "country": "Country",
     "logo": "Logo",
     "changeLogo": "Change logo",
@@ -128,10 +129,15 @@
   },
   "document_base": {
     "created": "Created",
+    "create": "Create",
     "create_folder": "Create folder",
     "drop_here_root": "Drop here to move to root level",
     "folder_name_placeholder": "Folder name",
+    "name_placeholder": "Document base name",
     "no_folders": "No folders in this document base",
+    "loading": "Loading document bases...",
+    "error": "Error",
+    "no_bases_available": "No document bases available",
     "status": {
       "active": "Active",
       "inactive": "Inactive"
@@ -139,6 +145,26 @@
   },
   "folder": {
     "deleteConfirm": "Delete?",
-    "created": "Created"
+    "created": "Created",
+    "readyToProcess": "ready to process",
+    "processing": "processing...",
+    "uploadDocument": "Upload document",
+    "createSubfolder": "Create subfolder",
+    "editFolder": "Edit folder",
+    "deleteFolder": "Delete folder",
+    "subfolderNamePlaceholder": "Subfolder name",
+    "processingComplete": "Processing completed",
+    "chunks": "chunks",
+    "processingFailed": "Failed to process file(s)",
+    "createSubfolderError": "Error creating subfolder",
+    "updateFolderError": "Error updating folder",
+    "deleteFolderError": "Error deleting folder",
+    "moveFolder": "Move folder",
+    "moveFolderError": "Error moving folder",
+    "uploadError": "Error uploading file",
+    "uploadSuccess": "Document uploaded successfully",
+    "processFilesError": "Error processing files",
+    "noFilesToProcess": "No files to process in this folder",
+    "fileProcessedSuccess": "Files processed successfully in folder"
   }
 }

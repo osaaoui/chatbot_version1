@@ -157,8 +157,6 @@ const FolderCard = ({
           documentId: response.data.document_id,
           status: "uploaded",
           folderId: folder.folder_id,
-          document_id: folder.document_base_id, // ← AGREGAR ESTA LÍNEA
-          documentBaseId: folder.document_base_id 
         };
         
         if (setStagedFiles) {
@@ -169,9 +167,7 @@ const FolderCard = ({
             original: file.name,
             documentId: response.data.document_id,
             status: "ready_to_process",
-            folderId: folder.folder_id,
-            document_id: folder.document_base_id, // ← AGREGAR ESTA LÍNEA
-            documentBaseId: folder.document_base_id
+            folderId: folder.folder_id
           }]);
         }
         
@@ -208,9 +204,7 @@ const FolderCard = ({
           original: f.original || f.name,
           status: "uploaded",
           documentId: f.documentId,
-          folderId: f.folderId,
-          document_id: folder.document_base_id, // ← AGREGAR ESTA LÍNEA
-          documentBaseId: folder.document_base_id 
+          folderId: f.folderId
         }));
         
         if (setStagedFiles) {
@@ -294,9 +288,9 @@ const FolderCard = ({
       );
 
       alert(
-        `✅ ${response.data.overall_message || "Processing completed"}: ${
+        `✅ ${response.data.overall_message || t('folder.processingComplete')}: ${
           response.data.total_chunks || "?"
-        } chunks`
+        } ${t('folder.chunks')}`
       );
 
       setTimeout(() => {
@@ -320,7 +314,7 @@ const FolderCard = ({
         )
       );
 
-      alert("❌ Failed to process file(s)");
+      alert(`❌ ${t('folder.processingFailed')}`);
     }
   };
 
@@ -595,7 +589,7 @@ const FolderCard = ({
             />
           ) : showDeleteConfirm ? (
             <span className={`font-medium text-red-700 ${level === 0 ? 'text-sm' : 'text-xs'}`}>
-              {t('folder.deleteConfirm', { folderName: folder.folder_name })}
+              {t('folder.deleteConfirm')}
             </span>
           ) : (
             <>
@@ -613,12 +607,12 @@ const FolderCard = ({
                 <div className="text-xs text-gray-500 mt-1">
                   {hasFilesToProcess && (
                     <span className="text-blue-600">
-                      {filesToProcess.length} listos para procesar
+                      {filesToProcess.length} {t('folder.readyToProcess')}
                     </span>
                   )}
                   {isProcessingFiles && (
                     <span className="text-orange-600 ml-2">
-                      {processingFiles.length > 0 ? processingFiles.length : ''} procesando...
+                      {processingFiles.length > 0 ? processingFiles.length : ''} {t('folder.processing')}
                     </span>
                   )}
                 </div>

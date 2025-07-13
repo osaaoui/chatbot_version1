@@ -74,6 +74,7 @@ function ChatPane({
               <PanelLeft />
               <span className="sr-only">{t('chat.toggleSidebar')}</span>
             </button>
+            <h3>{t('chat.title')}</h3>
         </div>
       </div>
       
@@ -91,7 +92,7 @@ function ChatPane({
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] px-4 py-3 text-sm ${
+                  className={`max-w-[70%] px-4 py-3 text-sm ${
                     msg.type === "user"
                       ? "bg-secondary text-text-primary rounded-2xl rounded-br-none"
                       : "text-text-primary rounded-2xl rounded-bl-none"

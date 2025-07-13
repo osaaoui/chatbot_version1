@@ -1,6 +1,7 @@
 // src/components/DocumentBase/DocumentBaseList.js
 import React from 'react';
 import { useDocumentBases } from '../../context/DocumentBasesContext';
+import { useTranslation } from 'react-i18next';
 import DocumentBaseCard from './DocumentBaseCard';
 
 const DocumentBaseList = ({ 
@@ -11,11 +12,12 @@ const DocumentBaseList = ({
   userEmail 
 }) => {
   const { documentBases, initialLoading, error } = useDocumentBases();
+  const { t } = useTranslation();
 
   if (initialLoading) {
     return (
       <div className="w-full p-4 text-center text-sm text-gray-500">
-        Cargando bases de documentos...
+        {t('document_base.loading')}
       </div>
     );
   }
@@ -23,7 +25,7 @@ const DocumentBaseList = ({
   if (error) {
     return (
       <div className="w-full p-4 text-center text-sm text-red-500">
-        Error: {error}
+        {t('document_base.error')}: {error}
       </div>
     );
   }
@@ -31,7 +33,7 @@ const DocumentBaseList = ({
   if (!documentBases || documentBases.length === 0) {
     return (
       <div className="w-full p-4 text-center text-sm text-gray-500">
-        No hay bases de documentos disponibles
+        {t('document_base.no_bases_available')}
       </div>
     );
   }

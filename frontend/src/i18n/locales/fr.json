@@ -2,20 +2,20 @@
   "header": {
     "company": "Entreprise",
     "teams": "Équipes",
-    "yourPlan": "Votre plan"
+    "yourPlan": "Votre Plan"
   },
   "avatar": {
-    "myAccount": "Mon compte",
+    "myAccount": "Mon Compte",
     "myProfile": "Mon Profil",
-    "textOnly": "Texte seulement",
-    "logout": "Se déconnecter",
+    "textOnly": "Texte Seulement",
+    "logout": "Déconnexion",
     "language": "Langue"
   },
   "modal": {
     "close": "Fermer",
     "edit": "Modifier",
-    "save": "Sauvegarder",
-    "addTeam": "Ajouter une Équipe"
+    "save": "Enregistrer",
+    "addTeam": "Ajouter Équipe"
   },
   "profile": {
     "title": "Mon Profil",
@@ -29,8 +29,8 @@
     "french": "Français"
   },
   "common": {
-    "processing": "Traitement...",
-    "failed": "Échec",
+    "processing": "Traitement en cours...",
+    "failed": "Erreur",
     "success": "Succès",
     "cancel": "Annuler",
     "confirm": "Confirmer",
@@ -42,17 +42,17 @@
     "close": "Fermer"
   },
   "auth": {
-    "login": "Se connecter",
+    "login": "Connexion",
     "signup": "S'inscrire",
-    "fullName" : "Nom et prénom",
+    "fullName": "Nom Complet",
     "email": "Email",
     "password": "Mot de passe",
     "loginButton": "Se connecter",
     "signupButton": "S'inscrire",
     "noAccount": "Pas de compte?",
-    "hasAccount": "Vous avez déjà un compte?",
-    "switchToSignup": "l'inscription",
-    "switchToLogin": "connexion",
+    "hasAccount": "Déjà un compte?",
+    "switchToSignup": "S'inscrire",
+    "switchToLogin": "Se connecter",
     "authenticationFailed": "Échec de l'authentification.",
     "signupFailed": "Échec de l'inscription",
     "loginFailed": "Échec de la connexion",
@@ -63,16 +63,17 @@
   "chat": {
     "askToStart": "Posez une question pour commencer...",
     "askAboutDocuments": "Posez une question sur vos documents...",
-    "enterToSend": "Appuyez sur Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne",
+    "enterToSend": "Appuyez sur Entrée pour envoyer, Shift+Entrée pour nouvelle ligne",
     "toggleSidebar": "Basculer la barre latérale",
-    "source": "Source"
+    "source": "Source",
+    "title": "Chat avec TIA"
   },
   "teams": {
     "title": "Équipes de Travail",
     "totalTeams": "Total des Équipes",
-    "activeTeams": "Actifs",
+    "activeTeams": "Actives",
     "totalMembers": "Membres",
-    "leader": "Chef:",
+    "leader": "Leader:",
     "members": "membres",
     "member": "membre"
   },
@@ -80,9 +81,9 @@
     "title": "Documents",
     "dropHere": "Déposez votre document ici",
     "orClickToBrowse": "ou cliquez pour parcourir",
-    "chooseFile": "Choisir un Fichier",
+    "chooseFile": "Choisir Fichier",
     "noDocuments": "Aucun document téléchargé",
-    "processDocuments": "Traiter les Documents",
+    "processDocuments": "Traiter Documents",
     "processingDocuments": "Traitement des documents...",
     "failedToLoad": "Échec du chargement du PDF.",
     "pageOf": "Page {{current}} de {{total}}",
@@ -90,16 +91,16 @@
   },
   "fileStatus": {
     "uploaded": "téléchargé",
-    "uploading": "en cours",
+    "uploading": "téléchargement",
     "processed": "traité",
     "error": "erreur"
   },
   "sidebar": {
     "uploads": "Téléchargements",
-    "bases": "Socles"
+    "bases": "Documents"
   },
   "company": {
-    "title": "Profil de l'Entreprise",
+    "title": "Profil Entreprise",
     "companyName": "Nom de l'entreprise",
     "companyNameRequired": "Nom de l'entreprise *",
     "companyEmail": "Email de l'entreprise",
@@ -107,38 +108,63 @@
     "taxId": "Numéro d'identification fiscale",
     "country": "Pays",
     "logo": "Logo",
-    "changeLogo": "Changer le logo",
-    "removeLogo": "Supprimer le logo",
-    "noLogo": "Aucun logo",
+    "changeLogo": "Changer logo",
+    "removeLogo": "Supprimer logo",
+    "noLogo": "Pas de logo",
     "logoAlt": "Logo de l'entreprise",
     "placeholders": {
       "companyName": "Entrez le nom de votre entreprise",
       "companyEmail": "📧 email@entreprise.com",
       "companyWebsite": "🌐 https://votreentreprise.com",
-      "taxId": "🏢 Numéro fiscal ou ID",
+      "taxId": "🏢 Numéro fiscal ou d'identification",
       "selectCountry": "🌍 Sélectionnez un pays"
     },
     "errors": {
-      "savingData": "Erreur lors de la sauvegarde des données",
-      "loadingData": "Erreur lors du chargement des données"
+      "savingData": "Erreur lors de l'enregistrement des données de l'entreprise",
+      "loadingData": "Erreur lors du chargement des données de l'entreprise"
     },
     "success": {
-      "dataSaved": "Données de l'entreprise sauvegardées avec succès"
+      "dataSaved": "Données de l'entreprise enregistrées avec succès"
     }
   },
   "document_base": {
     "created": "Créé",
-    "create_folder": "Créer un dossier",
+    "create": "Créer",
+    "create_folder": "Créer dossier",
     "drop_here_root": "Déposer ici pour déplacer au niveau racine",
     "folder_name_placeholder": "Nom du dossier",
+    "name_placeholder": "Nom de la base de documents",
     "no_folders": "Aucun dossier dans cette base de documents",
+    "loading": "Chargement des bases de documents...",
+    "error": "Erreur",
+    "no_bases_available": "Aucune base de documents disponible",
     "status": {
       "active": "Actif",
       "inactive": "Inactif"
     }
   },
-   "folder": {
-    "deleteConfirm": "Éliminer?",
-    "created": "Créé"
+  "folder": {
+    "deleteConfirm": "Supprimer?",
+    "created": "Créé",
+    "readyToProcess": "prêts à traiter",
+    "processing": "traitement en cours...",
+    "uploadDocument": "Télécharger document",
+    "createSubfolder": "Créer sous-dossier",
+    "editFolder": "Modifier dossier",
+    "deleteFolder": "Supprimer dossier",
+    "subfolderNamePlaceholder": "Nom du sous-dossier",
+    "processingComplete": "Traitement terminé",
+    "chunks": "chunks",
+    "processingFailed": "Échec du traitement du/des fichier(s)",
+    "createSubfolderError": "Erreur lors de la création du sous-dossier",
+    "updateFolderError": "Erreur lors de la mise à jour du dossier",
+    "deleteFolderError": "Erreur lors de la suppression du dossier",
+    "moveFolder": "Déplacer dossier",
+    "moveFolderError": "Erreur lors du déplacement du dossier",
+    "uploadError": "Erreur lors du téléchargement du fichier",
+    "uploadSuccess": "Document téléchargé avec succès",
+    "processFilesError": "Erreur lors du traitement des fichiers",
+    "noFilesToProcess": "Aucun fichier à traiter dans ce dossier",
+    "fileProcessedSuccess": "Fichiers traités avec succès dans le dossier"
   }
 }

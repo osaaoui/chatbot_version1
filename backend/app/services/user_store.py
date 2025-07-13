@@ -33,7 +33,7 @@ async def insert_user_to_postgresql(fullName: str, email: str, password_hash: st
             return None
         
         # 2. Crear DocumentBase personal
-        document_base_name = f"{fullName} Personal Documents"
+        document_base_name = f"{fullName} Documents"
         document_base_id = await conn.fetchval(
             "SELECT SP_CreateDocumentBase($1, $2, $3, $4)",
             document_base_name,  # base_name
@@ -70,7 +70,7 @@ async def insert_user_to_postgresql(fullName: str, email: str, password_hash: st
         )
         
         # 5. Crear carpeta inicial con el nombre del usuario
-        folder_name = f"{fullName} folder"
+        folder_name = f"{fullName} Folder"
         user_folder_id = await conn.fetchval(
             "SELECT SP_CreateFolder($1, $2, $3, $4)",
             folder_name,       # folder_name

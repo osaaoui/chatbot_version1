@@ -38,8 +38,7 @@ export const useFileManagement = (user, token, t) => {
     const filesToProcess = stagedFiles.filter(f => f.status !== "processed");
     if (!filesToProcess.length || !token || !user) return;
 
-    // Extraer document_id del primer archivo (todos deberían tener el mismo document_id)
-    const documentId = filesToProcess[0]?.document_id || filesToProcess[0]?.documentBaseId;
+    const documentId = filesToProcess[0].documentId;
 
     if (!documentId) {
       console.error("No document_id found in staged files");

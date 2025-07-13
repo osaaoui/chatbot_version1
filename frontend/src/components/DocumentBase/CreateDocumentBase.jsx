@@ -1,6 +1,7 @@
 // src/components/DocumentBase/CreateDocumentBase.js
 import React, { useState } from 'react';
 import { useDocumentBases } from '../../context/DocumentBasesContext';
+import { useTranslation } from 'react-i18next';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
 const COMPANY_ID = '';
@@ -9,6 +10,7 @@ const CreateDocumentBase = () => {
   const [baseName, setBaseName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const { createDocumentBase, error } = useDocumentBases();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +45,7 @@ const CreateDocumentBase = () => {
           type="text"
           value={baseName}
           onChange={(e) => setBaseName(e.target.value)}
-          placeholder="Nombre de la base de documentos"
+          placeholder={t('document_base.name_placeholder')}
           className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           disabled={isCreating}
         />
@@ -57,7 +59,7 @@ const CreateDocumentBase = () => {
           }`}
         >
           <PlusIcon className="w-4 h-4" />
-          Crear
+          {t('document_base.create')}
         </button>
       </form>
       

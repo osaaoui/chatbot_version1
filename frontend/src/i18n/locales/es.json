@@ -44,7 +44,7 @@
   "auth": {
     "login": "Iniciar Sesión",
     "signup": "Registrarse",
-    "fullName" : "Nombre Completo",
+    "fullName": "Nombre Completo",
     "email": "Email",
     "password": "Contraseña",
     "loginButton": "Iniciar Sesión",
@@ -65,7 +65,8 @@
     "askAboutDocuments": "Haz una pregunta sobre tus documentos...",
     "enterToSend": "Presiona Enter para enviar, Shift+Enter para nueva línea",
     "toggleSidebar": "Alternar barra lateral",
-    "source": "Fuente"
+    "source": "Fuente",
+    "title": "Chat con TIA"
   },
   "teams": {
     "title": "Equipos de Trabajo",
@@ -96,7 +97,7 @@
   },
   "sidebar": {
     "uploads": "Subidas",
-    "bases": "Bases"
+    "bases": "Documentos"
   },
   "company": {
     "title": "Perfil empresa",
@@ -128,17 +129,42 @@
   },
   "document_base": {
     "created": "Creado",
+    "create": "Crear",
     "create_folder": "Crear carpeta",
     "drop_here_root": "Soltar aquí para mover a nivel raíz",
     "folder_name_placeholder": "Nombre de la carpeta",
+    "name_placeholder": "Nombre de la base de documentos",
     "no_folders": "No hay carpetas en esta base de documentos",
+    "loading": "Cargando bases de documentos...",
+    "error": "Error",
+    "no_bases_available": "No hay bases de documentos disponibles",
     "status": {
       "active": "Activo",
       "inactive": "Inactivo"
     }
   },
-   "folder": {
-    "deleteConfirm": "Eliminar?",
-    "created": "Creado"
+  "folder": {
+    "deleteConfirm": "¿Eliminar?",
+    "created": "Creado",
+    "readyToProcess": "listos para procesar",
+    "processing": "procesando...",
+    "uploadDocument": "Subir documento",
+    "createSubfolder": "Crear subcarpeta",
+    "editFolder": "Editar carpeta",
+    "deleteFolder": "Eliminar carpeta",
+    "subfolderNamePlaceholder": "Nombre de la subcarpeta",
+    "processingComplete": "Procesamiento completado",
+    "chunks": "chunks",
+    "processingFailed": "Error al procesar archivo(s)",
+    "createSubfolderError": "Error al crear subcarpeta",
+    "updateFolderError": "Error al actualizar carpeta",
+    "deleteFolderError": "Error al eliminar carpeta",
+    "moveFolder": "Mover carpeta",
+    "moveFolderError": "Error al mover carpeta",
+    "uploadError": "Error al subir archivo",
+    "uploadSuccess": "Documento subido exitosamente",
+    "processFilesError": "Error al procesar archivos",
+    "noFilesToProcess": "No hay archivos para procesar en esta carpeta",
+    "fileProcessedSuccess": "Archivos procesados exitosamente en carpeta"
   }
 }
