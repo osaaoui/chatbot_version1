@@ -54,74 +54,148 @@ function ChatPane({
   };
 
   const renderFormattedAnswer = (text) => {
-  const lines = text.split(/(?:\r?\n|\s{2,})+/); // break on newlines or double spaces
+    // Convertir el texto a formato markdown válido
+    const preprocessMarkdown = (text) => {
+      const lines = text.split(/\r?\n/);
+      const processedLines = [];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmedLine = line.trim();
+        
+        // Si es una línea vacía, agregarla tal como está
+        if (!trimmedLine) {
+          processedLines.push('');
+          continue;
+        }
+        
+        // Detectar encabezados que no tengan espacio después de ###
+        if (/^#{1,6}[^#\s]/.test(trimmedLine)) {
+          const hashCount = trimmedLine.match(/^#+/)[0].length;
+          const headingText = trimmedLine.substring(hashCount).trim();
+          processedLines.push('#'.repeat(hashCount) + ' ' + headingText);
+          continue;
+        }
+        
+        // Detectar listas numeradas y asegurar formato correcto
+        if (/^\d+\.\s/.test(trimmedLine)) {
+          processedLines.push(trimmedLine);
+          continue;
+        }
+        
+        // Detectar listas con guiones/asteriscos
+        if (/^[-*+]\s/.test(trimmedLine)) {
+          processedLines.push(trimmedLine);
+          continue;
+        }
+        
+        // Para cualquier otra línea, agregarla tal como está
+        processedLines.push(line);
+      }
+      
+      return processedLines.join('\n');
+    };
 
-  const elements = [];
-  let currentListItems = [];
-  let buffer = [];
-
-  const flushBuffer = () => {
-    if (buffer.length) {
-        elements.push(<p key={`p-${elements.length}`}>{buffer.join(" ")}</p>);
-      <p key={`p-${elements.length}`}>
-  <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>
-    {buffer.join(" ")}
-  </ReactMarkdown>
-</p>
-      buffer = [];
-    }
+    const markdownText = preprocessMarkdown(text);
+    
+    return (
+      <ReactMarkdown
+        components={{
+          // Personalizar encabezados
+          h1: ({ children }) => (
+            <h1 className="text-xl font-bold mt-4 mb-2">{children}</h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-lg font-bold mt-4 mb-2">{children}</h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-lg font-semibold mt-4 mb-2">{children}</h3>
+          ),
+          h4: ({ children }) => (
+            <h4 className="text-base font-semibold mt-3 mb-2">{children}</h4>
+          ),
+          h5: ({ children }) => (
+            <h5 className="text-sm font-semibold mt-3 mb-2">{children}</h5>
+          ),
+          h6: ({ children }) => (
+            <h6 className="text-sm font-medium mt-3 mb-2">{children}</h6>
+          ),
+          
+          // Personalizar párrafos
+          p: ({ children }) => (
+            <p className="mb-3 last:mb-0">{children}</p>
+          ),
+          
+          // Personalizar listas ordenadas
+          ol: ({ children }) => (
+            <ol className="list-decimal list-outside pl-6 mb-4 space-y-1">
+              {children}
+            </ol>
+          ),
+          
+          // Personalizar listas no ordenadas
+          ul: ({ children }) => (
+            <ul className="list-disc list-outside pl-6 mb-4 space-y-1">
+              {children}
+            </ul>
+          ),
+          
+          // Personalizar elementos de lista
+          li: ({ children }) => (
+            <li className="mb-1 leading-relaxed">
+              {children}
+            </li>
+          ),
+          
+          // Personalizar texto en negrita
+          strong: ({ children }) => (
+            <strong className="font-semibold">{children}</strong>
+          ),
+          
+          // Personalizar texto en cursiva
+          em: ({ children }) => (
+            <em className="italic">{children}</em>
+          ),
+          
+          // Personalizar código inline
+          code: ({ children }) => (
+            <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono">
+              {children}
+            </code>
+          ),
+          
+          // Personalizar bloques de código
+          pre: ({ children }) => (
+            <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto mb-4">
+              {children}
+            </pre>
+          ),
+          
+          // Personalizar enlaces
+          a: ({ href, children }) => (
+            <a 
+              href={href} 
+              className="text-blue-600 hover:text-blue-800 underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {children}
+            </a>
+          ),
+          
+          // Personalizar citas
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-4 border-gray-300 pl-4 italic mb-4">
+              {children}
+            </blockquote>
+          )
+        }}
+      >
+        {markdownText}
+      </ReactMarkdown>
+    );
   };
 
-  const flushList = () => {
-    if (currentListItems.length > 0) {
-      elements.push(
-        <ul className="list-disc pl-6 mb-2" key={`ul-${elements.length}`}>
-          {currentListItems.map((item, idx) => (
-         <li key={`li-${elements.length}-${idx}`}>
-  <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>
-    {item}
-  </ReactMarkdown>
-</li>
-
-
-          ))}
-        </ul>
-      );
-      currentListItems = [];
-    }
-  };
-
-  for (let line of lines) {
-    line = line.trim();
-    if (!line) continue;
-
-    if (/^###/.test(line)) {
-      flushBuffer();
-      flushList();
-      const headingText = line.replace(/^###\s*/, "");
-      elements.push(
-        <h3
-          key={`h3-${elements.length}`}
-          className="text-lg font-semibold mt-4 mb-2"
-        >
-          {headingText}
-        </h3>
-      );
-    } else if (/^- /.test(line)) {
-      flushBuffer();
-      currentListItems.push(line.replace(/^- /, "").trim());
-    } else {
-      buffer.push(line);
-    }
-  }
-
-  flushBuffer();
-  flushList();
-
-  return <>{elements}</>;
-};
-
-  
   useEffect(() => {
     if (answer) {
       setIsLoading(false);
@@ -158,8 +232,12 @@ function ChatPane({
               <div key={idx} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                 {msg.type === "bot" && (
                   <div className="flex items-end mr-2">
-                    <div className="h-8 w-8 rounded-md text-dark flex items-center justify-center text-sm font-bold border border-border-light">
-          TIA
+                    <div className=" text-dark flex p-0 items-center justify-center text-sm font-bold ">
+          <img 
+         src="/img/image4.png" 
+         alt="Tia Landing" 
+         className="logo w-24 object-contain " 
+       />
         </div>
                   </div>
                 )}
@@ -171,11 +249,9 @@ function ChatPane({
                   }`}
                 >
                   <div>
-                   <div className="prose prose-sm max-w-none">
+                    <div className="prose prose-sm max-w-none">
                       {renderFormattedAnswer(msg.text)}
                     </div>
-
-
 
                     {isLastBot && sources?.length > 0 && (
                       <span className="ml-1">
@@ -212,9 +288,13 @@ function ChatPane({
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex items-end mr-2">
-              <div className="h-8 w-8 rounded-md text-dark flex items-center justify-center text-sm font-bold border border-border-light">
-                TIA
-              </div>
+                   <div className=" text-dark flex p-0 items-center justify-center text-sm font-bold ">
+          <img 
+         src="/img/image4.png" 
+         alt="Tia Landing" 
+         className="logo w-24 object-contain " 
+       />
+        </div>
             </div>
             <div className="max-w-[80%] px-4 py-3 text-sm text-text-primary rounded-2xl rounded-bl-none">
               <div className="loading-animation">

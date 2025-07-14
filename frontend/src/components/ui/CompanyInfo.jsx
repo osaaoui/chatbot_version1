@@ -37,7 +37,7 @@ const CompanyInfo = ({ companyName: propCompanyName, logoSrc: propLogoSrc, logoA
         />
       ) : (
        <img 
-         src="/img/logo.png" 
+         src="/img/image4.png" 
          alt="Tia Landing" 
          className="logo w-24 rounded-md object-contain " 
        />
