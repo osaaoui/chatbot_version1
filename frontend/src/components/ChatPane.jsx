@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { UserCircle, Bot, PanelLeft} from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 
-
 function ChatPane({ 
   question, 
   answer, 
@@ -73,7 +72,11 @@ function ChatPane({
       elements.push(
         <ul className="list-disc pl-6 mb-2" key={`ul-${elements.length}`}>
           {currentListItems.map((item, idx) => (
-            <li key={`li-${elements.length}-${idx}`}>{item}</li>
+         <li key={`li-${elements.length}-${idx}`}>
+  <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>
+    {item}
+  </ReactMarkdown>
+</li>
           ))}
         </ul>
       );
@@ -160,8 +163,8 @@ function ChatPane({
                 >
                   <div>
                    <div className="prose prose-sm max-w-none">
-  {renderFormattedAnswer(msg.text)}
-</div>
+                      {renderFormattedAnswer(msg.text)}
+                    </div>
 
 
 

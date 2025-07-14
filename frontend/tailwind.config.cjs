@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -21,25 +21,25 @@ export default {
         warning: 'var(--color-warning)',
         error: 'var(--color-error)',
         info: 'var(--color-info)',
-        
+
         // Backgrounds
         'bg-primary': 'var(--bg-primary)',
         'bg-secondary': 'var(--bg-secondary)',
         'bg-tertiary': 'var(--bg-tertiary)',
         'bg-dark': 'var(--bg-dark)',
         'bg-green': 'var(--color-success)',
-        
+
         // Text colors
         'text-primary': 'var(--text-primary)',
         'text-secondary': 'var(--text-secondary)',
         'text-tertiary': 'var(--text-tertiary)',
-        
+
         // Borders
         'border-light': 'var(--border-light)',
         'border-medium': 'var(--border-medium)',
         'border-dark': 'var(--border-dark)',
       },
-      
+
       spacing: {
         'xs': 'var(--spacing-xs)',
         'sm': 'var(--spacing-sm)',
@@ -48,7 +48,7 @@ export default {
         'xl': 'var(--spacing-xl)',
         '2xl': 'var(--spacing-2xl)',
       },
-      
+
       fontSize: {
         'xs': 'var(--text-xs)',
         'sm': 'var(--text-sm)',
@@ -58,14 +58,14 @@ export default {
         '2xl': 'var(--text-2xl)',
         '3xl': 'var(--text-3xl)',
       },
-      
+
       borderRadius: {
         'sm': 'var(--radius-sm)',
         'md': 'var(--radius-md)',
         'lg': 'var(--radius-lg)',
         'xl': 'var(--radius-xl)',
       },
-      
+
       boxShadow: {
         'soft': 'var(--shadow-sm)',
         'medium': 'var(--shadow-md)',
