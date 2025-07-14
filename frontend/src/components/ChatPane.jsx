@@ -62,6 +62,7 @@ function ChatPane({
 
   const flushBuffer = () => {
     if (buffer.length) {
+        elements.push(<p key={`p-${elements.length}`}>{buffer.join(" ")}</p>);
       <p key={`p-${elements.length}`}>
   <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>
     {buffer.join(" ")}
@@ -157,7 +158,9 @@ function ChatPane({
               <div key={idx} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                 {msg.type === "bot" && (
                   <div className="flex items-end mr-2">
-                    <Bot className="w-5 h-5 text-text-tertiary" />
+                    <div className="h-8 w-8 rounded-md text-dark flex items-center justify-center text-sm font-bold border border-border-light">
+          TIA
+        </div>
                   </div>
                 )}
                 <div
@@ -209,7 +212,9 @@ function ChatPane({
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex items-end mr-2">
-              <Bot className="w-5 h-5 text-text-tertiary" />
+              <div className="h-8 w-8 rounded-md text-dark flex items-center justify-center text-sm font-bold border border-border-light">
+                TIA
+              </div>
             </div>
             <div className="max-w-[80%] px-4 py-3 text-sm text-text-primary rounded-2xl rounded-bl-none">
               <div className="loading-animation">

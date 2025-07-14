@@ -27,12 +27,8 @@ const CompanyInfo = ({ companyName: propCompanyName, logoSrc: propLogoSrc, logoA
     return () => window.removeEventListener('companyDataUpdated', handleCompanyDataUpdate);
   }, [propCompanyName, propLogoSrc]);
 
-  const getInitials = (name) => {
-    return name.split(' ').map(word => word.charAt(0).toUpperCase()).join('').substring(0, 2);
-  };
-
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center">
       {companyData.logo ? (
         <img
           src={companyData.logo}
@@ -40,9 +36,11 @@ const CompanyInfo = ({ companyName: propCompanyName, logoSrc: propLogoSrc, logoA
           className="h-8 w-8 rounded-md object-cover border border-border-light"
         />
       ) : (
-        <div className="h-8 w-8 rounded-md bg-blue-600 text-white flex items-center justify-center text-sm font-bold border border-border-light">
-          {getInitials(companyData.name)}
-        </div>
+       <img 
+         src="/img/logo.png" 
+         alt="Tia Landing" 
+         className="logo w-24 rounded-md object-contain " 
+       />
       )}
       
       <span className="text-xl font-medium text-heading">
