@@ -1,6 +1,8 @@
 // src/components/ChatPane.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { UserCircle, Bot, PanelLeft } from "lucide-react"; // Icons
+import ReactMarkdown from 'react-markdown';
+
 
 function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSidebar,setSelectedSource }) {
   const [chatHistory, setChatHistory] = useState([]);
@@ -52,6 +54,10 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSi
     onQuestionChange({ target: { value: "" } });
     onSend();
   };
+
+
+
+
 
   // Add answer to chat history when it changes
   useEffect(() => {
@@ -109,7 +115,9 @@ function ChatPane({ question, answer, onQuestionChange, onSend, sources,toggleSi
         }`}
       >
         <div>
+  
   {msg.text}
+
   {isLastBot && sources && sources.length > 0 && (
     <span className="ml-1">
       {sources.map((source, sidx) => (

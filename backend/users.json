@@ -39,5 +39,11 @@
     "email": "ignacio@gmail.com",
     "hashed_password": "$2b$12$Pj57Jrk4DNieCszW.r1R6eDys5ylJckudA3CSPyqwnwBNZUDMYr8W",
     "role": "admin"
+  },
+  "omar_admin3@gmail.com": {
+    "fullName": "Omar",
+    "email": "omar_admin3@gmail.com",
+    "hashed_password": "$2b$12$6b2JvJug.VreiTPM0tTmOuaNrJV0/91NbX0WtPB8dW8rMT.JOh11u",
+    "role": "admin"
   }
 }
