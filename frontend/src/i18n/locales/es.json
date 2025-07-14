@@ -87,13 +87,29 @@
     "processingDocuments": "Procesando documentos...",
     "failedToLoad": "Error al cargar PDF.",
     "pageOf": "Página {{current}} de {{total}}",
-    "page": "Página"
+    "page": "Página",
+    "errorLoading": "Error al cargar documentos",
+    "loadingDocuments": "Cargando documentos...",
+    "noDocumentsInFolder": "No hay documentos en esta carpeta"
   },
   "fileStatus": {
     "uploaded": "subido",
     "uploading": "subiendo",
     "processed": "procesado",
     "error": "error"
+  },
+  "documentStatus": {
+    "active": "Activo",
+    "upload": "Subir",
+    "uploaded": "Subido",
+    "processing": "Procesando",
+    "uploading": "Subiendo",
+    "error": "Error",
+    "failed": "Falló",
+    "loaded": "Cargado",
+    "inactive": "Inactivo",
+    "processed": "Procesado",
+    "unknown": "Desconocido"
   },
   "sidebar": {
     "uploads": "Subidas",

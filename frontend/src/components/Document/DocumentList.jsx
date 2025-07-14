@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   DocumentIcon,
   CalendarIcon,
@@ -8,6 +9,7 @@ import {
 import { documentService } from '../../services/documentService';
 
 const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
+  const { t } = useTranslation();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -38,7 +40,7 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
       }
     } catch (err) {
       console.error('Error fetching documents:', err);
-      setError('Error al cargar los documentos');
+      setError(t('documents.errorLoading'));
       setDocuments([]);
     } finally {
       setLoading(false);
@@ -66,14 +68,54 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
     switch (status?.toLowerCase()) {
       case 'active':
         return 'text-green-600 bg-green-50';
+      case 'upload':
+        return 'text-green-600 bg-green-50';
+      case 'uploaded':
+        return 'text-green-600 bg-green-50';
       case 'processing':
+        return 'text-orange-600 bg-orange-50';
+      case 'uploading':
         return 'text-orange-600 bg-orange-50';
       case 'error':
         return 'text-red-600 bg-red-50';
+      case 'failed':
+        return 'text-red-600 bg-red-50';
+      case 'loaded':
+        return 'text-gray-600 bg-gray-50';
       case 'inactive':
         return 'text-gray-600 bg-gray-50';
+      case 'processed':
+        return 'text-blue-600 bg-blue-50';
       default:
         return 'text-gray-600 bg-gray-50';
+    }
+  };
+
+  const getStatusText = (status) => {
+    const statusKey = status?.toLowerCase();
+    switch (statusKey) {
+      case 'active':
+        return t('documentStatus.active');
+      case 'upload':
+        return t('documentStatus.upload');
+      case 'uploaded':
+        return t('documentStatus.uploaded');
+      case 'processing':
+        return t('documentStatus.processing');
+      case 'uploading':
+        return t('documentStatus.uploading');
+      case 'error':
+        return t('documentStatus.error');
+      case 'failed':
+        return t('documentStatus.failed');
+      case 'loaded':
+        return t('documentStatus.loaded');
+      case 'inactive':
+        return t('documentStatus.inactive');
+      case 'processed':
+        return t('documentStatus.processed');
+      default:
+        return status || t('documentStatus.unknown');
     }
   };
 
@@ -82,7 +124,7 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
       <div className="mt-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
         <div className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-md">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-          <span className="text-xs text-gray-600">Cargando documentos...</span>
+          <span className="text-xs text-gray-600">{t('documents.loadingDocuments')}</span>
         </div>
       </div>
     );
@@ -103,7 +145,7 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
       <div className="mt-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
         <div className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-md">
           <DocumentIcon className="w-4 h-4 text-gray-400" />
-          <span className="text-xs text-gray-500">No hay documentos en esta carpeta</span>
+          <span className="text-xs text-gray-500">{t('documents.noDocumentsInFolder')}</span>
         </div>
       </div>
     );
@@ -128,7 +170,7 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
               </div>
               <div className="flex gap-1 ml-2">
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
-                  {document.status}
+                  {getStatusText(document.status)}
                 </span>
                 <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
                   {document.file_type}

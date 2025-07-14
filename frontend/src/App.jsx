@@ -14,7 +14,6 @@ const Layout = ({ selectedSource, onClosePDF, children }) => (
     <div className={`h-full ${selectedSource ? 'w-1/2' : 'w-full'}`}>
       {children}
     </div>
-    
     {selectedSource && (
       <div className="h-full w-1/2">
         <PDFViewerComponent
@@ -29,7 +28,6 @@ const Layout = ({ selectedSource, onClosePDF, children }) => (
     )}
   </div>
 );
-
 
 export default function App() {
   const { token, user, logout, loaded } = useAuth();
@@ -46,7 +44,7 @@ export default function App() {
     handleProcess: processFiles
   } = useFileManagement(user, token, t);
 
-    const handleAutoSourceSelection = useCallback((sourceData) => {
+  const handleAutoSourceSelection = useCallback((sourceData) => {
     if (sourceData?.autoSelected !== false) {
       return;
     }
@@ -61,8 +59,6 @@ export default function App() {
     sendQuestion
   } = useChatLogic(user, token, t, handleAutoSourceSelection);
 
-
-  
   const handleFileChange = useCallback((e) => {
     if (e.target.files?.length > 0) {
       setFile(e.target.files[0]);
@@ -74,10 +70,7 @@ export default function App() {
   }, []);
 
   const handleSourceSelection = useCallback((sourceData) => {
-    setSelectedSource({
-      ...sourceData,
-      autoSelected: false
-    });
+    setSelectedSource({ ...sourceData, autoSelected: false });
   }, []);
 
   const toggleSidebar = useCallback(() => {
@@ -92,13 +85,12 @@ export default function App() {
   if (!token || !user) return <AuthForm />;
 
   return (
-    <div className="bg-bg-secondary h-screen overflow-hidden">
+    <div className="app-layout">
       <Header onLogout={logout} />
       
-      
-      <div className="flex h-full pt-[57px]">
+      <div className="app-content">
         {sidebarOpen && (
-          <div className="h-full flex-shrink-0">
+          <div className="sidebar-container">
             <Sidebar
               stagedFiles={stagedFiles}
               setStagedFiles={setStagedFiles}
@@ -113,7 +105,7 @@ export default function App() {
             />
           </div>
         )}
-        
+
         <Layout selectedSource={selectedSource} onClosePDF={closePDF}>
           <ChatPane
             question={question}

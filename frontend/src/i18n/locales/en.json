@@ -87,13 +87,29 @@
     "processingDocuments": "Processing documents...",
     "failedToLoad": "Failed to load PDF.",
     "pageOf": "Page {{current}} of {{total}}",
-    "page": "Page"
+    "page": "Page",
+    "errorLoading": "Error loading documents",
+    "loadingDocuments": "Loading documents...",
+    "noDocumentsInFolder": "No documents in this folder"
   },
   "fileStatus": {
     "uploaded": "uploaded",
     "uploading": "uploading",
     "processed": "processed",
     "error": "error"
+  },
+  "documentStatus": {
+    "active": "Active",
+    "upload": "Upload",
+    "uploaded": "Uploaded",
+    "processing": "Processing",
+    "uploading": "Uploading",
+    "error": "Error",
+    "failed": "Failed",
+    "loaded": "Loaded",
+    "inactive": "Inactive",
+    "processed": "Processed",
+    "unknown": "Unknown"
   },
   "sidebar": {
     "uploads": "Uploads",

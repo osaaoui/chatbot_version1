@@ -40,10 +40,16 @@
     "hashed_password": "$2b$12$Pj57Jrk4DNieCszW.r1R6eDys5ylJckudA3CSPyqwnwBNZUDMYr8W",
     "role": "admin"
   },
-  "omar_admin3@gmail.com": {
-    "fullName": "Omar",
-    "email": "omar_admin3@gmail.com",
-    "hashed_password": "$2b$12$6b2JvJug.VreiTPM0tTmOuaNrJV0/91NbX0WtPB8dW8rMT.JOh11u",
+  "elias123@gmail.com": {
+    "fullName": "elias",
+    "email": "elias123@gmail.com",
+    "hashed_password": "$2b$12$O/IjbZ4abBDFIFzRT7L3R.Z0kpsLKn7AvmOhS64pCieDXqt37jH3u",
+    "role": "admin"
+  },
+  "omar23@gmail.com": {
+    "fullName": "omar",
+    "email": "omar23@gmail.com",
+    "hashed_password": "$2b$12$E2pEm75z9B.evZ.9I.ybquJk77oPmYgPIbIJWA71HZxijUNALmcnC",
     "role": "admin"
   }
 }

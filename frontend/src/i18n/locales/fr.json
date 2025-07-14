@@ -87,13 +87,29 @@
     "processingDocuments": "Traitement des documents...",
     "failedToLoad": "Échec du chargement du PDF.",
     "pageOf": "Page {{current}} de {{total}}",
-    "page": "Page"
+    "page": "Page",
+    "errorLoading": "Erreur lors du chargement des documents",
+    "loadingDocuments": "Chargement des documents...",
+    "noDocumentsInFolder": "Aucun document dans ce dossier"
   },
   "fileStatus": {
     "uploaded": "téléchargé",
     "uploading": "téléchargement",
     "processed": "traité",
     "error": "erreur"
+  },
+  "documentStatus": {
+    "active": "Actif",
+    "upload": "Télécharger",
+    "uploaded": "Téléchargé",
+    "processing": "En traitement",
+    "uploading": "Téléchargement",
+    "error": "Erreur",
+    "failed": "Échec",
+    "loaded": "Chargé",
+    "inactive": "Inactif",
+    "processed": "Traité",
+    "unknown": "Inconnu"
   },
   "sidebar": {
     "uploads": "Téléchargements",

@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../context/AuthProvider";
@@ -98,7 +97,7 @@ const Header = () => {
   if (!user) return null;
 
   return (
-    <header className="bg-header fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-2">
+    <header className="bg-header flex items-center justify-between px-6 py-2 border-b border-border-light relative z-10">
       <div className="flex items-center">
         <CompanyInfo />
         <Separator orientation="vertical" className="h-6 mx-4 bg-tertiary" />

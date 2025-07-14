@@ -1,14 +1,14 @@
-/* File: src/App.css */
-
 body {
   font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
 }
 
 #root {
   margin: 0;
-
   background-color: var(--bg-secondary);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .logo {
@@ -41,11 +41,11 @@ body {
   }
 }
 
-
-
 .app-main {
   padding: var(--spacing-xl) 0;
   background-color: var(--bg-secondary);
+  flex: 1;
+  overflow: auto;
 }
 
 .app-footer {
@@ -97,5 +97,18 @@ body {
   40% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --header-height: 60px; /* Slightly taller on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-height: 64px; /* Even taller on very small screens */
   }
 }
