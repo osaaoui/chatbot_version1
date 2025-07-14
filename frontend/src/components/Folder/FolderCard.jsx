@@ -138,7 +138,7 @@ const FolderCard = ({
         formData.append("folder_id", folder.folder_id);
         
         const response = await axios.post(
-          "http://localhost:8001/api/v2/uploads/upload/",
+          import.meta.env.VITE_API_URL + "/api/v2/uploads/upload/",
           formData,
           {
             headers: {
@@ -262,7 +262,7 @@ const FolderCard = ({
 
     try {
       const response = await axios.post(
-        "http://localhost:8001/api/v2/documents/process/",
+        import.meta.env.VITE_API_URL + "/api/v2/documents/process/",
         {
           user_id: userEmail || "default@email.com",
           filenames: filesToProcess.map((f) => f.name),

@@ -62,7 +62,11 @@ function ChatPane({
 
   const flushBuffer = () => {
     if (buffer.length) {
-      elements.push(<p key={`p-${elements.length}`}>{buffer.join(" ")}</p>);
+      <p key={`p-${elements.length}`}>
+  <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>
+    {buffer.join(" ")}
+  </ReactMarkdown>
+</p>
       buffer = [];
     }
   };
@@ -77,6 +81,8 @@ function ChatPane({
     {item}
   </ReactMarkdown>
 </li>
+
+
           ))}
         </ul>
       );

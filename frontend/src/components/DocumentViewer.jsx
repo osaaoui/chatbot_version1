@@ -27,7 +27,7 @@ function DocumentViewer({ source, onClose, headerHeight = 64 }) {
       return;
     }
 
-      const url = `http://localhost:8001/files/${filename}`;
+      const url = import.meta.env.VITE_API_URL + `/files/${filename}`;
 
       try {
         setLoading(true);

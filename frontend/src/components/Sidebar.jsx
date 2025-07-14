@@ -23,7 +23,7 @@ const Sidebar = ({
   useEffect(() => {
     const fetchPersistedDocs = async () => {
       try {
-        const response = await axios.get("http://localhost:8001/api/user-documents", {
+        const response = await axios.get(import.meta.env.VITE_API_URL + "/api/user-documents", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -105,7 +105,7 @@ const Sidebar = ({
         // formData.append("num_pages", estimatedPages);
         
         const response = await axios.post(
-          "http://localhost:8001/api/v2/uploads/upload/",
+          import.meta.env.VITE_API_URL + "/api/v2/uploads/upload/",
           formData,
           {
             headers: {

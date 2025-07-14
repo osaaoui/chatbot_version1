@@ -1,7 +1,7 @@
 // src/services/documentBaseService.js
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8001/api/v2/folders/document-bases/user';
+const BASE_URL = import.meta.env.VITE_API_URL + '/api/v2/folders/document-bases/user';
 
 const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`,

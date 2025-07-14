@@ -126,7 +126,7 @@ const PDFViewerComponent = ({ source, onClosePDF }) => {
     return () => clearTimeout(timer);
   }, [source]);
 
-  const fileUrl = `http://localhost:8001/api/files/${source.filename}`;
+  const fileUrl =import.meta.env.VITE_API_URL + `/api/files/${source.filename}`;
 
   return (
     <div className="pdf-viewer-container h-full w-full overflow-hidden border-l border-border-light relative">
