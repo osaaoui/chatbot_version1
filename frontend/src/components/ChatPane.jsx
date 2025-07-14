@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { UserCircle, Bot, PanelLeft} from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+
 
 function ChatPane({ 
   question, 
@@ -51,6 +53,64 @@ function ChatPane({
     setIsLoading(true);
     onSend();
   };
+
+  const renderFormattedAnswer = (text) => {
+  const lines = text.split(/(?:\r?\n|\s{2,})+/); // break on newlines or double spaces
+
+  const elements = [];
+  let currentListItems = [];
+  let buffer = [];
+
+  const flushBuffer = () => {
+    if (buffer.length) {
+      elements.push(<p key={`p-${elements.length}`}>{buffer.join(" ")}</p>);
+      buffer = [];
+    }
+  };
+
+  const flushList = () => {
+    if (currentListItems.length > 0) {
+      elements.push(
+        <ul className="list-disc pl-6 mb-2" key={`ul-${elements.length}`}>
+          {currentListItems.map((item, idx) => (
+            <li key={`li-${elements.length}-${idx}`}>{item}</li>
+          ))}
+        </ul>
+      );
+      currentListItems = [];
+    }
+  };
+
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) continue;
+
+    if (/^###/.test(line)) {
+      flushBuffer();
+      flushList();
+      const headingText = line.replace(/^###\s*/, "");
+      elements.push(
+        <h3
+          key={`h3-${elements.length}`}
+          className="text-lg font-semibold mt-4 mb-2"
+        >
+          {headingText}
+        </h3>
+      );
+    } else if (/^- /.test(line)) {
+      flushBuffer();
+      currentListItems.push(line.replace(/^- /, "").trim());
+    } else {
+      buffer.push(line);
+    }
+  }
+
+  flushBuffer();
+  flushList();
+
+  return <>{elements}</>;
+};
+
   
   useEffect(() => {
     if (answer) {
@@ -99,7 +159,12 @@ function ChatPane({
                   }`}
                 >
                   <div>
-                    {msg.text}
+                   <div className="prose prose-sm max-w-none">
+  {renderFormattedAnswer(msg.text)}
+</div>
+
+
+
                     {isLastBot && sources?.length > 0 && (
                       <span className="ml-1">
                         {sources.map((source, sidx) => (

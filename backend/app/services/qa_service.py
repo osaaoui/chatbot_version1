@@ -87,7 +87,9 @@ PROMPT_TEMPLATE_STR = """
 You are a helpful assistant. Use the context below to answer the question accurately.
 
 If a section title like "Introduction", "Methods", or "Conclusion" is relevant, consider it carefully.
-
+If you list items (like drugs, categories, steps), **always format them in Markdown** using:
+- Bullet points (e.g., `- ABBV-075`) 
+- or numbered lists (e.g., `1. ABBV-075`)
 Context:
 {context}
 

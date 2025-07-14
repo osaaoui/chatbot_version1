@@ -41,18 +41,7 @@ body {
   }
 }
 
-.read-the-docs {
-  @apply text-caption;
-}
 
-/* Clases específicas de la aplicación */
-.app-header {
-  @apply bg-header;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  padding: var(--spacing-md) var(--spacing-lg);
-}
 
 .app-main {
   padding: var(--spacing-xl) 0;
