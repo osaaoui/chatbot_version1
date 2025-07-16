@@ -1,3 +1,4 @@
+// src/App.js - ACTUALIZADO
 import React, { useState, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import Sidebar from "./components/Sidebar";
@@ -5,6 +6,7 @@ import ChatPane from "./components/ChatPane";
 import AuthForm from "./components/AuthForm";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthProvider";
+import { ConversationProvider } from "./context/ConversationProvider"; // NUEVO
 import PDFViewerComponent from "./components/PDFViewerComponent";
 import { useFileManagement } from "./hooks/app/useFileManagement";
 import { useChatLogic } from "./hooks/app/useChatLogic";
@@ -29,20 +31,14 @@ const Layout = ({ selectedSource, onClosePDF, children }) => (
   </div>
 );
 
-export default function App() {
+function AppContent() { // Contenido envuelto para usar ConversationProvider
   const { token, user, logout, loaded } = useAuth();
   const { t } = useTranslation();
   const [, setFile] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedSource, setSelectedSource] = useState(null);
 
-  const {
-    uploadedFiles,
-    stagedFiles,
-    isProcessing,
-    setStagedFiles,
-    handleProcess: processFiles
-  } = useFileManagement(user, token, t);
+  const { uploadedFiles, stagedFiles, isProcessing, setStagedFiles, handleProcess: processFiles } = useFileManagement(user, token, t);
 
   const handleAutoSourceSelection = useCallback((sourceData) => {
     if (sourceData?.autoSelected !== false) {
@@ -51,12 +47,19 @@ export default function App() {
     setSelectedSource(sourceData);
   }, []);
 
-  const {
-    question,
-    answer,
-    sources,
-    setQuestion,
-    sendQuestion
+  // Hook actualizado que ahora incluye chatHistory, isLoading y currentConversation
+  const { 
+    question, 
+    answer, 
+    sources, 
+    chatHistory,
+    isLoading,
+    currentConversation,
+    hasMoreMessages,
+    isLoadingMessages,
+    setQuestion, 
+    sendQuestion,
+    loadMoreMessages
   } = useChatLogic(user, token, t, handleAutoSourceSelection);
 
   const handleFileChange = useCallback((e) => {
@@ -87,7 +90,7 @@ export default function App() {
   return (
     <div className="app-layout">
       <Header onLogout={logout} />
-      
+
       <div className="app-content">
         {sidebarOpen && (
           <div className="sidebar-container">
@@ -111,6 +114,12 @@ export default function App() {
             question={question}
             answer={answer}
             sources={sources}
+            chatHistory={chatHistory} 
+            isLoading={isLoading} 
+            currentConversation={currentConversation} 
+            hasMoreMessages={hasMoreMessages}
+            isLoadingMessages={isLoadingMessages}
+            loadMoreMessages={loadMoreMessages} 
             onQuestionChange={(e) => setQuestion(e.target.value)}
             onSend={sendQuestion}
             toggleSidebar={toggleSidebar}
@@ -122,5 +131,13 @@ export default function App() {
         </Layout>
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ConversationProvider> {/* NUEVO WRAPPER */}
+      <AppContent />
+    </ConversationProvider>
   );
 }

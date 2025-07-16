@@ -54,7 +54,7 @@ class DocumentService(BaseService):
             
             async with self.get_connection() as conn:
                 rows = await conn.fetch(
-                    "SELECT * FROM get_all_documents_by_folder($1)",
+                    "SELECT * FROM sp_readalldocumentsbyfolder($1)",
                     folder_id
                 )
                 
@@ -79,9 +79,6 @@ class DocumentService(BaseService):
         except Exception as e:
             raise ServiceError(f"Failed to get documents from folder: {str(e)}")
         
-
-
-    
     async def get_document_by_id(self, document_id: str) -> Optional[Dict[str, Any]]:
         """Get document by ID"""
         try:

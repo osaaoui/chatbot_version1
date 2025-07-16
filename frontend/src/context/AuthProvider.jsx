@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Función para procesar autenticación desde URL
   const processAuthFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const authStatus = urlParams.get('auth');
@@ -21,24 +20,18 @@ export const AuthProvider = ({ children }) => {
         const decodedToken = decodeURIComponent(urlToken);
         const decodedUser = JSON.parse(decodeURIComponent(urlUser));
 
-        // Guardar en localStorage
         localStorage.setItem("token", decodedToken);
         localStorage.setItem("user", JSON.stringify(decodedUser));
 
-        // Actualizar estado
         setToken(decodedToken);
         setUser(decodedUser);
 
-        // Limpiar la URL sin recargar la página
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
 
-        console.log('Autenticación exitosa desde Astro:', { token: decodedToken, user: decodedUser });
-        
-        return true; // Indica que se procesó la autenticación desde URL
+        return true; 
       } catch (error) {
         console.error('Error procesando autenticación desde URL:', error);
-        // Si hay error, limpiar parámetros de la URL
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
       }
@@ -47,10 +40,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Primero intentar procesar desde URL
     const authFromURL = processAuthFromURL();
     
-    // Si no hay autenticación desde URL, intentar desde localStorage
     if (!authFromURL) {
       const storedToken = localStorage.getItem("token");
       const storedUser = localStorage.getItem("user");

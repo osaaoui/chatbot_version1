@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 from app.api.delete import router as delete_router
 from app.api.serve_files import router as serve_files_router
-from app.api.postgresql import folders, documents
+from app.api.postgresql import folders, documents, conversation, message
 
 
 app = FastAPI()
@@ -36,13 +36,11 @@ app.include_router(viewer.router)  # ✅ register the router
 app.include_router(delete_router, prefix="/api/v2/documents")
 app.include_router(folders.router, prefix="/api/v2/folders", tags=["folders"])
 app.include_router(documents.router, prefix="/api/v2/documentsv1", tags=["documents"])
+app.include_router(conversation.router, prefix="/api/v2/conversations", tags=["conversations"])
+app.include_router(message.router, prefix="/api/v2/messages", tags=["messages"])
 
-# this is for the version with pdf-viewer-core
 
 app.include_router(serve_files_router, prefix="/api")
-
-
-# this is for the version with pdf-viewer-core
 
 app.include_router(serve_files_router, prefix="/api")
 
