@@ -30,7 +30,7 @@ async def create_conversation(
 
 @router.get("/", response_model=APIResponse, status_code=status.HTTP_200_OK)
 async def get_conversations(
-    limits: int = 10,
+    limits: int = None,
     current_user: dict = Depends(get_current_user)
 ):
     try:

@@ -27,32 +27,42 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
     messages,
     createConversation, 
     selectConversation,
+    setCurrentConversationDirect,
     addMessageToConversation,
+    updateMessageInConversation, 
     loadMoreMessages: loadMoreMessagesFromContext,
     hasMoreMessages,
     isLoadingMessages
   } = useConversations();
 
-  const sendQuestion = useCallback(async () => {
+  const sendQuestion = useCallback(async (targetConversation = null) => {
     if (!token || !user || !question.trim()) return;
 
     const userMessage = question.trim();
-    let targetConversation = currentConversation;
+    let conversationToUse = targetConversation || currentConversation;
+    const isNewConversation = !conversationToUse;
+
+    let tempMessageId = null;
+    let conversationCreated = false;
 
     try {
       setQuestion("");
       
+      tempMessageId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
       addMessageToConversation({
+        message_id: tempMessageId,
         question: userMessage,
         answer: "",
         sources: [],
         isUserMessage: true,
-        isPending: true
+        isPending: false,
+        creation_date: new Date().toISOString()
       });
 
       setIsLoading(true);
       
-      if (!targetConversation) {
+      if (isNewConversation) {
         const conversationTitle = userMessage.length > 50 
           ? userMessage.substring(0, 47) + "..." 
           : userMessage;
@@ -60,9 +70,15 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
         const conversationId = await createConversation(token, conversationTitle);
         
         if (conversationId) {
+          conversationCreated = true;
           const newConv = { conversation_id: conversationId, title: conversationTitle };
-          await selectConversation(token, newConv);
-          targetConversation = newConv;
+          conversationToUse = newConv;
+          
+          updateMessageInConversation(tempMessageId, {
+            conversation_id: conversationId
+          });
+        } else {
+          throw new Error('Failed to create conversation');
         }
       }
 
@@ -71,7 +87,7 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
         {
           question: userMessage,
           user_id: user.email,
-          conversation_id: targetConversation?.conversation_id
+          conversation_id: conversationToUse?.conversation_id
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -82,32 +98,41 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
       setAnswer(responseAnswer);
       setSources(responseSources);
 
-      addMessageToConversation({
-        question: userMessage,
+      updateMessageInConversation(tempMessageId, {
         answer: responseAnswer,
         sources: responseSources,
-        isResponse: true
+        isResponse: true,
+        isPending: false,
+        conversation_id: conversationToUse?.conversation_id
       });
+
+      if (conversationCreated) {
+        setCurrentConversationDirect(conversationToUse);
+      }
 
       if (responseSources.length > 0) {
         setTimeout(() => autoSelectBestSource(responseSources, setSelectedSource), 100);
       }
 
     } catch (err) {
+      console.error('Error sending question:', err);
+      
       const errorMessage = `${t('common.failed')} ${err.response?.data?.message || ""}`;
       setAnswer(errorMessage);
       
-      addMessageToConversation({
-        question: userMessage,
-        answer: errorMessage,
-        sources: [],
-        isResponse: true,
-        isError: true
-      });
+      if (tempMessageId) {
+        updateMessageInConversation(tempMessageId, {
+          answer: errorMessage,
+          sources: [],
+          isResponse: true,
+          isError: true,
+          isPending: false
+        });
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [question, token, user, t, setSelectedSource, currentConversation, createConversation, selectConversation, addMessageToConversation]);
+  }, [question, token, user, t, setSelectedSource, currentConversation, createConversation, setCurrentConversationDirect, addMessageToConversation, updateMessageInConversation, messages.length]);
 
   const formatMessagesForChat = useMemo(() => {
     const chatHistory = [];
@@ -115,34 +140,25 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
     messages.forEach((msg) => {
       if (!msg.question && !msg.answer) return;
       
-      if (msg.isPending) {
-        chatHistory.push({
-          type: "user",
-          text: msg.question || "",
-          time: msg.creation_date ? new Date(msg.creation_date) : new Date(),
-          id: `${msg.message_id || Date.now()}-question`,
-          isPending: true
-        });
-        return;
-      }
-      
       if (msg.question) {
         chatHistory.push({
           type: "user",
-          text: msg.question || "",
+          text: msg.question,
           time: msg.creation_date ? new Date(msg.creation_date) : new Date(),
-          id: `${msg.message_id || Date.now()}-question`
+          id: `${msg.message_id || Date.now()}-question`,
+          isPending: msg.isPending || false
         });
       }
       
       if (msg.answer) {
         chatHistory.push({
           type: "bot",
-          text: msg.answer || "",
+          text: msg.answer,
           time: msg.creation_date ? new Date(msg.creation_date) : new Date(),
           sources: msg.sources || [],
           id: `${msg.message_id || Date.now()}-answer`,
-          isError: msg.isError || false
+          isError: msg.isError || false,
+          isPending: msg.isPending || false
         });
       }
     });
@@ -151,12 +167,12 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
   }, [messages]);
 
   const loadMoreMessages = useCallback(async () => {
-    if (!token) {
+    if (!token || !hasMoreMessages || isLoadingMessages || !currentConversation) {
       return;
     }
     
     return loadMoreMessagesFromContext(token);
-  }, [loadMoreMessagesFromContext, token]);
+  }, [loadMoreMessagesFromContext, token, hasMoreMessages, isLoadingMessages, currentConversation]);
 
   useEffect(() => {
     setQuestion("");

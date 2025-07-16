@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import  Dict, Any, List
 from app.core.base_service import BaseService, ServiceError
 from app.models.postgresql.message import  MessageCreate, MessageRequest
@@ -28,13 +29,20 @@ class MessageService(BaseService):
         try:
             await self.get_user_id_by_email(user_email)
 
+            cursor_date = None
+            if message.date_last_message:
+                if isinstance(message.date_last_message, str):
+                    cursor_date = datetime.fromisoformat(message.date_last_message.replace('Z', '+00:00'))
+                else:
+                    cursor_date = message.date_last_message
+
             async with self.get_connection() as conn:
                 rows = await conn.fetch(
                     "SELECT * FROM sp_readmessagesbyconversation($1, $2, $3, $4)",
                     message.conversation_id,
                     message.limits,
                     message.id_last_message,
-                    message.date_last_message
+                    cursor_date  # Usar el datetime convertido
                 )
                 return [dict(row) for row in rows] if rows else []
 

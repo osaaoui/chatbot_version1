@@ -2,14 +2,14 @@
 import React, { useState, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import Sidebar from "./components/Sidebar";
-import ChatPane from "./components/ChatPane";
+import ChatPane from "./components/Chat/ChatPane";
 import AuthForm from "./components/AuthForm";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthProvider";
 import { ConversationProvider } from "./context/ConversationProvider"; // NUEVO
 import PDFViewerComponent from "./components/PDFViewerComponent";
 import { useFileManagement } from "./hooks/app/useFileManagement";
-import { useChatLogic } from "./hooks/app/useChatLogic";
+import { useChatLogic } from "./hooks/chat/useChatLogic";
 
 const Layout = ({ selectedSource, onClosePDF, children }) => (
   <div className="flex-1 h-full flex">

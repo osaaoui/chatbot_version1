@@ -54,7 +54,7 @@ export const ConversationProvider = ({ children }) => {
     return null;
   }, [fetchConversations]);
 
-  const fetchMessages = useCallback(async (token, conversationId, loadMore = false) => {
+  const fetchMessages = useCallback(async (token, conversationId, loadMore = false, preservePendingMessages = false) => {
     if (!token || !conversationId) return;
     
     try {
@@ -73,28 +73,62 @@ export const ConversationProvider = ({ children }) => {
       if (response.data.success) {
         const newMessages = response.data.data.messages || [];
         
-        const validMessages = newMessages.filter(msg => 
-          msg && (msg.question || msg.answer) && msg.message_id
-        );
+        const validMessages = newMessages
+          .filter(msg => msg && (msg.question || msg.answer) && msg.message_id)
+          .map(msg => {
+            let parsedSources = msg.sources;
+            if (typeof msg.sources === 'string') {
+              try {
+                parsedSources = JSON.parse(msg.sources);
+              } catch (e) {
+                console.warn('Error parsing sources:', e);
+                parsedSources = [];
+              }
+            }
+            
+            return {
+              ...msg,
+              sources: parsedSources || []
+            };
+          });
         
         if (loadMore) {
           setMessages(prev => {
-            return [...validMessages, ...prev];
+            const existingIds = new Set(prev.map(m => m.message_id));
+            const uniqueNewMessages = validMessages.filter(m => !existingIds.has(m.message_id));
+            
+            return [...uniqueNewMessages, ...prev];
           });
         } else {
-          setMessages(validMessages);
+          setMessages(prev => {
+            if (preservePendingMessages) {
+              const pendingMessages = prev.filter(msg => {
+                const isTemporary = String(msg.message_id).includes('-') && 
+                                  (msg.isUserMessage || msg.isPending || !msg.answer);
+                return isTemporary;
+              });
+              
+              const existingIds = new Set(validMessages.map(m => m.message_id));
+              const uniquePendingMessages = pendingMessages.filter(m => !existingIds.has(m.message_id));
+              
+              return [...validMessages, ...uniquePendingMessages];
+            }
+            
+            return validMessages;
+          });
         }
 
         if (validMessages.length > 0) {
           const oldestMessage = validMessages[0];
           
-          const hasMore = oldestMessage.has_more || false;
+          const hasMore = validMessages.some(msg => msg.has_more) || false;
+          
           setHasMoreMessages(hasMore);
           
-          if (hasMore && oldestMessage.next_cursor_message_id) {
+          if (hasMore) {
             setNextCursor({
-              messageId: oldestMessage.next_cursor_message_id,
-              date: oldestMessage.next_cursor_date
+              messageId: oldestMessage.message_id,
+              date: oldestMessage.creation_date
             });
           } else {
             setNextCursor(null);
@@ -108,49 +142,52 @@ export const ConversationProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Error fetching messages:', err);
-      console.error('Error details:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        url: err.config?.url
-      });
     } finally {
       setIsLoadingMessages(false);
     }
   }, [nextCursor]);
 
-  const selectConversation = useCallback(async (token, conversation) => {
+  const selectConversation = useCallback(async (token, conversation, preservePendingMessages = false) => {
     setCurrentConversation(conversation);
-    setMessages([]);
     setNextCursor(null);
     setHasMoreMessages(false);
     
+    if (!preservePendingMessages) {
+      setMessages([]);
+    }
+    
     if (conversation) {
-      await fetchMessages(token, conversation.conversation_id);
+      await fetchMessages(token, conversation.conversation_id, false, preservePendingMessages);
+    } else if (!preservePendingMessages) {
+      setMessages([]);
     }
   }, [fetchMessages]);
 
-  const loadMoreMessages = useCallback(async (token) => {
+  const setCurrentConversationDirect = useCallback((conversation) => {
+    setCurrentConversation(conversation);
+  }, []);
 
-    if (!hasMoreMessages || isLoadingMessages || !currentConversation || !nextCursor) {
+  const loadMoreMessages = useCallback(async (token) => {
+    if (!token || !hasMoreMessages || isLoadingMessages || !currentConversation || !nextCursor) {
       return;
     }
   
-    await fetchMessages(token, currentConversation.conversation_id, true);
+    return await fetchMessages(token, currentConversation.conversation_id, true, false);
   }, [hasMoreMessages, isLoadingMessages, currentConversation, nextCursor, fetchMessages]);
 
-  // Optimizar addMessageToConversation para evitar re-renders innecesarios
   const addMessageToConversation = useCallback((newMessage) => {
     const messageToAdd = {
-      message_id: newMessage.isUserMessage ? `${Date.now()}-user` : `${Date.now()}-bot`,
+      message_id: newMessage.message_id || (newMessage.isUserMessage ? `${Date.now()}-user` : `${Date.now()}-bot`),
       conversation_id: currentConversation?.conversation_id,
       question: newMessage.question,
       answer: newMessage.answer,
       sources: newMessage.sources || [],
-      creation_date: new Date().toISOString(),
+      creation_date: newMessage.creation_date || new Date().toISOString(),
       status: "Active",
       has_more: false,
       isPending: newMessage.isPending || false,
-      isError: newMessage.isError || false
+      isError: newMessage.isError || false,
+      isUserMessage: newMessage.isUserMessage || false
     };
 
     setMessages(prev => {
@@ -160,7 +197,7 @@ export const ConversationProvider = ({ children }) => {
       
       if (newMessage.isResponse) {
         const pendingIndex = prev.findIndex(msg => 
-          msg.question === messageToAdd.question && msg.isPending
+          msg.question === messageToAdd.question && (msg.isPending || !msg.answer)
         );
         
         if (pendingIndex !== -1) {
@@ -189,6 +226,18 @@ export const ConversationProvider = ({ children }) => {
     });
   }, [currentConversation]);
 
+  const updateMessageInConversation = useCallback((messageId, updates) => {
+    setMessages(prevMessages => {
+      return prevMessages.map(msg => {
+        const matchesId = msg.message_id === messageId || 
+                         msg.message_id === messageId.toString() ||
+                         msg.message_id.toString() === messageId.toString();
+        
+        return matchesId ? { ...msg, ...updates } : msg;
+      });
+    });
+  }, []);
+
   const contextValue = useMemo(() => ({
     conversations,
     currentConversation,
@@ -200,9 +249,11 @@ export const ConversationProvider = ({ children }) => {
     fetchConversations,
     createConversation,
     selectConversation,
+    setCurrentConversationDirect,
     fetchMessages,
     loadMoreMessages,
-    addMessageToConversation
+    addMessageToConversation,
+    updateMessageInConversation
   }), [
     conversations,
     currentConversation,
@@ -214,9 +265,11 @@ export const ConversationProvider = ({ children }) => {
     fetchConversations,
     createConversation,
     selectConversation,
+    setCurrentConversationDirect,
     fetchMessages,
     loadMoreMessages,
-    addMessageToConversation
+    addMessageToConversation,
+    updateMessageInConversation 
   ]);
 
   return (
