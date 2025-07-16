@@ -8,6 +8,7 @@ import ButtonGroup from "./ui/ButtonGroup";
 import CompanyInfo from "./ui/CompanyInfo";
 import EmpresaContent from "./Enterprise";
 import EquiposContent from "./Teams";
+import TermsAndConditions from "./TermsAndConditions";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -47,10 +48,8 @@ const Header = () => {
   ];
 
   const avatarMenuItems = [
-    { label: t('avatar.myAccount') },
-    { separator: true },
     { label: t('avatar.myProfile'), onClick: () => openModal('profile') },
-    { label: t('avatar.textOnly') },
+    { label: t('avatar.legal'), onClick: () => openModal('legal') },
     { separator: true },
     { label: t('avatar.logout'), onClick: logout },
   ];
@@ -91,6 +90,13 @@ const Header = () => {
         { label: t('modal.addTeam'), onClick: () => console.log("Add team"), variant: "primary" }
       ],
       content: <EquiposContent />
+    },
+    legal: {
+      buttons: [
+        { label: t('modal.close'), onClick: closeModal, variant: "secondary" }
+      ],
+      content: <TermsAndConditions />,
+      size: "large"
     }
   };
 

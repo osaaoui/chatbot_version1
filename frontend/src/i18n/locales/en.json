@@ -9,7 +9,13 @@
     "myProfile": "My Profile",
     "textOnly": "Text Only",
     "logout": "Logout",
-    "language": "Language"
+    "language": "Language",
+    "legal": "Terms & Conditions"
+  },
+  "footer": {
+    "version": "TIA v2.1.0",
+    "creation": "Tip is a Creation of",
+    "rights": "All rights reserved"
   },
   "modal": {
     "close": "Close",
@@ -66,7 +72,30 @@
     "enterToSend": "Press Enter to send, Shift+Enter for new line",
     "toggleSidebar": "Toggle sidebar",
     "source": "Source",
-    "title": "Chat with TIA"
+    "title": "Chat with TIA",
+    "sending": "Sending...",
+    "emptyMessage": "Empty message",
+    "noContent": "No content",
+    "newChat": "New Chat",
+    "hideConversations": "Hide",
+    "showConversations": "Conversations",
+    "conversations": "Conversations",
+    "newConversation": "New",
+    "noConversations": "No conversations",
+    "dateToday": "Today",
+    "dateYesterday": "Yesterday",
+    "dateDaysAgo": "{{days}} days ago",
+    "saveConversationPrompt": "Save this conversation?",
+    "conversationTitlePlaceholder": "Conversation title",
+    "saveAndSend": "Save and Send",
+    "justSend": "Just Send",
+    "loadingPreviousMessages": "Loading previous messages...",
+    "loadPreviousMessages": "Load previous messages",
+    "emptyConversation": "This conversation is empty. Ask your first question!",
+    "welcomeMessage": "Hi! Ask a question to start a new conversation.",
+    "scrollToBottom": "Scroll to bottom",
+    "continueConversationPlaceholder": "Continue the conversation...",
+    "sendButton": "Send"
   },
   "teams": {
     "title": "Work Teams",
@@ -182,5 +211,24 @@
     "processFilesError": "Error processing files",
     "noFilesToProcess": "No files to process in this folder",
     "fileProcessedSuccess": "Files processed successfully in folder"
+  },
+  "legal": {
+    "title": "Terms of Use & Legal Documents",
+    "description": "Access our legal documents and policies regarding data handling and platform usage.",
+    "termsOfUse": "Terms of Use",
+    "termsDescription": "Platform usage terms and conditions",
+    "privacyPolicy": "Privacy Policy",
+    "privacyDescription": "How we collect and use your information",
+    "dataHandling": "Data Handling Policy",
+    "dataHandlingDescription": "Detailed information about data processing and security",
+    "view": "View",
+    "note": "Note:",
+    "noteContent": "By using this platform, you agree to our terms of use and data handling policies. Last updated: January 2024."
+  },
+  "errors": {
+    "sessionTimeout": "Due to inactivity, your session has been closed. We're protecting your information. Please log back in to continue chatting.",
+    "createDocumentBase": "Error creating document base",
+    "updateDocumentBase": "Error updating document base",
+    "deleteDocumentBase": "Error deleting document base"
   }
 }

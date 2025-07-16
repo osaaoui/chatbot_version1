@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { documentBaseService } from '../services/documentBaseService';
+import { useTranslation } from 'react-i18next';
 
 const DocumentBasesContext = createContext();
 
@@ -12,9 +13,14 @@ export const useDocumentBases = () => {
 };
 
 export const DocumentBasesProvider = ({ children }) => {
+  const { t } = useTranslation();
   const [documentBases, setDocumentBases] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const sessionTimeoutMessage = t('errors.sessionTimeout', {
+    defaultValue: 'Due to inactivity, your session has been closed. We\'re protecting your information. Please log back in to continue chatting.'
+  });
 
   const fetchDocumentBases = useCallback(async () => {
     setError(null);
@@ -24,14 +30,14 @@ export const DocumentBasesProvider = ({ children }) => {
       if (response.success) {
         setDocumentBases(response.data || []);
       } else {
-        setError(response.message || 'Error fetching document bases');
+        setError(response.message || sessionTimeoutMessage);
       }
     } catch (err) {
-      setError(err.message || 'Error fetching document bases');
+      setError(err.message || sessionTimeoutMessage);
     } finally {
       setInitialLoading(false);
     }
-  }, []);
+  }, [sessionTimeoutMessage]);
 
   const createDocumentBase = useCallback(async (data) => {
     setError(null);
@@ -62,15 +68,15 @@ export const DocumentBasesProvider = ({ children }) => {
         }
         return response;
       } else {
-        setError(response.message || 'Error creating document base');
+        setError(response.message || t('errors.createDocumentBase'));
         return response;
       }
     } catch (err) {
-      const errorMessage = err.message || 'Error creating document base';
+      const errorMessage = err.message || t('errors.createDocumentBase');
       setError(errorMessage);
       throw err;
     }
-  }, [fetchDocumentBases]);
+  }, [fetchDocumentBases, t]);
 
   const updateDocumentBase = useCallback(async (documentBaseId, data) => {
     setError(null);
@@ -88,15 +94,15 @@ export const DocumentBasesProvider = ({ children }) => {
         }
         return response;
       } else {
-        setError(response.message || 'Error updating document base');
+        setError(response.message || t('errors.updateDocumentBase'));
         return response;
       }
     } catch (err) {
-      const errorMessage = err.message || 'Error updating document base';
+      const errorMessage = err.message || t('errors.updateDocumentBase');
       setError(errorMessage);
       throw err;
     }
-  }, [fetchDocumentBases]);
+  }, [fetchDocumentBases, t]);
 
   const deleteDocumentBase = useCallback(async (documentBaseId) => {
     setError(null);
@@ -108,15 +114,15 @@ export const DocumentBasesProvider = ({ children }) => {
         );
         return response;
       } else {
-        setError(response.message || 'Error deleting document base');
+        setError(response.message || t('errors.deleteDocumentBase'));
         return response;
       }
     } catch (err) {
-      const errorMessage = err.message || 'Error deleting document base';
+      const errorMessage = err.message || t('errors.deleteDocumentBase');
       setError(errorMessage);
       throw err;
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchDocumentBases();

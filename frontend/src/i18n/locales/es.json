@@ -9,7 +9,13 @@
     "myProfile": "Mi Perfil",
     "textOnly": "Solo texto",
     "logout": "Cerrar sesión",
-    "language": "Idioma"
+    "language": "Idioma",
+    "legal": "Términos y Condiciones"
+  },
+  "footer": {
+    "version": "TIA v2.1.0",
+    "creation": "Tip es una creación de",
+    "rights": "Todos los derechos reservados"
   },
   "modal": {
     "close": "Cerrar",
@@ -66,7 +72,30 @@
     "enterToSend": "Presiona Enter para enviar, Shift+Enter para nueva línea",
     "toggleSidebar": "Alternar barra lateral",
     "source": "Fuente",
-    "title": "Chat con TIA"
+    "title": "Chat con TIA",
+    "sending": "Enviando...",
+    "emptyMessage": "Mensaje vacío",
+    "noContent": "Sin contenido",
+    "newChat": "Nuevo Chat",
+    "hideConversations": "Ocultar",
+    "showConversations": "Conversaciones",
+    "conversations": "Conversaciones",
+    "newConversation": "Nuevo",
+    "noConversations": "No hay conversaciones",
+    "dateToday": "Hoy",
+    "dateYesterday": "Ayer",
+    "dateDaysAgo": "{{days}} días",
+    "saveConversationPrompt": "¿Guardar esta conversación?",
+    "conversationTitlePlaceholder": "Título de la conversación",
+    "saveAndSend": "Guardar y Enviar",
+    "justSend": "Solo Enviar",
+    "loadingPreviousMessages": "Cargando mensajes anteriores...",
+    "loadPreviousMessages": "Cargar mensajes anteriores",
+    "emptyConversation": "Esta conversación está vacía. ¡Haz tu primera pregunta!",
+    "welcomeMessage": "¡Hola! Haz una pregunta para comenzar una nueva conversación.",
+    "scrollToBottom": "Ir al final",
+    "continueConversationPlaceholder": "Continúa la conversación...",
+    "sendButton": "Enviar"
   },
   "teams": {
     "title": "Equipos de Trabajo",
@@ -182,5 +211,24 @@
     "processFilesError": "Error al procesar archivos",
     "noFilesToProcess": "No hay archivos para procesar en esta carpeta",
     "fileProcessedSuccess": "Archivos procesados exitosamente en carpeta"
+  },
+  "legal": {
+    "title": "Términos de Uso y Documentos Legales",
+    "description": "Accede a nuestros documentos legales y políticas sobre el manejo de datos y uso de la plataforma.",
+    "termsOfUse": "Términos de Uso",
+    "termsDescription": "Términos y condiciones de uso de la plataforma",
+    "privacyPolicy": "Política de Privacidad",
+    "privacyDescription": "Cómo recopilamos y usamos tu información",
+    "dataHandling": "Política de Manejo de Datos",
+    "dataHandlingDescription": "Información detallada sobre el procesamiento y seguridad de datos",
+    "view": "Ver",
+    "note": "Nota:",
+    "noteContent": "Al usar esta plataforma, aceptas nuestros términos de uso y políticas de manejo de datos. Última actualización: Enero 2024."
+  },
+  "errors": {
+    "sessionTimeout": "Debido a inactividad, tu sesión ha sido cerrada. Estamos protegiendo tu información. Por favor inicia sesión nuevamente para continuar chateando.",
+    "createDocumentBase": "Error al crear la base de documentos",
+    "updateDocumentBase": "Error al actualizar la base de documentos",
+    "deleteDocumentBase": "Error al eliminar la base de documentos"
   }
 }

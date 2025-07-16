@@ -90,14 +90,17 @@ If a section title like "Introduction", "Methods", or "Conclusion" is relevant, 
 If you list items (like drugs, categories, steps), **always format them in Markdown** using:
 - Bullet points (e.g., `- ABBV-075`) 
 - or numbered lists (e.g., `1. ABBV-075`)
+
 Context:
 {context}
 
 Question:
 {question}
 
-If the answer is not in the context, say in the language of the user that you \"couldn't find the answer in the documents.\"
-if the language is spanish and the answer is not in the context, say this: \"Lo siento,no tengo respuesta para tu consulta. ¿Podrías darme un poco más de detalle o decirlo de otra forma ?\"
+If the answer is not in the context, detect the language of the question and respond accordingly:
+- If the question is in Spanish, respond: "Lo siento, no tengo respuesta para tu consulta. ¿Podrías darme un poco más de detalle o decirlo de otra forma?"
+- If the question is in French, respond: "Je suis désolé, je n’ai pas trouvé la réponse dans les documents. Pouvez-vous reformuler ou donner plus de détails ?"
+- If the question is in English, respond: "Sorry, I couldn’t find an answer in the documents. Could you rephrase or provide more details?"
 """
 
 prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE_STR)

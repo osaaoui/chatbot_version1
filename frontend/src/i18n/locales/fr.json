@@ -9,7 +9,13 @@
     "myProfile": "Mon Profil",
     "textOnly": "Texte Seulement",
     "logout": "Déconnexion",
-    "language": "Langue"
+    "language": "Langue",
+    "legal": "Conditions Générales"
+  },
+  "footer": {
+    "version": "TIA v2.1.0",
+    "creation": "Tip est une Création de",
+    "rights": "Tous droits réservés"
   },
   "modal": {
     "close": "Fermer",
@@ -66,7 +72,30 @@
     "enterToSend": "Appuyez sur Entrée pour envoyer, Shift+Entrée pour nouvelle ligne",
     "toggleSidebar": "Basculer la barre latérale",
     "source": "Source",
-    "title": "Chat avec TIA"
+    "title": "Discussion avec TIA",
+    "sending": "Envoi...",
+    "emptyMessage": "Message vide",
+    "noContent": "Aucun contenu",
+    "newChat": "Nouveau Chat",
+    "hideConversations": "Masquer",
+    "showConversations": "Conversations",
+    "conversations": "Conversations",
+    "newConversation": "Nouveau",
+    "noConversations": "Aucune conversation",
+    "dateToday": "Aujourd'hui",
+    "dateYesterday": "Hier",
+    "dateDaysAgo": "il y a {{days}} jours",
+    "saveConversationPrompt": "Enregistrer cette conversation ?",
+    "conversationTitlePlaceholder": "Titre de la conversation",
+    "saveAndSend": "Enregistrer et Envoyer",
+    "justSend": "Envoyer seulement",
+    "loadingPreviousMessages": "Chargement des messages précédents...",
+    "loadPreviousMessages": "Charger les messages précédents",
+    "emptyConversation": "Cette conversation est vide. Posez votre première question !",
+    "welcomeMessage": "Bonjour ! Posez une question pour commencer une nouvelle conversation.",
+    "scrollToBottom": "Aller en bas",
+    "continueConversationPlaceholder": "Continuez la conversation...",
+    "sendButton": "Envoyer"
   },
   "teams": {
     "title": "Équipes de Travail",
@@ -182,5 +211,24 @@
     "processFilesError": "Erreur lors du traitement des fichiers",
     "noFilesToProcess": "Aucun fichier à traiter dans ce dossier",
     "fileProcessedSuccess": "Fichiers traités avec succès dans le dossier"
+  },
+  "legal": {
+    "title": "Conditions d'Utilisation et Documents Légaux",
+    "description": "Accédez à nos documents légaux et politiques concernant la gestion des données et l'utilisation de la plateforme.",
+    "termsOfUse": "Conditions d'Utilisation",
+    "termsDescription": "Termes et conditions d'utilisation de la plateforme",
+    "privacyPolicy": "Politique de Confidentialité",
+    "privacyDescription": "Comment nous collectons et utilisons vos informations",
+    "dataHandling": "Politique de Gestion des Données",
+    "dataHandlingDescription": "Informations détaillées sur le traitement et la sécurité des données",
+    "view": "Voir",
+    "note": "Note :",
+    "noteContent": "En utilisant cette plateforme, vous acceptez nos conditions d'utilisation et politiques de gestion des données. Dernière mise à jour : Janvier 2024."
+  },
+  "errors": {
+    "sessionTimeout": "En raison de l'inactivité, votre session a été fermée. Nous protégeons vos informations. Veuillez vous reconnecter pour continuer à discuter.",
+    "createDocumentBase": "Erreur lors de la création de la base de documents",
+    "updateDocumentBase": "Erreur lors de la mise à jour de la base de documents",
+    "deleteDocumentBase": "Erreur lors de la suppression de la base de documents"
   }
 }

@@ -1,12 +1,12 @@
-// src/App.js - ACTUALIZADO
 import React, { useState, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import Sidebar from "./components/Sidebar";
 import ChatPane from "./components/Chat/ChatPane";
 import AuthForm from "./components/AuthForm";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { useAuth } from "./context/AuthProvider";
-import { ConversationProvider } from "./context/ConversationProvider"; // NUEVO
+import { ConversationProvider } from "./context/ConversationProvider"; 
 import PDFViewerComponent from "./components/PDFViewerComponent";
 import { useFileManagement } from "./hooks/app/useFileManagement";
 import { useChatLogic } from "./hooks/chat/useChatLogic";
@@ -31,7 +31,7 @@ const Layout = ({ selectedSource, onClosePDF, children }) => (
   </div>
 );
 
-function AppContent() { // Contenido envuelto para usar ConversationProvider
+function AppContent() { 
   const { token, user, logout, loaded } = useAuth();
   const { t } = useTranslation();
   const [, setFile] = useState(null);
@@ -47,7 +47,6 @@ function AppContent() { // Contenido envuelto para usar ConversationProvider
     setSelectedSource(sourceData);
   }, []);
 
-  // Hook actualizado que ahora incluye chatHistory, isLoading y currentConversation
   const { 
     question, 
     answer, 
@@ -130,13 +129,15 @@ function AppContent() { // Contenido envuelto para usar ConversationProvider
           />
         </Layout>
       </div>
+      <Footer />
     </div>
+    
   );
 }
 
 export default function App() {
   return (
-    <ConversationProvider> {/* NUEVO WRAPPER */}
+    <ConversationProvider>
       <AppContent />
     </ConversationProvider>
   );
