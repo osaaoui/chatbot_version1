@@ -13,7 +13,7 @@
     
     /* Colores secundarios */
     --color-secondary: #cdcfe641;
-    --color-secondary-dark: #475569;
+    --color-secondary-dark: #cdcfe6d5;
     --color-secondary-light: #cecfd1;
     
     /* Colores de estado */
@@ -25,6 +25,7 @@
     /* Colores de fondo */
     --bg-primary: var(--color-primary);
     --bg-secondary: var(--color-secondary);
+    --bg-secondary-dark: var(--color-secondary-dark);
     --bg-tertiary: #ececec;
     --bg-dark: #0f172a;
     

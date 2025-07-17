@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 
 const ChatInput = ({ 
@@ -8,6 +9,8 @@ const ChatInput = ({
   isLoading, 
   currentConversation 
 }) => {
+  const { t } = useTranslation();
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -25,8 +28,8 @@ const ChatInput = ({
           onKeyDown={handleKeyDown}
           placeholder={
             currentConversation 
-              ? "Continúa la conversación..." 
-              : "Haz una pregunta para comenzar..."
+              ? t('chat.continueConversationPlaceholder')
+              : t('chat.askToStart')
           }
           className="input-base flex-1 resize-none rounded-full"
           disabled={isLoading}
@@ -34,8 +37,8 @@ const ChatInput = ({
         <button
           onClick={onSubmit}
           disabled={!question.trim() || isLoading}
-          className="p-2 rounded-full bg-secondary hover:bg-bg-tertiary text-text-primary transition-colors disabled:opacity-50"
-          title="Enviar"
+          className="p-2 rounded-full bg-bg-secondary-dark hover:bg-bg-secondary text-text-primary transition-colors disabled:opacity-50"
+          title={t('chat.sendButton')}
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -58,7 +61,7 @@ const ChatInput = ({
         </button>
       </div>
       <p className="text-[10px] text-text-tertiary mt-1">
-        Presiona Enter para enviar, Shift+Enter para nueva línea
+        {t('chat.enterToSend')}
       </p>
     </footer>
   );

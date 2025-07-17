@@ -23,7 +23,6 @@ def register(user: UserCreate):
     }
     
     users[user.email] = user_data
-    # Pasa user_data como segundo parámetro
     save_users(users, user_data)
 
     token = create_access_token({"sub": user.email, "role": user.role, "fullName": user.fullName})

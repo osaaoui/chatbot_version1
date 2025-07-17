@@ -25,9 +25,11 @@ module.exports = {
         // Backgrounds
         'bg-primary': 'var(--bg-primary)',
         'bg-secondary': 'var(--bg-secondary)',
+        'bg-secondary-dark': 'var(--bg-secondary-dark)',
         'bg-tertiary': 'var(--bg-tertiary)',
         'bg-dark': 'var(--bg-dark)',
         'bg-green': 'var(--color-success)',
+
 
         // Text colors
         'text-primary': 'var(--text-primary)',

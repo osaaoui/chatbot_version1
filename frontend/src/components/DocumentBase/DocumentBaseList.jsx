@@ -25,7 +25,7 @@ const DocumentBaseList = ({
   if (error) {
     return (
       <div className="w-full p-4 text-center text-sm text-red-500">
-        {t('document_base.error')}: {error}
+        {t('document_base.error')}
       </div>
     );
   }

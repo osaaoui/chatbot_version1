@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MessageSquare, Plus, Loader2, X } from 'lucide-react';
 
 const ConversationsModal = ({ 
@@ -11,6 +12,7 @@ const ConversationsModal = ({
   onCreateNew,
   formatDate 
 }) => {
+  const { t } = useTranslation();
   const [isCreating, setIsCreating] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newConversationTitle, setNewConversationTitle] = useState('');
@@ -49,7 +51,7 @@ const ConversationsModal = ({
         <div className="flex items-center justify-between p-3 border-b border-gray-200">
           <h3 className="font-medium text-sm flex items-center gap-2">
             <MessageSquare className="w-4 h-4" />
-            Conversaciones
+            {t('chat.conversations')}
           </h3>
           <button
             onClick={onClose}
@@ -67,7 +69,7 @@ const ConversationsModal = ({
           ) : conversations.length === 0 ? (
             <div className="text-center py-6 text-gray-500">
               <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">No hay conversaciones</p>
+              <p className="text-xs">{t('chat.noConversations')}</p>
             </div>
           ) : (
             <div className="space-y-1">
@@ -101,7 +103,7 @@ const ConversationsModal = ({
                 type="text"
                 value={newConversationTitle}
                 onChange={(e) => setNewConversationTitle(e.target.value)}
-                placeholder="Nombre de la conversación"
+                placeholder={t('chat.conversationName')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 autoFocus
                 onKeyDown={(e) => {
@@ -123,12 +125,12 @@ const ConversationsModal = ({
                   {isCreating ? (
                     <>
                       <Loader2 className="w-3 h-3 animate-spin" />
-                      Creando...
+                      {t('chat.creating')}
                     </>
                   ) : (
                     <>
                       <Plus className="w-3 h-3" />
-                      Crear
+                      {t('chat.create')}
                     </>
                   )}
                 </button>
@@ -136,7 +138,7 @@ const ConversationsModal = ({
                   onClick={handleCancelCreate}
                   className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-xs font-medium"
                 >
-                  Cancelar
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -146,7 +148,7 @@ const ConversationsModal = ({
               className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs font-medium"
             >
               <Plus className="w-3 h-3" />
-              Nueva Conversación
+              {t('chat.newConversationButton')}
             </button>
           )}
         </div>

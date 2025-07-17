@@ -1,8 +1,11 @@
 import { useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import LazyMarkdown from '../../components/Chat/LazyMarkdown';
 
 export const useMarkdownRenderer = () => {
+  const { t } = useTranslation();
+
   const markdownComponents = useMemo(() => ({
     h1: ({ children }) => <h1 className="text-xl font-bold mt-4 mb-2">{children}</h1>,
     h2: ({ children }) => <h2 className="text-lg font-bold mt-4 mb-2">{children}</h2>,
@@ -54,7 +57,7 @@ export const useMarkdownRenderer = () => {
 
   const renderFormattedAnswer = useCallback((text) => {
     if (!text || typeof text !== 'string') {
-      return <span className="text-text-tertiary italic">Sin contenido</span>;
+      return <span className="text-text-tertiary italic">{t('chat.noContent')}</span>;
     }
 
     if (text.length > 2000) {
@@ -68,7 +71,7 @@ export const useMarkdownRenderer = () => {
         {markdownText}
       </ReactMarkdown>
     );
-  }, [markdownComponents, preprocessMarkdown]);
+  }, [markdownComponents, preprocessMarkdown, t]);
 
   return { renderFormattedAnswer };
 };

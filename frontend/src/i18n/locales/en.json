@@ -45,7 +45,10 @@
     "inactive": "Inactive",
     "prev": "Previous",
     "next": "Next",
-    "close": "Close"
+    "close": "Close",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{days}} days ago"
   },
   "auth": {
     "login": "Login",
@@ -95,7 +98,14 @@
     "welcomeMessage": "Hi! Ask a question to start a new conversation.",
     "scrollToBottom": "Scroll to bottom",
     "continueConversationPlaceholder": "Continue the conversation...",
-    "sendButton": "Send"
+    "sendButton": "Send",
+    "loadingMessages": "Loading messages...",
+    "loadMoreMessages": "Load previous messages",
+    "conversationName": "Conversation name",
+    "creating": "Creating...",
+    "create": "Create",
+    "newConversationButton": "New Conversation",
+    "goToEnd": "Go to end"
   },
   "teams": {
     "title": "Work Teams",
@@ -138,6 +148,7 @@
     "loaded": "Loaded",
     "inactive": "Inactive",
     "processed": "Processed",
+    "deleted": "Deleted",
     "unknown": "Unknown"
   },
   "sidebar": {
@@ -181,12 +192,15 @@
     "name_placeholder": "Document base name",
     "no_folders": "No folders in this document base",
     "loading": "Loading document bases...",
-    "error": "Error",
+    "error": "Due to inactivity, your session has been closed. We protect your information. Please reconnect to continue chatting.",
     "no_bases_available": "No document bases available",
-    "status": {
+     "status": {
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "empty": "Active document base (no content)",
+      "unknown": "Unknown status"
     }
+
   },
   "folder": {
     "deleteConfirm": "Delete?",
@@ -210,7 +224,15 @@
     "uploadSuccess": "Document uploaded successfully",
     "processFilesError": "Error processing files",
     "noFilesToProcess": "No files to process in this folder",
-    "fileProcessedSuccess": "Files processed successfully in folder"
+    "fileProcessedSuccess": "Files processed successfully in folder",
+     "status": {
+      "active": "Active folder",
+      "inactive": "Inactive folder",
+      "deleted": "Deleted folder",
+      "empty": "Empty folder",
+      "unknown": "Unknown status"
+    }
+
   },
   "legal": {
     "title": "Terms of Use & Legal Documents",

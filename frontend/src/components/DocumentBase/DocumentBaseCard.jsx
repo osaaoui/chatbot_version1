@@ -7,7 +7,6 @@ import FolderCard from '../Folder/FolderCard';
 
 const DocumentBaseCard = ({ 
   documentBase,
-  // Nuevas props para pasar a FolderCard
   onProcessFiles,
   isProcessing = false,
   stagedFiles = [],
@@ -96,6 +95,20 @@ const DocumentBaseCard = ({
     e.dataTransfer.dropEffect = 'move';
   };
 
+ const getDocumentBaseStatusTooltip = (status, hasContent = true) => {
+    const normalizedStatus = status?.toLowerCase()
+    switch (normalizedStatus) {
+      case "active":
+        return hasContent ? t("document_base.status.active") : t("document_base.status.empty")
+      case "inactive":
+        return t("document_base.status.inactive")
+      default:
+        return t("document_base.status.unknown")
+    }
+  };
+
+
+
   const handleRootDragEnter = (e) => {
     e.preventDefault();
     setIsDragOverRoot(true);
@@ -156,10 +169,11 @@ const DocumentBaseCard = ({
           </h3>
           <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
             <span>{t('document_base.created')}: {formatDate(documentBase.creation_date)}</span>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              documentBase.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-            }`}>
-              {t(`document_base.status.${documentBase.status.toLowerCase()}`)}
+            <span className={`px-1 py-1 rounded-full text-xs font-medium ${
+              documentBase.status === 'Active' ? 'bg-green-500' : documentBase.status === "Inactive"
+                ? "bg-red-500"
+                : "bg-yellow-500"
+            }`} title={getDocumentBaseStatusTooltip(documentBase.status, hasFolders)}>
             </span>
           </div>
         </div>

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useConversations } from '../../context/ConversationProvider';
 
 export const useConversationLogic = (token) => {
+  const { t } = useTranslation();
   const [showConversations, setShowConversations] = useState(false);
 
   const {
@@ -24,16 +26,17 @@ export const useConversationLogic = (token) => {
     return cleanMessage.substring(0, 47) + "...";
   }, []);
 
-  const handleCreateNewConversation = useCallback(async (title = "Nueva Conversación") => {
-    const conversationId = await createConversation(token, title);
+  const handleCreateNewConversation = useCallback(async (title) => {
+    const defaultTitle = title || t('chat.newConversation');
+    const conversationId = await createConversation(token, defaultTitle);
     if (conversationId) {
       await fetchConversations(token);
-      const newConv = { conversation_id: conversationId, title };
+      const newConv = { conversation_id: conversationId, title: defaultTitle };
       selectConversation(token, newConv);
       return conversationId;
     }
     return null;
-  }, [createConversation, token, fetchConversations, selectConversation]);
+  }, [createConversation, token, fetchConversations, selectConversation, t]);
 
   const handleAutoSaveConversation = useCallback(async (firstMessage) => {
     const title = generateTitle(firstMessage);
@@ -51,11 +54,11 @@ export const useConversationLogic = (token) => {
     const now = new Date();
     const diffDays = Math.ceil((now - date) / (1000 * 60 * 60 * 24));
     
-    if (diffDays <= 1) return 'Hoy';
-    if (diffDays === 2) return 'Ayer';
-    if (diffDays <= 7) return `${diffDays - 1} días`;
+    if (diffDays <= 1) return t('common.today');
+    if (diffDays === 2) return t('common.yesterday');
+    if (diffDays <= 7) return t('common.daysAgo', { days: diffDays - 1 });
     return date.toLocaleDateString();
-  }, []);
+  }, [t]);
 
   return {
     showConversations,

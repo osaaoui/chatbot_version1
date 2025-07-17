@@ -18,7 +18,6 @@ async def insert_user_to_postgresql(fullName: str, email: str, password_hash: st
     try:
         conn = await asyncpg.connect(settings.DATABASE_URL)
         
-        # 1. Crear el usuario
         user_id = await conn.fetchval(
             "SELECT public.sp_createuser($1, $2, $3, $4, $5)",
             fullName,
@@ -32,56 +31,64 @@ async def insert_user_to_postgresql(fullName: str, email: str, password_hash: st
             await conn.close()
             return None
         
-        # 2. Crear DocumentBase personal
+
+        company_name = f"{fullName} Company"
+        company_id = await conn.fetchval(
+            "SELECT public.sp_createcompany($1, $2, $3, $4)",
+            company_name,      
+            32,                 
+            "default",
+            user_id             
+        )
+
+        if not company_id:
+            await conn.close()
+            return None
+        
         document_base_name = f"{fullName} Documents"
         document_base_id = await conn.fetchval(
             "SELECT SP_CreateDocumentBase($1, $2, $3, $4)",
-            document_base_name,  # base_name
-            user_id,            # created_by_user_id
-            None,               # company_id (NULL for personal)
-            user_id             # owner_user_id
+            document_base_name, 
+            user_id,            
+            None,               
+            user_id             
         )
         
-        # 3. Crear PurchasedPackage (Individual Pro)
-        expiration_date = datetime.now() + timedelta(days=365)  # 1 año desde ahora
+        expiration_date = datetime.now() + timedelta(days=365) 
         package_id = await conn.fetchval(
             "SELECT SP_CreatePurchasedPackage($1, $2, $3, $4, $5, $6, $7)",
-            user_id,                                    # client_id
-            'Individual',                               # client_type
-            'INDIVIDUAL_PRO',                          # package_type_id
-            expiration_date,                           # expiration_date
-            19.99,                                     # amount_paid
-            user_id,                                   # created_by_user_id
-            1                                          # current_user_count
+            user_id,                                   
+            'Individual',                              
+            'INDIVIDUAL_PRO',                          
+            expiration_date,                           
+            19.99,                                     
+            user_id,                                   
+            1                                          
         )
         
-        # 4. Crear permisos completos para el usuario en su DocumentBase
         permission_id = await conn.fetchval(
             "SELECT SP_CreateOrUpdateDocumentPermission($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-            user_id,           # user_id
-            user_id,           # created_by_user_id
-            True,              # can_upload
-            True,              # can_delete
-            True,              # can_read
-            True,              # can_modify
-            document_base_id,  # document_base_id
-            None,              # folder_id
-            None               # document_id
+            user_id,          
+            user_id,          
+            True,             
+            True,             
+            True,            
+            True,             
+            document_base_id,  
+            None,             
+            None            
         )
         
-        # 5. Crear carpeta inicial con el nombre del usuario
         folder_name = f"{fullName} Folder"
         user_folder_id = await conn.fetchval(
             "SELECT SP_CreateFolder($1, $2, $3, $4)",
-            folder_name,       # folder_name
-            document_base_id,  # document_base_id
-            user_id,           # created_by_user_id
-            None               # parent_folder_id (root folder)
+            folder_name,      
+            document_base_id, 
+            user_id,          
+            None      
         )
         
         await conn.close()
-        
-        # Retornar todos los datos creados
         return {
             "user_id": str(user_id),
             "document_base": {
@@ -110,17 +117,13 @@ async def insert_user_to_postgresql(fullName: str, email: str, password_hash: st
         return None
 
 def save_users(users: dict, user_data: dict = None):
-    # Primero guarda en archivo
     with open(USER_FILE, "w") as f:
         json.dump(users, f, indent=2)
     
-    # Luego maneja PostgreSQL si hay user_data
     if user_data:
         try:
-            # Verifica si hay un loop en ejecución
             try:
                 loop = asyncio.get_running_loop()
-                # Si hay un loop corriendo, programa la tarea
                 task = asyncio.create_task(insert_user_to_postgresql(
                     user_data["fullName"],
                     user_data["email"],
@@ -128,7 +131,6 @@ def save_users(users: dict, user_data: dict = None):
                     user_data["role"]
                 ))
                 
-                # Callback para manejar el resultado
                 def handle_result(task):
                     try:
                         result = task.result()
@@ -140,7 +142,6 @@ def save_users(users: dict, user_data: dict = None):
                 task.add_done_callback(handle_result)
                 
             except RuntimeError:
-                # No hay loop corriendo, crea uno nuevo
                 result = asyncio.run(insert_user_to_postgresql(
                     user_data["fullName"],
                     user_data["email"],

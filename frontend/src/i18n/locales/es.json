@@ -45,7 +45,10 @@
     "inactive": "Inactivo",
     "prev": "Anterior",
     "next": "Siguiente",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "daysAgo": "Hace {{days}} días"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -84,7 +87,7 @@
     "noConversations": "No hay conversaciones",
     "dateToday": "Hoy",
     "dateYesterday": "Ayer",
-    "dateDaysAgo": "{{days}} días",
+    "dateDaysAgo": "Hace {{days}} días",
     "saveConversationPrompt": "¿Guardar esta conversación?",
     "conversationTitlePlaceholder": "Título de la conversación",
     "saveAndSend": "Guardar y Enviar",
@@ -92,10 +95,17 @@
     "loadingPreviousMessages": "Cargando mensajes anteriores...",
     "loadPreviousMessages": "Cargar mensajes anteriores",
     "emptyConversation": "Esta conversación está vacía. ¡Haz tu primera pregunta!",
-    "welcomeMessage": "¡Hola! Haz una pregunta para comenzar una nueva conversación.",
-    "scrollToBottom": "Ir al final",
-    "continueConversationPlaceholder": "Continúa la conversación...",
-    "sendButton": "Enviar"
+    "welcomeMessage": "¡Hola! Haz una pregunta para iniciar una nueva conversación.",
+    "scrollToBottom": "Desplazar hacia abajo",
+    "continueConversationPlaceholder": "Continuar la conversación...",
+    "sendButton": "Enviar",
+    "loadingMessages": "Cargando mensajes...",
+    "loadMoreMessages": "Cargar mensajes anteriores",
+    "conversationName": "Nombre de la conversación",
+    "creating": "Creando...",
+    "create": "Crear",
+    "newConversationButton": "Nueva Conversación",
+    "goToEnd": "Ir al final"
   },
   "teams": {
     "title": "Equipos de Trabajo",
@@ -138,6 +148,7 @@
     "loaded": "Cargado",
     "inactive": "Inactivo",
     "processed": "Procesado",
+    "deleted": "Eliminado",
     "unknown": "Desconocido"
   },
   "sidebar": {
@@ -181,12 +192,15 @@
     "name_placeholder": "Nombre de la base de documentos",
     "no_folders": "No hay carpetas en esta base de documentos",
     "loading": "Cargando bases de documentos...",
-    "error": "Error",
+    "error": "Por inactividad, tu sesión ha sido por cerrada. Protegemos tu  información. Conéctate de nuevo para continuar chateando..",
     "no_bases_available": "No hay bases de documentos disponibles",
-    "status": {
+     "status": {
       "active": "Activo",
-      "inactive": "Inactivo"
+      "inactive": "Inactivo",
+      "empty": "Base de documentos activa (sin contenido)",
+      "unknown": "Estado desconocido"
     }
+
   },
   "folder": {
     "deleteConfirm": "¿Eliminar?",
@@ -210,7 +224,15 @@
     "uploadSuccess": "Documento subido exitosamente",
     "processFilesError": "Error al procesar archivos",
     "noFilesToProcess": "No hay archivos para procesar en esta carpeta",
-    "fileProcessedSuccess": "Archivos procesados exitosamente en carpeta"
+    "fileProcessedSuccess": "Archivos procesados exitosamente en carpeta",
+     "status": {
+      "active": "Carpeta activa",
+      "inactive": "Carpeta inactiva",
+      "deleted": "Carpeta eliminada",
+      "empty": "Carpeta sin documentos",
+      "unknown": "Estado desconocido"
+    }
+
   },
   "legal": {
     "title": "Términos de Uso y Documentos Legales",

@@ -65,7 +65,6 @@ const CreateDocumentBase = () => {
       
       {error && (
         <div className="mt-2 text-sm text-red-500">
-          {error}
         </div>
       )}
     </div>

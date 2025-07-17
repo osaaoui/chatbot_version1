@@ -35,7 +35,7 @@
     "french": "Français"
   },
   "common": {
-    "processing": "Traitement en cours...",
+    "processing": "Traitement...",
     "failed": "Erreur",
     "success": "Succès",
     "cancel": "Annuler",
@@ -45,7 +45,10 @@
     "inactive": "Inactif",
     "prev": "Précédent",
     "next": "Suivant",
-    "close": "Fermer"
+    "close": "Fermer",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "daysAgo": "Il y a {{days}} jours"
   },
   "auth": {
     "login": "Connexion",
@@ -72,8 +75,8 @@
     "enterToSend": "Appuyez sur Entrée pour envoyer, Shift+Entrée pour nouvelle ligne",
     "toggleSidebar": "Basculer la barre latérale",
     "source": "Source",
-    "title": "Discussion avec TIA",
-    "sending": "Envoi...",
+    "title": "Chat avec TIA",
+    "sending": "Envoi en cours...",
     "emptyMessage": "Message vide",
     "noContent": "Aucun contenu",
     "newChat": "Nouveau Chat",
@@ -84,18 +87,25 @@
     "noConversations": "Aucune conversation",
     "dateToday": "Aujourd'hui",
     "dateYesterday": "Hier",
-    "dateDaysAgo": "il y a {{days}} jours",
-    "saveConversationPrompt": "Enregistrer cette conversation ?",
+    "dateDaysAgo": "Il y a {{days}} jours",
+    "saveConversationPrompt": "Sauvegarder cette conversation ?",
     "conversationTitlePlaceholder": "Titre de la conversation",
-    "saveAndSend": "Enregistrer et Envoyer",
-    "justSend": "Envoyer seulement",
+    "saveAndSend": "Sauvegarder et Envoyer",
+    "justSend": "Juste Envoyer",
     "loadingPreviousMessages": "Chargement des messages précédents...",
     "loadPreviousMessages": "Charger les messages précédents",
     "emptyConversation": "Cette conversation est vide. Posez votre première question !",
-    "welcomeMessage": "Bonjour ! Posez une question pour commencer une nouvelle conversation.",
-    "scrollToBottom": "Aller en bas",
-    "continueConversationPlaceholder": "Continuez la conversation...",
-    "sendButton": "Envoyer"
+    "welcomeMessage": "Salut ! Posez une question pour commencer une nouvelle conversation.",
+    "scrollToBottom": "Faire défiler vers le bas",
+    "continueConversationPlaceholder": "Continuer la conversation...",
+    "sendButton": "Envoyer",
+    "loadingMessages": "Chargement des messages...",
+    "loadMoreMessages": "Charger les messages précédents",
+    "conversationName": "Nom de la conversation",
+    "creating": "Création...",
+    "create": "Créer",
+    "newConversationButton": "Nouvelle Conversation",
+    "goToEnd": "Aller à la fin"
   },
   "teams": {
     "title": "Équipes de Travail",
@@ -138,6 +148,7 @@
     "loaded": "Chargé",
     "inactive": "Inactif",
     "processed": "Traité",
+    "deleted": "Supprimé",
     "unknown": "Inconnu"
   },
   "sidebar": {
@@ -181,11 +192,13 @@
     "name_placeholder": "Nom de la base de documents",
     "no_folders": "Aucun dossier dans cette base de documents",
     "loading": "Chargement des bases de documents...",
-    "error": "Erreur",
+    "error": "En raison de l'inactivité, votre session a été fermée. Nous protégeons vos informations. Veuillez vous reconnecter pour continuer à discuter.",
     "no_bases_available": "Aucune base de documents disponible",
-    "status": {
+   "status": {
       "active": "Actif",
-      "inactive": "Inactif"
+      "inactive": "Inactif",
+      "empty": "Base de documents Actif (sans contenu)",
+      "unknown": "Statut inconnu"
     }
   },
   "folder": {
@@ -210,7 +223,14 @@
     "uploadSuccess": "Document téléchargé avec succès",
     "processFilesError": "Erreur lors du traitement des fichiers",
     "noFilesToProcess": "Aucun fichier à traiter dans ce dossier",
-    "fileProcessedSuccess": "Fichiers traités avec succès dans le dossier"
+    "fileProcessedSuccess": "Fichiers traités avec succès dans le dossier",
+      "status": {
+      "active": "Dossier actif",
+      "inactive": "Dossier inactif",
+      "deleted": "Dossier supprimé",
+      "empty": "Dossier vide",
+      "unknown": "Statut inconnu"
+    }
   },
   "legal": {
     "title": "Conditions d'Utilisation et Documents Légaux",

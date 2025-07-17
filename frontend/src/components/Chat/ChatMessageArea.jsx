@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { MessageSquare, Loader2, ChevronUp, ArrowUp } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 
@@ -15,13 +16,15 @@ const ChatMessagesArea = ({
   showScrollToBottom,
   scrollToBottom
 }) => {
+  const { t } = useTranslation();
   
   const hasUserMessageWithoutResponse = chatHistory.some(msg => 
     msg.type === "user" && !chatHistory.some(botMsg => 
       botMsg.type === "bot" && 
-      Math.abs(new Date(botMsg.time) - new Date(msg.time)) < 60000 // Dentro de 1 minuto
+      Math.abs(new Date(botMsg.time) - new Date(msg.time)) < 60000 
     )
   );
+
   return (
     <>
       <main 
@@ -41,12 +44,12 @@ const ChatMessagesArea = ({
               {isLoadingMessages ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Cargando mensajes...</span>
+                  <span>{t('chat.loadingMessages')}</span>
                 </>
               ) : (
                 <>
                   <ChevronUp className="w-4 h-4" />
-                  <span>Cargar mensajes anteriores</span>
+                  <span>{t('chat.loadMoreMessages')}</span>
                 </>
               )}
             </button>
@@ -57,8 +60,8 @@ const ChatMessagesArea = ({
             <MessageSquare className="w-12 h-12 text-text-tertiary mx-auto mb-4" />
             <p className="text-text-tertiary">
               {currentConversation 
-                ? "Esta conversación está vacía. ¡Haz tu primera pregunta!" 
-                : "¡Hola! Haz una pregunta para comenzar una nueva conversación."
+                ? t('chat.emptyConversation')
+                : t('chat.welcomeMessage')
               }
             </p>
           </div>
@@ -94,8 +97,8 @@ const ChatMessagesArea = ({
       {showScrollToBottom && (
         <button
           onClick={() => scrollToBottom(true)}
-          className="absolute bottom-20 right-4 p-2 bg-primary text-white rounded-full shadow-lg hover:bg-primary-dark transition-colors z-10"
-          title="Ir al final"
+          className="absolute bottom-20 right-4 p-3 mb-6 bg-bg-secondary-dark text-dark rounded-full shadow-lg hover:bg-bg-secondary transition-colors z-10"
+          title={t('chat.goToEnd')}
         >
           <ArrowUp className="w-4 h-4 transform rotate-180" />
         </button>

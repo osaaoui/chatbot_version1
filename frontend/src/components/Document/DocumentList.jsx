@@ -67,55 +67,27 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'active':
-        return 'text-green-600 bg-green-50';
+        return 'text-green-600 bg-green-500';
       case 'upload':
-        return 'text-green-600 bg-green-50';
+        return 'text-green-600 bg-green-500 ';
       case 'uploaded':
-        return 'text-green-600 bg-green-50';
+        return 'text-green-600 bg-green-500';
       case 'processing':
-        return 'text-orange-600 bg-orange-50';
+        return 'text-orange-600 bg-orange-500';
       case 'uploading':
-        return 'text-orange-600 bg-orange-50';
+        return 'text-orange-600 bg-orange-500';
       case 'error':
-        return 'text-red-600 bg-red-50';
+        return 'text-red-600 bg-red-500';
       case 'failed':
-        return 'text-red-600 bg-red-50';
+        return 'text-red-600 bg-red-500';
       case 'loaded':
-        return 'text-gray-600 bg-gray-50';
+        return 'text-gray-600 bg-yellow-500';
       case 'inactive':
-        return 'text-gray-600 bg-gray-50';
+        return 'text-gray-600 bg-yellow-500';
       case 'processed':
-        return 'text-blue-600 bg-blue-50';
+        return 'text-blue-600 bg-blue-500';
       default:
-        return 'text-gray-600 bg-gray-50';
-    }
-  };
-
-  const getStatusText = (status) => {
-    const statusKey = status?.toLowerCase();
-    switch (statusKey) {
-      case 'active':
-        return t('documentStatus.active');
-      case 'upload':
-        return t('documentStatus.upload');
-      case 'uploaded':
-        return t('documentStatus.uploaded');
-      case 'processing':
-        return t('documentStatus.processing');
-      case 'uploading':
-        return t('documentStatus.uploading');
-      case 'error':
-        return t('documentStatus.error');
-      case 'failed':
-        return t('documentStatus.failed');
-      case 'loaded':
-        return t('documentStatus.loaded');
-      case 'inactive':
-        return t('documentStatus.inactive');
-      case 'processed':
-        return t('documentStatus.processed');
-      default:
-        return status || t('documentStatus.unknown');
+        return 'text-gray-600 bg-yellow-500';
     }
   };
 
@@ -179,8 +151,7 @@ const DocumentList = forwardRef(({ folderId, level = 0 }, ref) => {
                     </h4>
                   </div>
                   <div className="flex gap-1 ml-2">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
-                      {getStatusText(document.status)}
+                    <span className={`px-1 py-1 h-1 mt-2 rounded-full ${getStatusColor(document.status)}`}>
                     </span>
                     <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
                       {document.file_type}

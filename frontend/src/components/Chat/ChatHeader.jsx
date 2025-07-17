@@ -22,7 +22,7 @@ const ChatHeader = ({
             <span className="sr-only">{t('chat.toggleSidebar')}</span>
           </button>
           <h3 className="font-medium">
-            {currentConversation?.title || "Nuevo Chat"}
+            {currentConversation?.title || t('chat.newChat')}
           </h3>
         </div>
         
@@ -31,7 +31,7 @@ const ChatHeader = ({
           className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white hover:bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors"
         >
           <MessageSquare className="w-3 h-3" />
-          Conversaciones
+          {t('chat.conversations')}
         </button>
       </div>
     </div>

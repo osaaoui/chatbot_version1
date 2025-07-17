@@ -14,14 +14,18 @@ const DocumentBaseManager = ({
   return (
     <DocumentBasesProvider>
       <FoldersProvider>
-        <div className="w-full h-full flex flex-col">
+        <div className="w-full h-full flex flex-col  overflow-x-hidden">
           {/* Create new document base section */}
           <div className="mb-4">
             <CreateDocumentBase />
           </div>
           
           {/* List of document bases */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto scrollbar-hide"
+          style={{
+    scrollbarWidth: 'none',       // Firefox
+    msOverflowStyle: 'none'       // Internet Explorer 10+
+  }}>
             <DocumentBaseList 
               onProcessFiles={onProcessFiles}
               isProcessing={isProcessing}
