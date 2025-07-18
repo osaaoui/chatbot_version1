@@ -1,21 +1,24 @@
-import React, { useState, useCallback } from "react";
-import { useTranslation } from 'react-i18next';
-import Sidebar from "./components/Sidebar";
-import ChatPane from "./components/Chat/ChatPane";
-import AuthForm from "./components/AuthForm";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import { useAuth } from "./context/AuthProvider";
-import { ConversationProvider } from "./context/ConversationProvider"; 
-import PDFViewerComponent from "./components/PDFViewerComponent";
-import { useFileManagement } from "./hooks/app/useFileManagement";
-import { useChatLogic } from "./hooks/chat/useChatLogic";
+"use client"
+
+import { useState, useCallback } from "react"
+import { useTranslation } from "react-i18next"
+import Sidebar from "./components/Sidebar"
+import ChatPane from "./components/Chat/ChatPane"
+import AuthForm from "./components/AuthForm"
+import Header from "./components/Header"
+import Footer from "./components/Footer"
+import { useAuth } from "./context/AuthProvider"
+import { ConversationProvider } from "./context/ConversationProvider"
+import { DocumentBasesProvider } from "./context/DocumentBasesContext" // Importar DocumentBasesProvider
+import { FoldersProvider } from "./context/FoldersContext" // Importar FoldersProvider
+import PDFViewerComponent from "./components/PDFViewerComponent"
+import { useFileManagement } from "./hooks/app/useFileManagement"
+import { useChatLogic } from "./hooks/chat/useChatLogic"
+import { useGlobalFileUpload } from "./hooks/chat/useGlobalFileUpload"
 
 const Layout = ({ selectedSource, onClosePDF, children }) => (
   <div className="flex-1 h-full flex">
-    <div className={`h-full ${selectedSource ? 'w-1/2' : 'w-full'}`}>
-      {children}
-    </div>
+    <div className={`h-full ${selectedSource ? "w-1/2" : "w-full"}`}>{children}</div>
     {selectedSource && (
       <div className="h-full w-1/2">
         <PDFViewerComponent
@@ -29,67 +32,73 @@ const Layout = ({ selectedSource, onClosePDF, children }) => (
       </div>
     )}
   </div>
-);
+)
 
-function AppContent() { 
-  const { token, user, logout, loaded } = useAuth();
-  const { t } = useTranslation();
-  const [, setFile] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedSource, setSelectedSource] = useState(null);
+function AppContent() {
+  const { token, user, logout, loaded } = useAuth()
+  const { t } = useTranslation()
+  const [, setFile] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [selectedSource, setSelectedSource] = useState(null)
 
-  const { uploadedFiles, stagedFiles, isProcessing, setStagedFiles, handleProcess: processFiles } = useFileManagement(user, token, t);
+  const {
+    uploadedFiles,
+    stagedFiles,
+    isProcessing,
+    setStagedFiles,
+    handleProcess: processFiles,
+  } = useFileManagement(user, token, t)
+  const { uploadFiles, isUploading: isGlobalUploading } = useGlobalFileUpload(setStagedFiles)
 
   const handleAutoSourceSelection = useCallback((sourceData) => {
     if (sourceData?.autoSelected !== false) {
-      return;
+      return
     }
-    setSelectedSource(sourceData);
-  }, []);
+    setSelectedSource(sourceData)
+  }, [])
 
-  const { 
-    question, 
-    answer, 
-    sources, 
+  const {
+    question,
+    answer,
+    sources,
     chatHistory,
     isLoading,
     currentConversation,
     hasMoreMessages,
     isLoadingMessages,
-    setQuestion, 
+    setQuestion,
     sendQuestion,
-    loadMoreMessages
-  } = useChatLogic(user, token, t, handleAutoSourceSelection);
+    loadMoreMessages,
+  } = useChatLogic(user, token, t, handleAutoSourceSelection)
 
   const handleFileChange = useCallback((e) => {
     if (e.target.files?.length > 0) {
-      setFile(e.target.files[0]);
+      setFile(e.target.files[0])
     }
-  }, []);
+  }, [])
 
   const handleFileSelected = useCallback((file) => {
-    setFile(file);
-  }, []);
+    setFile(file)
+  }, [])
 
   const handleSourceSelection = useCallback((sourceData) => {
-    setSelectedSource({ ...sourceData, autoSelected: false });
-  }, []);
+    setSelectedSource({ ...sourceData, autoSelected: false })
+  }, [])
 
   const toggleSidebar = useCallback(() => {
-    setSidebarOpen(prev => !prev);
-  }, []);
+    setSidebarOpen((prev) => !prev)
+  }, [])
 
   const closePDF = useCallback(() => {
-    setSelectedSource(null);
-  }, []);
+    setSelectedSource(null)
+  }, [])
 
-  if (!loaded) return null;
-  if (!token || !user) return <AuthForm />;
+  if (!loaded) return null
+  if (!token || !user) return <AuthForm />
 
   return (
     <div className="app-layout">
       <Header onLogout={logout} />
-
       <div className="app-content">
         {sidebarOpen && (
           <div className="sidebar-container">
@@ -107,18 +116,17 @@ function AppContent() {
             />
           </div>
         )}
-
         <Layout selectedSource={selectedSource} onClosePDF={closePDF}>
           <ChatPane
             question={question}
             answer={answer}
             sources={sources}
-            chatHistory={chatHistory} 
-            isLoading={isLoading} 
-            currentConversation={currentConversation} 
+            chatHistory={chatHistory}
+            isLoading={isLoading}
+            currentConversation={currentConversation}
             hasMoreMessages={hasMoreMessages}
             isLoadingMessages={isLoadingMessages}
-            loadMoreMessages={loadMoreMessages} 
+            loadMoreMessages={loadMoreMessages}
             onQuestionChange={(e) => setQuestion(e.target.value)}
             onSend={sendQuestion}
             toggleSidebar={toggleSidebar}
@@ -126,19 +134,28 @@ function AppContent() {
             selectedSource={selectedSource}
             onClosePDF={closePDF}
             sidebarOpen={sidebarOpen}
+            onFileUpload={uploadFiles}
+            isUploading={isGlobalUploading}
           />
         </Layout>
       </div>
       <Footer />
     </div>
-    
-  );
+  )
 }
 
 export default function App() {
   return (
     <ConversationProvider>
-      <AppContent />
+      <DocumentBasesProvider>
+        {" "}
+        {/* Envuelve AppContent con DocumentBasesProvider */}
+        <FoldersProvider>
+          {" "}
+          {/* Envuelve AppContent con FoldersProvider */}
+          <AppContent />
+        </FoldersProvider>
+      </DocumentBasesProvider>
     </ConversationProvider>
-  );
+  )
 }

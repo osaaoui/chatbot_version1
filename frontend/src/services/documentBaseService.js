@@ -1,4 +1,3 @@
-// src/services/documentBaseService.js
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_URL + '/api/v2/folders/document-bases/user';
@@ -9,7 +8,6 @@ const getAuthHeaders = () => ({
 });
 
 export const documentBaseService = {
-  // Listar document bases del usuario
   getDocumentBases: async () => {
     try {
       const response = await axios.get(BASE_URL, {
@@ -22,7 +20,6 @@ export const documentBaseService = {
     }
   },
 
-  // Crear document base
   createDocumentBase: async (data) => {
     try {
       const response = await axios.post(BASE_URL, data, {
@@ -35,7 +32,6 @@ export const documentBaseService = {
     }
   },
 
-  // Actualizar document base
   updateDocumentBase: async (documentBaseId, data) => {
     try {
       const response = await axios.put(`${BASE_URL}/${documentBaseId}`, data, {
@@ -48,7 +44,6 @@ export const documentBaseService = {
     }
   },
 
-  // Eliminar document base
   deleteDocumentBase: async (documentBaseId) => {
     try {
       const response = await axios.delete(`${BASE_URL}/${documentBaseId}`, {

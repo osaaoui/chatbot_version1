@@ -1,11 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import axios from "axios";
 import { 
-  DocumentIcon, 
-  ArrowUpTrayIcon
+  DocumentIcon
 } from "@heroicons/react/24/outline";
-import { PanelLeft } from "lucide-react";
+
 import DocumentBaseManager from './DocumentBase/DocumentBaseManager';
 
 const Sidebar = ({
@@ -13,12 +12,9 @@ const Sidebar = ({
   setStagedFiles,
   email,
   onProcess,
-  onFileSelected,
   isProcessing,
-  toggleSidebar,
 }) => {
   const { t } = useTranslation();
-  const fileInputRef = useRef(null);
   
   useEffect(() => {
     const fetchPersistedDocs = async () => {
@@ -63,80 +59,7 @@ const Sidebar = ({
     }
   }, [email]);
   
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    handleUpload(files);
-  };
-  
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const files = Array.from(event.dataTransfer.files);
-    handleUpload(files);
-  };
-  
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-  
-  const handleUpload = async (files) => {
-    const DOCUMENT_BASE_ID = "49bd7249-ed70-47d4-9660-67775b674f3e"; 
-    const FOLDER_ID = "db82cde7-40ac-46ce-97d7-2f1826cff46b"; 
-    
-    for (const file of files) {
-      const tempRecord = {
-        name: file.name,
-        original: file.name,
-        status: "uploading",
-      };
-      setStagedFiles((prev) => [...prev, tempRecord]);
-      
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("document_base_id", DOCUMENT_BASE_ID);
-        
-        // Solo agregar folder_id si no es null
-        if (FOLDER_ID) {
-          formData.append("folder_id", FOLDER_ID);
-        }
-        
-        // Para PDFs, podrías calcular o estimar las páginas
-        // Por ahora lo dejamos opcional
-        // formData.append("num_pages", estimatedPages);
-        
-        const response = await axios.post(
-          import.meta.env.VITE_API_URL + "/api/v2/uploads/upload/",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        
-        setStagedFiles((prev) =>
-          prev.map((f) =>
-            f.name === file.name
-              ? { ...f, status: "uploaded", documentId: response.data.document_id }
-              : f
-          )
-        );
-        
-        if (onFileSelected)
-          onFileSelected({ name: file.name, original: file.name, documentId: response.data.document_id });
-          
-      } catch (err) {
-        console.error("Error uploading file:", file.name, err);
-        setStagedFiles((prev) =>
-          prev.map((f) =>
-            f.name === file.name ? { ...f, status: "error" } : f
-          )
-        );
-      }
-    }
-  };
-
+ 
   return (
     <div className="bg-bg-secondary flex flex-col items-center w-80 h-full px-4 pt-6 pb-6 border-r border-border-light flex-shrink-0">
       <div className="w-full mb-6">
@@ -174,10 +97,10 @@ const Sidebar = ({
         <button
           onClick={onProcess}
           disabled={isProcessing}
-          className={`w-full transition ${
+          className={`w-full px-4 py-2 border rounded-md transition font-medium ${
             isProcessing
-              ? "btn-secondary opacity-50 cursor-not-allowed"
-              : "btn-secondary"
+              ? "bg-bg-primary cursor-not-allowed"
+              : "bg-bg-primary hover:bg-bg-tertiary"
           }`}
         >
           {isProcessing ? t('common.processing') : t('documents.processDocuments')}

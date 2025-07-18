@@ -21,13 +21,21 @@
     "close": "Cerrar",
     "edit": "Editar",
     "save": "Guardar",
+    "cancel": "Cancelar",
     "addTeam": "Agregar Equipo"
   },
   "profile": {
     "title": "Mi Perfil",
     "email": "Email:",
     "status": "Estado:",
-    "active": "Activo"
+    "active": "Activo",
+    "success": {
+      "updated": "Perfil actualizado exitosamente"
+    },
+    "error": {
+      "loadFailed": "Error al cargar el perfil",
+      "updateFailed": "Error al actualizar el perfil"
+    }
   },
   "languages": {
     "spanish": "Español",
@@ -105,7 +113,8 @@
     "creating": "Creando...",
     "create": "Crear",
     "newConversationButton": "Nueva Conversación",
-    "goToEnd": "Ir al final"
+    "goToEnd": "Ir al final",
+    "dropFilesHere": "Suelta los archivos aquí para subir"
   },
   "teams": {
     "title": "Equipos de Trabajo",
@@ -192,15 +201,14 @@
     "name_placeholder": "Nombre de la base de documentos",
     "no_folders": "No hay carpetas en esta base de documentos",
     "loading": "Cargando bases de documentos...",
-    "error": "Por inactividad, tu sesión ha sido por cerrada. Protegemos tu  información. Conéctate de nuevo para continuar chateando..",
+    "error": "Por inactividad, tu sesión ha sido por cerrada. Protegemos tu  información. Conéctate de nuevo para continuar chateando..",
     "no_bases_available": "No hay bases de documentos disponibles",
-     "status": {
+    "status": {
       "active": "Activo",
       "inactive": "Inactivo",
       "empty": "Base de documentos activa (sin contenido)",
       "unknown": "Estado desconocido"
     }
-
   },
   "folder": {
     "deleteConfirm": "¿Eliminar?",
@@ -225,14 +233,13 @@
     "processFilesError": "Error al procesar archivos",
     "noFilesToProcess": "No hay archivos para procesar en esta carpeta",
     "fileProcessedSuccess": "Archivos procesados exitosamente en carpeta",
-     "status": {
+    "status": {
       "active": "Carpeta activa",
       "inactive": "Carpeta inactiva",
       "deleted": "Carpeta eliminada",
       "empty": "Carpeta sin documentos",
       "unknown": "Estado desconocido"
     }
-
   },
   "legal": {
     "title": "Términos de Uso y Documentos Legales",
@@ -251,6 +258,17 @@
     "sessionTimeout": "Debido a inactividad, tu sesión ha sido cerrada. Estamos protegiendo tu información. Por favor inicia sesión nuevamente para continuar chateando.",
     "createDocumentBase": "Error al crear la base de documentos",
     "updateDocumentBase": "Error al actualizar la base de documentos",
-    "deleteDocumentBase": "Error al eliminar la base de documentos"
+    "deleteDocumentBase": "Error al eliminar la base de documentos",
+    "failed": "Error"
+  },
+  "uploadModal": {
+    "title": "Subir Archivos",
+    "filesToUpload": "Archivos a subir",
+    "selectDocumentBase": "Seleccionar Base de Documentos",
+    "chooseDocumentBase": "Elige una base de documentos",
+    "noDocumentBases": "No se encontraron bases de documentos.",
+    "selectFolder": "Seleccionar Carpeta",
+    "chooseFolder": "Elige una carpeta",
+    "noFolders": "No se encontraron carpetas para esta base de documentos."
   }
 }

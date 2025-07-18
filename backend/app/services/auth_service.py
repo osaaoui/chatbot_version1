@@ -29,7 +29,7 @@ def authenticate_user(email, password):
     user = users.get(email)
     if not user or not verify_password(password, user["hashed_password"]):
         return None
-    return user  # or just user["email"] if you only need that
+    return user  
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()

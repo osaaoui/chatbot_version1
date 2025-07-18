@@ -21,15 +21,24 @@
     "close": "Fermer",
     "edit": "Modifier",
     "save": "Enregistrer",
+    "cancel": "Annuler",
     "addTeam": "Ajouter Équipe"
   },
   "profile": {
     "title": "Mon Profil",
     "email": "Email:",
     "status": "Statut:",
-    "active": "Actif"
+    "active": "Actif",
+    
+    "success": {
+      "updated": "Profil mis à jour avec succès"
+    },
+    "error": {
+      "loadFailed": "Échec du chargement du profil",
+      "updateFailed": "Échec de la mise à jour du profil"
+    }
   },
-  "languages": {
+   "languages": {
     "spanish": "Español",
     "english": "English",
     "french": "Français"
@@ -249,6 +258,7 @@
     "sessionTimeout": "En raison de l'inactivité, votre session a été fermée. Nous protégeons vos informations. Veuillez vous reconnecter pour continuer à discuter.",
     "createDocumentBase": "Erreur lors de la création de la base de documents",
     "updateDocumentBase": "Erreur lors de la mise à jour de la base de documents",
-    "deleteDocumentBase": "Erreur lors de la suppression de la base de documents"
+    "deleteDocumentBase": "Erreur lors de la suppression de la base de documents",
+    "failed": "Erreur"
   }
 }

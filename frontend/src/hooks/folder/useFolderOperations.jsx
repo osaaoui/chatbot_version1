@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useFolders } from "../../context/FoldersContext"
+import { useDocumentBases } from "../../context/DocumentBasesContext"
 
 export const useFolderOperations = (folder) => {
   const [isEditing, setIsEditing] = useState(false)
@@ -11,6 +12,7 @@ export const useFolderOperations = (folder) => {
   const [subfolderName, setSubfolderName] = useState("")
 
   const { createFolder, updateFolder, deleteFolder } = useFolders()
+  const { updateDocumentBaseStatus } = useDocumentBases() 
 
   const createSubfolder = async () => {
     if (!subfolderName.trim()) return
@@ -25,6 +27,8 @@ export const useFolderOperations = (folder) => {
       const response = await createFolder(data)
 
       if (response.success) {
+        updateDocumentBaseStatus(folder.document_base_id, "Active")
+
         setSubfolderName("")
         setShowCreateSubfolder(false)
         return true

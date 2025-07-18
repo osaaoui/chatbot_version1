@@ -25,6 +25,10 @@ export const useFileUpload = (folder, stagedFiles, setStagedFiles) => {
             if (stagedFile.status === "processing") {
               return { ...localFile, status: "processing" }
             }
+            // Si el archivo está 'uploaded' o 'ready_to_process', no lo marcamos como 'processed' aquí
+            if (stagedFile.status === "uploaded" || stagedFile.status === "ready_to_process") {
+              return { ...localFile, status: stagedFile.status }
+            }
           }
 
           return localFile
@@ -33,6 +37,8 @@ export const useFileUpload = (folder, stagedFiles, setStagedFiles) => {
         return updatedFiles
       })
 
+      // Mantener los archivos 'processed' visibles por un corto tiempo, luego eliminarlos de processedFiles
+      // para que la fuente de verdad sea stagedFiles y la API
       setTimeout(() => {
         setProcessedFiles((prev) => prev.filter((f) => f.status !== "processed"))
       }, 1000)
@@ -54,25 +60,35 @@ export const useFileUpload = (folder, stagedFiles, setStagedFiles) => {
           },
         })
 
+        // ELIMINAR: No actualizar el estado de la carpeta/documentBase a "Active" aquí.
+        // Esto se hará solo cuando el archivo sea PROCESADO.
+        // if (folder.status !== "Active") {
+        //   updateFolderStatus(folder.folder_id, folder.document_base_id, "Active");
+        // }
+        // updateDocumentBaseStatus(folder.document_base_id, "Active");
+
         const newStagedFile = {
           name: response.data.filename || file.name,
           original: file.name,
           documentId: response.data.document_id,
-          status: "uploaded",
+          status: "uploaded", // El estado inicial después de la subida es 'uploaded'
           folderId: folder.folder_id,
+          documentBaseId: folder.document_base_id, // Añadir documentBaseId para uso posterior
         }
 
         if (setStagedFiles) {
           setStagedFiles((prev) => [...prev, newStagedFile])
         } else {
+          // Esto es un fallback si setStagedFiles no se pasa, pero debería pasarse
           setProcessedFiles((prev) => [
             ...prev,
             {
               name: response.data.filename || file.name,
               original: file.name,
               documentId: response.data.document_id,
-              status: "ready_to_process",
+              status: "uploaded", // Estado inicial
               folderId: folder.folder_id,
+              documentBaseId: folder.document_base_id,
             },
           ])
         }

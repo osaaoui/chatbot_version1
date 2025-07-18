@@ -1,4 +1,4 @@
-// src/context/AuthProvider.js
+// src/context/AuthProvider.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
@@ -68,6 +68,16 @@ export const AuthProvider = ({ children }) => {
     setUser(newUser);
   };
 
+  const updateToken = (newToken) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
+  };
+
+  const updateUser = (newUser) => {
+    localStorage.setItem("user", JSON.stringify(newUser));
+    setUser(newUser);
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -76,7 +86,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, loaded }}>
+    <AuthContext.Provider value={{ 
+      token, 
+      user, 
+      login, 
+      logout, 
+      updateToken, 
+      updateUser, 
+      loaded 
+    }}>
       {children}
     </AuthContext.Provider>
   );

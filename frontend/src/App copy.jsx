@@ -24,9 +24,6 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedSource, setSelectedSource] = useState(null); 
 
-
-
-  // ✅ Always call hooks at the top-level – this one stays here
   useEffect(() => {
   setQuestion("");
   setAnswer("");
@@ -45,7 +42,6 @@ export default function App() {
         );
         
 
-        // Normalize the backend metadata into the expected structure
         const formattedFiles = response.data.map(entry => ({
           name: entry.filename,
           status: "processed",
@@ -66,13 +62,10 @@ export default function App() {
   fetchFiles();
 }, [token, user]);
 
-  // ✅ Show nothing (or spinner) while auth state is loading
   if (!loaded) return null;
 
-  // ✅ Show login form if not authenticated
   if (!token || !user) return <AuthForm />;
 
-  // Handle local file selection
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
@@ -80,11 +73,9 @@ export default function App() {
   };
 
 
- // Process uploaded files
 const handleProcess = async () => {
   console.log("🟣 handleProcess called");
 
-  // ✅ Filter out already processed files
   const filesToProcess = stagedFiles.filter((f) => f.status !== "processed");
   console.log("🟣 Sending to process:", filesToProcess.map((f) => f.name));
 
@@ -109,7 +100,6 @@ const handleProcess = async () => {
     const processed = response.data.processed_files || [];
     console.log("🟣 Backend response:", response.data);
 
-    // ✅ Update and deduplicate staged files
     const updated = stagedFiles.map((f) =>
       processed.includes(f.name) ? { ...f, status: "processed" } : f
     );
@@ -133,8 +123,6 @@ const handleProcess = async () => {
   }
 };
 
-
-  // Submit user question to chat endpoint
   const sendQuestion = async () => {
     if (!token || !user) return;
 
@@ -164,7 +152,6 @@ const handleProcess = async () => {
     }
   };
 
-  // Used to select a file from the sidebar component
   const handleFileSelected = (file) => {
     setFile(file);
   };

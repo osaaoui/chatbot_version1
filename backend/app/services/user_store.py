@@ -14,6 +14,30 @@ def load_users():
     with open(USER_FILE, "r") as f:
         return json.load(f)
 
+async def update_user_in_sqlite(old_email: str, new_email: str, full_name: str, role: str):
+    try:
+        users = load_users()
+        
+        if old_email in users:
+            user_data = users[old_email]
+            
+            user_data["email"] = new_email
+            user_data["fullName"] = full_name
+            user_data["role"] = role
+            
+            del users[old_email]
+            
+            users[new_email] = user_data
+            
+            save_users(users)
+            
+            print(f"Usuario actualizado en SQLite: {old_email} -> {new_email}")
+        else:
+            print(f"Usuario {old_email} no encontrado en SQLite")
+            
+    except Exception as e:
+        print(f"Error actualizando usuario en SQLite: {str(e)}")
+
 async def insert_user_to_postgresql(fullName: str, email: str, password_hash: str, role: str):
     try:
         conn = await asyncpg.connect(settings.DATABASE_URL)

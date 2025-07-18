@@ -1,36 +1,86 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Loader2 } from 'lucide-react';
+"use client"
 
-const ChatInput = ({ 
-  question, 
-  onQuestionChange, 
-  onSubmit, 
-  isLoading, 
-  currentConversation 
-}) => {
-  const { t } = useTranslation();
+import { useRef, useEffect, useState, useCallback } from "react"
+import { useTranslation } from "react-i18next"
+import { Loader2, UploadCloud } from "lucide-react"
+
+const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentConversation, onFilesDropped }) => {
+  const { t } = useTranslation()
+  const textareaRef = useRef(null)
+  const [isDragOver, setIsDragOver] = useState(false) // State for visual feedback on drag over
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      onSubmit();
+      e.preventDefault()
+      onSubmit()
     }
-  };
+  }
+
+  useEffect(() => {
+    if (!isLoading && textareaRef.current) {
+      textareaRef.current.focus()
+    }
+  }, [isLoading])
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault() // Necessary to allow dropping
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = "copy" // Visual feedback for copy operation
+  }, [])
+
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // Check if the drag is truly leaving the element, not just moving to a child
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragOver(false)
+    }
+  }, [])
+
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(false)
+
+      const files = Array.from(e.dataTransfer.files)
+      if (files.length > 0) {
+        onFilesDropped(files)
+      }
+    },
+    [onFilesDropped],
+  )
 
   return (
-    <footer className="flex-shrink-0 border-t border-border-light px-6 py-3 bg-bg-primary">
-      <div className="flex items-center gap-2">
+    <footer className="flex-shrink-0 border-t border-border-light px-6  bg-bg-primary">
+      <div
+        className={`relative flex items-center gap-2 p-2 rounded-lg border-2 transition-all duration-200 ${
+          isDragOver ? "border-blue-500 bg-blue-50" : "border-transparent"
+        }`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDragOver && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-100 bg-opacity-90 z-10 rounded-lg">
+            <UploadCloud className="w-8 h-8 text-blue-600 mb-2" />
+            <p className="text-blue-700 font-medium">{t("chat.dropFilesHere")}</p>
+          </div>
+        )}
         <textarea
+          ref={textareaRef}
           rows={1}
           value={question}
           onChange={onQuestionChange}
           onKeyDown={handleKeyDown}
-          placeholder={
-            currentConversation 
-              ? t('chat.continueConversationPlaceholder')
-              : t('chat.askToStart')
-          }
+          placeholder={currentConversation ? t("chat.continueConversationPlaceholder") : t("chat.askToStart")}
           className="input-base flex-1 resize-none rounded-full"
           disabled={isLoading}
         />
@@ -38,7 +88,7 @@ const ChatInput = ({
           onClick={onSubmit}
           disabled={!question.trim() || isLoading}
           className="p-2 rounded-full bg-bg-secondary-dark hover:bg-bg-secondary text-text-primary transition-colors disabled:opacity-50"
-          title={t('chat.sendButton')}
+          title={t("chat.sendButton")}
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -51,20 +101,14 @@ const ChatInput = ({
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 12h14M12 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           )}
         </button>
       </div>
-      <p className="text-[10px] text-text-tertiary mt-1">
-        {t('chat.enterToSend')}
-      </p>
+      <p className="text-[10px] text-text-tertiary mt-1">{t("chat.enterToSend")}</p>
     </footer>
-  );
-};
+  )
+}
 
-export default ChatInput;
+export default ChatInput

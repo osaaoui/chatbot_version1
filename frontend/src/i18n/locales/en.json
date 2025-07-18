@@ -21,13 +21,21 @@
     "close": "Close",
     "edit": "Edit",
     "save": "Save",
+    "cancel": "Cancel",
     "addTeam": "Add Team"
   },
   "profile": {
     "title": "My Profile",
     "email": "Email:",
     "status": "Status:",
-    "active": "Active"
+    "active": "Active",
+    "success": {
+      "updated": "Profile updated successfully"
+    },
+    "error": {
+      "loadFailed": "Failed to load profile",
+      "updateFailed": "Failed to update profile"
+    }
   },
   "languages": {
     "spanish": "Español",
@@ -194,13 +202,12 @@
     "loading": "Loading document bases...",
     "error": "Due to inactivity, your session has been closed. We protect your information. Please reconnect to continue chatting.",
     "no_bases_available": "No document bases available",
-     "status": {
+    "status": {
       "active": "Active",
       "inactive": "Inactive",
       "empty": "Active document base (no content)",
       "unknown": "Unknown status"
     }
-
   },
   "folder": {
     "deleteConfirm": "Delete?",
@@ -225,14 +232,13 @@
     "processFilesError": "Error processing files",
     "noFilesToProcess": "No files to process in this folder",
     "fileProcessedSuccess": "Files processed successfully in folder",
-     "status": {
+    "status": {
       "active": "Active folder",
       "inactive": "Inactive folder",
       "deleted": "Deleted folder",
       "empty": "Empty folder",
       "unknown": "Unknown status"
     }
-
   },
   "legal": {
     "title": "Terms of Use & Legal Documents",
@@ -251,6 +257,7 @@
     "sessionTimeout": "Due to inactivity, your session has been closed. We're protecting your information. Please log back in to continue chatting.",
     "createDocumentBase": "Error creating document base",
     "updateDocumentBase": "Error updating document base",
-    "deleteDocumentBase": "Error deleting document base"
+    "deleteDocumentBase": "Error deleting document base",
+    "failed": "Error"
   }
 }

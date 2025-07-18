@@ -32,7 +32,6 @@ class BaseService:
             await conn.close()
     
     async def get_user_id_by_email(self, email: str) -> str:
-        """Get user ID from email - cached method to avoid repetition"""
         async with self.get_connection() as conn:
             result = await conn.fetchrow("SELECT * FROM SP_ReadUserByEmail($1)", email)
             if not result:

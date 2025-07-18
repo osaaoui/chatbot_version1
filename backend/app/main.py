@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.api import chat, upload, processing, list_files
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import auth_endpoint
+from app.api.postgresql import user_profile 
 from app.api import viewer  # ✅ correct import
 from fastapi.staticfiles import StaticFiles
 import os
@@ -12,9 +13,8 @@ from app.api.postgresql import folders, documents, conversation, message
 
 app = FastAPI()
 
-UPLOAD_DIR = os.path.abspath("uploaded_files")  # ✅ ensure absolute path
+UPLOAD_DIR = os.path.abspath("uploaded_files") 
 
-# ✅ Mount /files to serve the actual PDF files
 app.mount("/files", StaticFiles(directory=UPLOAD_DIR), name="uploaded_files")
 
 
@@ -38,17 +38,7 @@ app.include_router(folders.router, prefix="/api/v2/folders", tags=["folders"])
 app.include_router(documents.router, prefix="/api/v2/documentsv1", tags=["documents"])
 app.include_router(conversation.router, prefix="/api/v2/conversations", tags=["conversations"])
 app.include_router(message.router, prefix="/api/v2/messages", tags=["messages"])
-
-
+app.include_router(user_profile.router, prefix="/api/auth", tags=["user_profile"])
 app.include_router(serve_files_router, prefix="/api")
 
 app.include_router(serve_files_router, prefix="/api")
-
-
-
-
-
-
-
-
-

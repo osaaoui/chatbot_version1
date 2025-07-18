@@ -1,24 +1,15 @@
-"use client";
+"use client"
 
-import { useState, useRef } from "react";
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  FolderIcon,
-} from "@heroicons/react/24/outline";
-import { useLanguage } from "../../hooks/useLanguaje";
-import { useFolderOperations } from "../../hooks/folder/useFolderOperations";
-import { useDragAndDrop } from "../../hooks/folder/useDragAndDrop";
-import { useFileUpload } from "../../hooks/folder/useFileUpload";
-import {
-  formatDate,
-  getFolderStyles,
-  getIconSize,
-  getTextSize,
-} from "../../utils/folderUtils";
-import DocumentList from "../Document/DocumentList";
-import FolderActions from "./FolderActions";
-import CreateSubfolder from "./CreateSubfolder";
+import { useState, useRef } from "react"
+import { ChevronDownIcon, ChevronRightIcon, FolderIcon } from "@heroicons/react/24/outline"
+import { useLanguage } from "../../hooks/useLanguaje"
+import { useFolderOperations } from "../../hooks/folder/useFolderOperations"
+import { useDragAndDrop } from "../../hooks/folder/useDragAndDrop"
+import { useFileUpload } from "../../hooks/folder/useFileUpload" // Keep this import for internal folder file upload logic if needed, or remove if useGlobalFileUpload replaces it entirely
+import { formatDate, getFolderStyles, getIconSize, getTextSize } from "../../utils/folderUtils"
+import DocumentList from "../Document/DocumentList"
+import FolderActions from "./FolderActions"
+import CreateSubfolder from "./CreateSubfolder"
 
 const FolderCard = ({
   folder,
@@ -27,13 +18,13 @@ const FolderCard = ({
   userEmail,
   onProcessFiles,
   isProcessing = false,
-  stagedFiles = [],
-  setStagedFiles,
+  stagedFiles = [], // Recibir stagedFiles
+  setStagedFiles, // Recibir setStagedFiles
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const fileInputRef = useRef(null);
-  const documentListRef = useRef(null);
-  const { t } = useLanguage();
+  const [isExpanded, setIsExpanded] = useState(false)
+  const fileInputRef = useRef(null)
+  const documentListRef = useRef(null)
+  const { t } = useLanguage()
 
   const {
     isEditing,
@@ -49,7 +40,7 @@ const FolderCard = ({
     createSubfolder,
     updateFolderName,
     deleteFolderConfirm,
-  } = useFolderOperations(folder);
+  } = useFolderOperations(folder)
 
   const {
     isDragOver,
@@ -60,100 +51,88 @@ const FolderCard = ({
     handleDragEnter,
     handleDragLeave,
     handleDrop,
-  } = useDragAndDrop(folder, allFolders, setIsExpanded, isExpanded);
+  } = useDragAndDrop(folder, allFolders, setIsExpanded, isExpanded)
 
-  const { handleFileUpload, getCurrentFolderFiles } = useFileUpload(
-    folder,
-    stagedFiles,
-    setStagedFiles
-  );
+  // Si `useFileUpload` se sigue usando para la subida directa desde la carpeta, mantenerlo.
+  // Si `useGlobalFileUpload` es el único punto de entrada para todas las subidas, esta línea podría ser redundante.
+  // Para este escenario, asumimos que `handleFileUpload` de `useFileUpload` sigue siendo relevante para la subida directa.
+  const { handleFileUpload, getCurrentFolderFiles } = useFileUpload(folder, stagedFiles, setStagedFiles)
 
-  const hasChildren = folder.children && folder.children.length > 0;
-  const paddingLeft = level * 16;
-  const iconSize = getIconSize(level);
-  const textSize = getTextSize(level);
+  const hasChildren = folder.children && folder.children.length > 0
+  const paddingLeft = level * 16
+  const iconSize = getIconSize(level)
+  const textSize = getTextSize(level)
 
-  const {
-    filesToProcess,
-    processingFiles,
-    hasFilesToProcess,
-    isProcessingFiles,
-  } = getCurrentFolderFiles();
+  const { filesToProcess, processingFiles, hasFilesToProcess, isProcessingFiles } = getCurrentFolderFiles()
 
   const handleToggleExpand = () => {
     if (!isEditing && !showDeleteConfirm && !isDragging) {
-      setIsExpanded(!isExpanded);
+      setIsExpanded(!isExpanded)
     }
-  };
+  }
 
   const handleUploadClick = (e) => {
-    e.stopPropagation();
-    fileInputRef.current.click();
-  };
+    e.stopPropagation()
+    fileInputRef.current.click()
+  }
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files)
     if (files.length > 0) {
-      handleFileUpload(files);
+      handleFileUpload(files) // Esto usa el hook useFileUpload local de la carpeta
     }
-  };
+  }
 
   const handleCreateSubfolderClick = (e) => {
-    e.stopPropagation();
-    setShowCreateSubfolder(true);
+    e.stopPropagation()
+    setShowCreateSubfolder(true)
     if (!isExpanded) {
-      setIsExpanded(true);
+      setIsExpanded(true)
     }
-  };
+  }
 
   const handleEditClick = (e) => {
-    e.stopPropagation();
-    setIsEditing(true);
-    setEditName(folder.folder_name);
-  };
+    e.stopPropagation()
+    setIsEditing(true)
+    setEditName(folder.folder_name)
+  }
 
   const handleDeleteClick = (e) => {
-    e.stopPropagation();
-    setShowDeleteConfirm(true);
-  };
+    e.stopPropagation()
+    setShowDeleteConfirm(true)
+  }
 
   const handleEditKeyPress = (e) => {
     if (e.key === "Enter") {
-      updateFolderName();
+      updateFolderName()
     } else if (e.key === "Escape") {
-      setEditName(folder.folder_name);
-      setIsEditing(false);
+      setEditName(folder.folder_name)
+      setIsEditing(false)
     }
-  };
+  }
 
   const handleCreateSubfolderConfirm = async () => {
-    const success = await createSubfolder();
+    const success = await createSubfolder()
     if (success && documentListRef.current) {
       setTimeout(() => {
-        documentListRef.current.refreshDocuments();
-      }, 500);
+        documentListRef.current.refreshDocuments()
+      }, 500)
     }
-  };
+  }
 
   const getFolderBaseStatusTooltip = (status) => {
-    const normalizedStatus = status?.toLowerCase();
+    const normalizedStatus = status?.toLowerCase()
     switch (normalizedStatus) {
       case "active":
-        return t("folder.status.active");
+        return t("folder.status.active")
       case "inactive":
-        return t("folder.status.inactive");
+        return t("folder.status.inactive")
       default:
-        return t("folder.status.unknown");
+        return t("folder.status.unknown")
     }
-  };
+  }
 
-  const folderStyles = getFolderStyles(
-    level,
-    isDragging,
-    isDragOver,
-    showDeleteConfirm,
-    isEditing
-  );
+  const folderStyles = getFolderStyles(level, isDragging, isDragOver, showDeleteConfirm, isEditing)
 
   return (
     <div className="w-full">
@@ -181,7 +160,7 @@ const FolderCard = ({
 
         <FolderIcon className={`text-yellow-500 ${iconSize}`} />
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {isEditing ? (
             <input
               type="text"
@@ -193,16 +172,10 @@ const FolderCard = ({
               onClick={(e) => e.stopPropagation()}
             />
           ) : showDeleteConfirm ? (
-            <span className={`font-medium text-red-700 ${textSize}`}>
-              {t("folder.deleteConfirm")}
-            </span>
+            <span className={`font-medium text-red-700 ${textSize}`}>{t("folder.deleteConfirm")}</span>
           ) : (
             <>
-              <span
-                className={`font-medium text-gray-700 truncate block ${textSize}`}
-              >
-                {folder.folder_name}
-              </span>
+              <span className={`font-medium text-gray-700 truncate block ${textSize}`}>{folder.folder_name}</span>
               {folder.creation_date && level === 0 && (
                 <span className="text-xs text-gray-400 block">
                   {t("folder.created")}: {formatDate(folder.creation_date)}
@@ -217,8 +190,7 @@ const FolderCard = ({
                   )}
                   {isProcessingFiles && (
                     <span className="text-orange-600 ml-2">
-                      {processingFiles.length > 0 ? processingFiles.length : ""}{" "}
-                      {t("folder.processing")}
+                      {processingFiles.length > 0 ? processingFiles.length : ""} {t("folder.processing")}
                     </span>
                   )}
                 </div>
@@ -229,13 +201,7 @@ const FolderCard = ({
 
         {!isEditing && !showDeleteConfirm && (
           <span
-            className={`w-2 h-2 rounded-full ${
-              folder.status === "Active"
-                ? "bg-green-500"
-                : folder.status === "Inactive"
-                ? "bg-red-500"
-                : "bg-yellow-500"
-            }`}
+            className={`w-2 h-2 rounded-full ${folder.status === "Active" ? "bg-green-500" : "bg-yellow-500"}`}
             title={getFolderBaseStatusTooltip(folder.status)}
           ></span>
         )}
@@ -248,11 +214,10 @@ const FolderCard = ({
             editName={editName}
             onConfirmEdit={updateFolderName}
             onCancelEdit={() => {
-              setEditName(folder.folder_name);
-              setIsEditing(false);
+              setEditName(folder.folder_name)
+              setIsEditing(false)
             }}
             onConfirmDelete={deleteFolderConfirm}
-            onCancelDelete={() => setShowDeleteConfirm(false)}
             onUpload={handleUploadClick}
             onCreateSubfolder={handleCreateSubfolderClick}
             onEdit={handleEditClick}
@@ -278,8 +243,8 @@ const FolderCard = ({
               setSubfolderName={setSubfolderName}
               onConfirm={handleCreateSubfolderConfirm}
               onCancel={() => {
-                setSubfolderName("");
-                setShowCreateSubfolder(false);
+                setSubfolderName("")
+                setShowCreateSubfolder(false)
               }}
               paddingLeft={paddingLeft}
             />
@@ -296,8 +261,8 @@ const FolderCard = ({
                   userEmail={userEmail}
                   onProcessFiles={onProcessFiles}
                   isProcessing={isProcessing}
-                  stagedFiles={stagedFiles}
-                  setStagedFiles={setStagedFiles}
+                  stagedFiles={stagedFiles} 
+                  setStagedFiles={setStagedFiles} 
                 />
               ))}
             </>
@@ -307,11 +272,13 @@ const FolderCard = ({
             ref={documentListRef}
             folderId={folder.folder_id}
             level={level}
+            stagedFiles={stagedFiles} // Pasar stagedFiles al DocumentList
+            setStagedFiles={setStagedFiles} // Pasar setStagedFiles al DocumentList
           />
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default FolderCard;
+export default FolderCard

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Loader2, ChevronUp, ArrowUp } from 'lucide-react';
-import ChatMessage from './ChatMessage';
 
 const ChatMessagesArea = ({
   chatContainerRef,
@@ -18,12 +17,26 @@ const ChatMessagesArea = ({
 }) => {
   const { t } = useTranslation();
   
-  const hasUserMessageWithoutResponse = chatHistory.some(msg => 
-    msg.type === "user" && !chatHistory.some(botMsg => 
-      botMsg.type === "bot" && 
-      Math.abs(new Date(botMsg.time) - new Date(msg.time)) < 60000 
-    )
-  );
+  const shouldShowLoadingAnimation = () => {
+    if (!isLoading) return false;
+    
+    if (chatHistory.length === 0) return true;
+    
+    const userMessages = chatHistory.filter(msg => msg.type === "user");
+    if (userMessages.length === 0) return false;
+    
+    const lastUserMessage = userMessages[userMessages.length - 1];
+    
+    if (lastUserMessage.isPending) return true;
+    
+    const lastUserMessageTime = new Date(lastUserMessage.time).getTime();
+    const botResponseExists = chatHistory.some(msg => 
+      msg.type === "bot" && 
+      new Date(msg.time).getTime() > lastUserMessageTime
+    );
+    
+    return !botResponseExists;
+  };
 
   return (
     <>
@@ -70,7 +83,7 @@ const ChatMessagesArea = ({
             {renderedMessages}
           </div>
         )}
-        {isLoading && (hasUserMessageWithoutResponse || chatHistory.length === 0) && (
+        {shouldShowLoadingAnimation() && (
           <div className="flex justify-start">
             <div className="flex items-end mr-2">
               <div className="text-dark flex p-0 items-center justify-center text-sm font-bold">
@@ -93,7 +106,7 @@ const ChatMessagesArea = ({
           </div>
         )}
         <div ref={chatEndRef} />
-      </main>
+      </main>      
       {showScrollToBottom && (
         <button
           onClick={() => scrollToBottom(true)}

@@ -26,7 +26,6 @@ export const useChatLogic = (user, token, t, setSelectedSource) => {
     currentConversation, 
     messages,
     createConversation, 
-    selectConversation,
     setCurrentConversationDirect,
     addMessageToConversation,
     updateMessageInConversation, 

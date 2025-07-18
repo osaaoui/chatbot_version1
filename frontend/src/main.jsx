@@ -4,7 +4,6 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import './i18n';
-// In App.jsx or main.jsx
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import './App.css';

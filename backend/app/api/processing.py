@@ -22,7 +22,7 @@ router = APIRouter()
 class ProcessRequest(BaseModel):
     filenames: List[str]
     user_id: str
-    document_id: str
+    document_ids: List[str]
 
 @router.get("/user-documents/{user_id}")
 def get_user_documents(user_id: str):
@@ -40,8 +40,8 @@ async def process_documents(req: ProcessRequest):
     if not req.filenames:
         raise HTTPException(status_code=400, detail="No filenames provided")
     
-    if not req.document_id:
-        raise HTTPException(status_code=400, detail="Document ID is required")
+    if not req.document_ids:
+        raise HTTPException(status_code=400, detail="Document IDs are required")
 
     processed_files = []
     total_chunks = 0
@@ -55,19 +55,20 @@ async def process_documents(req: ProcessRequest):
             continue  
 
         chunks = process_documents_for_user([filepath], req.user_id)
-
         mark_as_processed(req.user_id, filename, chunks)
         total_chunks += chunks
         processed_files.append(filename)
 
+    # Actualizar el estado de todos los documentos
     try:
         document_service = DocumentService()
-        await document_service.update_document_status(
-            document_id=req.document_id,
-            user_email =req.user_id,
-            status="Upload"
-        )
-        print(f"[API] ✅ Document {req.document_id} status updated to 'Upload'")
+        for document_id in req.document_ids:
+            await document_service.update_document_status(
+                document_id=document_id,
+                user_email=req.user_id,
+                status="Upload"
+            )
+        print(f"[API] ✅ Documents {req.document_ids} status updated to 'Upload'")
         status_updated = True
     except Exception as e:
         print(f"[API] ❌ Error updating document status: {str(e)}")

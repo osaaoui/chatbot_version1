@@ -9,6 +9,7 @@ import CompanyInfo from "./ui/CompanyInfo";
 import EmpresaContent from "./Enterprise";
 import EquiposContent from "./Teams";
 import TermsAndConditions from "./TermsAndConditions";
+import ProfileModal from "./Profile/ProfileModal";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -55,27 +56,6 @@ const Header = () => {
   ];
 
   const modalConfig = {
-    profile: {
-      buttons: [
-        { label: t('modal.close'), onClick: closeModal, variant: "secondary" },
-        { label: t('modal.edit'), onClick: () => console.log("Edit Profile"), variant: "primary" }
-      ],
-      content: (
-        <>
-          <h2 className="text-heading text-xl font-bold mb-4">{t('profile.title')}</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-body">{t('profile.email')}</label>
-              <p className="text-heading">{user.email}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-body">{t('profile.status')}</label>
-              <p className="success font-medium">{t('profile.active')}</p>
-            </div>
-          </div>
-        </>
-      )
-    },
     company: {
       buttons: [
         { label: t('modal.close'), onClick: closeModal, variant: "secondary" },
@@ -116,7 +96,12 @@ const Header = () => {
         <Avatar name={user.fullName} menuItems={avatarMenuItems} />
       </div>
       
-      {activeModal && modalConfig[activeModal] && (
+      <ProfileModal 
+        isOpen={activeModal === 'profile'} 
+        onClose={closeModal} 
+      />
+      
+      {activeModal && activeModal !== 'profile' && modalConfig[activeModal] && (
         <Modal 
           isOpen={true} 
           onClose={closeModal}

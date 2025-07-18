@@ -120,7 +120,7 @@ const ConversationsModal = ({
                 <button
                   onClick={handleCreateNew}
                   disabled={!newConversationTitle.trim() || isCreating}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 text-xs font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-bg-primary text-text-dark border rounded-md hover:bg-bg-tertiary transition-colors text-xs font-medium"
                 >
                   {isCreating ? (
                     <>
@@ -143,13 +143,13 @@ const ConversationsModal = ({
               </div>
             </div>
           ) : (
-            <button
-              onClick={handleShowCreateForm}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs font-medium"
-            >
-              <Plus className="w-3 h-3" />
-              {t('chat.newConversationButton')}
-            </button>
+          <button
+            onClick={handleShowCreateForm}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-bg-primary text-text-dark border rounded-md hover:bg-bg-tertiary transition-colors text-xs font-medium"
+          >
+            <Plus className="w-3 h-3" />
+            {t('chat.newConversationButton')}
+          </button>
           )}
         </div>
       </div>

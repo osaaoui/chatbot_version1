@@ -8,7 +8,6 @@ const getAuthHeaders = () => ({
 });
 
 export const documentService = {
-  // Crear documento
   createDocument: async (data) => {
     try {
       const response = await axios.post(BASE_URL, data, {
@@ -21,7 +20,6 @@ export const documentService = {
     }
   },
 
-  // Obtener documento por ID
   getDocumentById: async (documentId) => {
     try {
       const response = await axios.get(`${BASE_URL}/${documentId}`, {
@@ -34,7 +32,6 @@ export const documentService = {
     }
   },
 
-  // Obtener documentos por carpeta - NUEVA FUNCIÓN
   getDocumentsByFolder: async (folderId) => {
     try {
       const response = await axios.get(`${BASE_URL}/folder/${folderId}`, {
@@ -47,7 +44,6 @@ export const documentService = {
     }
   },
 
-  // Actualizar documento
   updateDocument: async (documentId, documentName) => {
     try {
       const response = await axios.put(`${BASE_URL}/${documentId}`, null, {
@@ -61,7 +57,6 @@ export const documentService = {
     }
   },
 
-  // Eliminar documento
   deleteDocument: async (documentId) => {
     try {
       const response = await axios.delete(`${BASE_URL}/${documentId}`, {
