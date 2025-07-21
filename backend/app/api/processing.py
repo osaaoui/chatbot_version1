@@ -59,7 +59,6 @@ async def process_documents(req: ProcessRequest):
         total_chunks += chunks
         processed_files.append(filename)
 
-    # Actualizar el estado de todos los documentos
     try:
         document_service = DocumentService()
         for document_id in req.document_ids:
@@ -68,7 +67,6 @@ async def process_documents(req: ProcessRequest):
                 user_email=req.user_id,
                 status="Upload"
             )
-        print(f"[API] ✅ Documents {req.document_ids} status updated to 'Upload'")
         status_updated = True
     except Exception as e:
         print(f"[API] ❌ Error updating document status: {str(e)}")

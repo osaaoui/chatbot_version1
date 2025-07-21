@@ -10,7 +10,7 @@ from app.services.user_store import load_users, save_users
 router = APIRouter()
 
 @router.post("/signup", response_model=Token)
-def register(user: UserCreate):
+async def register(user: UserCreate):
     users = load_users()
     if user.email in users:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -23,7 +23,7 @@ def register(user: UserCreate):
     }
     
     users[user.email] = user_data
-    save_users(users, user_data)
+    await save_users(users, user_data)
 
     token = create_access_token({"sub": user.email, "role": user.role, "fullName": user.fullName})
     return {"access_token": token, "token_type": "bearer"}

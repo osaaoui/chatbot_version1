@@ -20,11 +20,19 @@ const Header = () => {
   const openModal = (modalType) => setActiveModal(modalType);
   const closeModal = () => setActiveModal(null);
 
-  const handleSaveCompany = () => {
-    if (empresaRef.current && empresaRef.current.saveCompanyData) {
-      empresaRef.current.saveCompanyData();
-      alert(t('company.success.dataSaved'));
-      closeModal();
+  const handleLogout = () => {
+    logout();
+  };
+
+  const handleSaveCompany = async () => {
+    if (empresaRef.current?.saveCompanyData) {
+      const result = await empresaRef.current.saveCompanyData();
+      if (result.success) {
+        alert(t('company.success.dataSaved'));
+        closeModal();
+      } else {
+        alert(t('company.errors.savingData'));
+      }
     }
   };
 
@@ -52,7 +60,7 @@ const Header = () => {
     { label: t('avatar.myProfile'), onClick: () => openModal('profile') },
     { label: t('avatar.legal'), onClick: () => openModal('legal') },
     { separator: true },
-    { label: t('avatar.logout'), onClick: logout },
+    { label: t('avatar.logout'), onClick: handleLogout },
   ];
 
   const modalConfig = {

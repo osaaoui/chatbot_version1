@@ -9,8 +9,9 @@ import Header from "./components/Header"
 import Footer from "./components/Footer"
 import { useAuth } from "./context/AuthProvider"
 import { ConversationProvider } from "./context/ConversationProvider"
-import { DocumentBasesProvider } from "./context/DocumentBasesContext" // Importar DocumentBasesProvider
-import { FoldersProvider } from "./context/FoldersContext" // Importar FoldersProvider
+import { DocumentBasesProvider } from "./context/DocumentBasesContext"
+import { FoldersProvider } from "./context/FoldersContext"
+import { CompanyProvider } from "./context/CompanyContext"
 import PDFViewerComponent from "./components/PDFViewerComponent"
 import { useFileManagement } from "./hooks/app/useFileManagement"
 import { useChatLogic } from "./hooks/chat/useChatLogic"
@@ -35,7 +36,7 @@ const Layout = ({ selectedSource, onClosePDF, children }) => (
 )
 
 function AppContent() {
-  const { token, user, logout, loaded } = useAuth()
+  const { token, user, loaded } = useAuth()
   const { t } = useTranslation()
   const [, setFile] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -98,7 +99,7 @@ function AppContent() {
 
   return (
     <div className="app-layout">
-      <Header onLogout={logout} />
+      <Header />
       <div className="app-content">
         {sidebarOpen && (
           <div className="sidebar-container">
@@ -147,15 +148,13 @@ function AppContent() {
 export default function App() {
   return (
     <ConversationProvider>
-      <DocumentBasesProvider>
-        {" "}
-        {/* Envuelve AppContent con DocumentBasesProvider */}
-        <FoldersProvider>
-          {" "}
-          {/* Envuelve AppContent con FoldersProvider */}
-          <AppContent />
-        </FoldersProvider>
-      </DocumentBasesProvider>
+      <CompanyProvider>
+        <DocumentBasesProvider>
+          <FoldersProvider>
+            <AppContent />
+          </FoldersProvider>
+        </DocumentBasesProvider>
+      </CompanyProvider>
     </ConversationProvider>
   )
 }

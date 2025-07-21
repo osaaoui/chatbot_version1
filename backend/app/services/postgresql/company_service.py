@@ -7,7 +7,7 @@ class CompanyService(BaseService):
             user_id = await self.get_user_id_by_email(user_email)
             async with self.get_connection() as conn:
                 id_company = await conn.fetch(
-                    "SELECT * FROM sp_getcompany($1)",
+                    "SELECT * FROM sp_readcompanybyuserid($1)",
                     user_id
                 )
                 return [dict(row) for row in id_company] if id_company else []

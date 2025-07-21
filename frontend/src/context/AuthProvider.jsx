@@ -1,4 +1,3 @@
-// src/context/AuthProvider.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
@@ -16,7 +15,6 @@ export const AuthProvider = ({ children }) => {
 
     if (authStatus === 'success' && urlToken && urlUser) {
       try {
-        // Decodificar los datos
         const decodedToken = decodeURIComponent(urlToken);
         const decodedUser = JSON.parse(decodeURIComponent(urlUser));
 
@@ -51,7 +49,6 @@ export const AuthProvider = ({ children }) => {
           setUser(JSON.parse(storedUser));
         } catch (error) {
           console.error('Error parsing stored user data:', error);
-          // Limpiar datos corruptos
           localStorage.removeItem("token");
           localStorage.removeItem("user");
         }

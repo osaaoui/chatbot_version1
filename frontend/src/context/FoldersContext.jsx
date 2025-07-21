@@ -1,7 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback } from "react"
+import { createContext, useContext, useState, useCallback, useEffect } from "react"
 import { folderService } from "../services/folderService"
+import { useAuth } from "./AuthProvider"
 
 const FoldersContext = createContext()
 
@@ -14,6 +15,7 @@ export const useFolders = () => {
 }
 
 export const FoldersProvider = ({ children }) => {
+  const { user, token } = useAuth() 
   const [foldersByDocumentBase, setFoldersByDocumentBase] = useState({})
   const [error, setError] = useState(null)
 
@@ -25,7 +27,9 @@ export const FoldersProvider = ({ children }) => {
   )
 
   const fetchFolders = useCallback(async (documentBaseId) => {
-    if (!documentBaseId) return
+    // Solo buscar carpetas si hay usuario y token
+    if (!user || !token || !documentBaseId) return
+    
     setError(null)
     try {
       const response = await folderService.getFolders()
@@ -43,7 +47,7 @@ export const FoldersProvider = ({ children }) => {
     } catch (err) {
       setError(err.message || "Error fetching folders")
     }
-  }, [])
+  }, [user, token]) // Agregar user y token como dependencias
 
   const createFolder = useCallback(
     async (data) => {
@@ -146,6 +150,17 @@ export const FoldersProvider = ({ children }) => {
     [getFoldersForDocumentBase],
   )
 
+  const clearFoldersData = useCallback(() => {
+    setFoldersByDocumentBase({})
+    setError(null)
+  }, [])
+
+  useEffect(() => {
+    if (!user || !token) {
+      clearFoldersData()
+    }
+  }, [user, token, clearFoldersData])
+
   const value = {
     foldersByDocumentBase,
     error,
@@ -156,6 +171,7 @@ export const FoldersProvider = ({ children }) => {
     deleteFolder,
     getFoldersHierarchy,
     updateFolderStatus,
+    clearFoldersData,
   }
 
   return <FoldersContext.Provider value={value}>{children}</FoldersContext.Provider>

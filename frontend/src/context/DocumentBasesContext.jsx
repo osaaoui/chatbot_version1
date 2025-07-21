@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { documentBaseService } from "../services/documentBaseService"
 import { useTranslation } from "react-i18next"
+import { useAuth } from "./AuthProvider"
 
 const DocumentBasesContext = createContext()
 
@@ -16,16 +17,25 @@ export const useDocumentBases = () => {
 
 export const DocumentBasesProvider = ({ children }) => {
   const { t } = useTranslation()
+  const { user, token } = useAuth() // Agregar dependencia de auth
   const [documentBases, setDocumentBases] = useState([])
-  const [initialLoading, setInitialLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(false) // Cambiar a false inicialmente
   const [error, setError] = useState(null)
+  
   const sessionTimeoutMessage = t("errors.sessionTimeout", {
     defaultValue:
       "Due to inactivity, your session has been closed. We're protecting your information. Please log back in to continue chatting.",
   })
 
   const fetchDocumentBases = useCallback(async () => {
+    // Solo buscar bases de documentos si hay usuario y token
+    if (!user || !token) {
+      return
+    }
+
     setError(null)
+    setInitialLoading(true)
+    
     try {
       const response = await documentBaseService.getDocumentBases()
 
@@ -39,7 +49,7 @@ export const DocumentBasesProvider = ({ children }) => {
     } finally {
       setInitialLoading(false)
     }
-  }, [sessionTimeoutMessage])
+  }, [user, token, sessionTimeoutMessage]) // Agregar user y token como dependencias
 
   const createDocumentBase = useCallback(
     async (data) => {
@@ -135,9 +145,23 @@ export const DocumentBasesProvider = ({ children }) => {
     [t],
   )
 
+  // Limpiar estado cuando no hay usuario autenticado
+  const clearDocumentBasesData = useCallback(() => {
+    setDocumentBases([])
+    setError(null)
+    setInitialLoading(false)
+  }, [])
+
+  // Efecto para reaccionar a cambios en la autenticación
   useEffect(() => {
-    fetchDocumentBases()
-  }, [fetchDocumentBases])
+    if (user && token) {
+      // Usuario autenticado: cargar bases de documentos
+      fetchDocumentBases()
+    } else {
+      // No hay usuario: limpiar datos
+      clearDocumentBasesData()
+    }
+  }, [user, token, fetchDocumentBases, clearDocumentBasesData])
 
   const value = {
     documentBases,
@@ -148,6 +172,7 @@ export const DocumentBasesProvider = ({ children }) => {
     updateDocumentBase,
     deleteDocumentBase,
     updateDocumentBaseStatus,
+    clearDocumentBasesData,
   }
 
   return <DocumentBasesContext.Provider value={value}>{children}</DocumentBasesContext.Provider>

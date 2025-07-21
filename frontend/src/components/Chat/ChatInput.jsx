@@ -1,64 +1,65 @@
-"use client"
+"use client";
 
-import { useRef, useEffect, useState, useCallback } from "react"
-import { useTranslation } from "react-i18next"
-import { Loader2, UploadCloud } from "lucide-react"
+import { useRef, useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Loader2, UploadCloud } from "lucide-react";
+import { SelectorIA, AI_MODELS } from "../ui/SelectorIA"; 
 
-const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentConversation, onFilesDropped }) => {
-  const { t } = useTranslation()
-  const textareaRef = useRef(null)
-  const [isDragOver, setIsDragOver] = useState(false) // State for visual feedback on drag over
+const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentConversation, onFilesDropped,
+}) => {
+  const { t } = useTranslation();
+  const textareaRef = useRef(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      onSubmit()
+      e.preventDefault();
+      onSubmit();
     }
-  }
+  };
 
   useEffect(() => {
     if (!isLoading && textareaRef.current) {
-      textareaRef.current.focus()
+      textareaRef.current.focus();
     }
-  }, [isLoading])
+  }, [isLoading]);
 
   const handleDragOver = useCallback((e) => {
-    e.preventDefault() // Necessary to allow dropping
-    e.stopPropagation()
-    e.dataTransfer.dropEffect = "copy" // Visual feedback for copy operation
-  }, [])
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "copy";
+  }, []);
 
   const handleDragEnter = useCallback((e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragOver(true)
-  }, [])
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  }, []);
 
   const handleDragLeave = useCallback((e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    // Check if the drag is truly leaving the element, not just moving to a child
+    e.preventDefault();
+    e.stopPropagation();
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      setIsDragOver(false)
+      setIsDragOver(false);
     }
-  }, [])
+  }, []);
 
   const handleDrop = useCallback(
     (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      setIsDragOver(false)
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragOver(false);
 
-      const files = Array.from(e.dataTransfer.files)
+      const files = Array.from(e.dataTransfer.files);
       if (files.length > 0) {
-        onFilesDropped(files)
+        onFilesDropped(files);
       }
     },
     [onFilesDropped],
-  )
+  );
 
   return (
-    <footer className="flex-shrink-0 border-t border-border-light px-6  bg-bg-primary">
+    <footer className="flex-shrink-0 border-t border-border-light px-6 bg-bg-primary">
       <div
         className={`relative flex items-center gap-2 p-2 rounded-lg border-2 transition-all duration-200 ${
           isDragOver ? "border-blue-500 bg-blue-50" : "border-transparent"
@@ -74,6 +75,9 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
             <p className="text-blue-700 font-medium">{t("chat.dropFilesHere")}</p>
           </div>
         )}
+        
+        <SelectorIA />
+
         <textarea
           ref={textareaRef}
           rows={1}
@@ -106,9 +110,11 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
           )}
         </button>
       </div>
-      <p className="text-[10px] text-text-tertiary mt-1">{t("chat.enterToSend")}</p>
+      <div className="flex items-center justify-between mt-1">
+        <p className="text-[10px] text-text-tertiary">{t("chat.enterToSend")}</p>
+      </div>
     </footer>
-  )
-}
+  );
+};
 
-export default ChatInput
+export default ChatInput;

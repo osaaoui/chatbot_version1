@@ -1,15 +1,15 @@
 // src/components/DocumentBase/CreateDocumentBase.js
 import React, { useState } from 'react';
 import { useDocumentBases } from '../../context/DocumentBasesContext';
+import { useCompany } from '../../context/CompanyContext';
 import { useTranslation } from 'react-i18next';
 import { PlusIcon } from '@heroicons/react/24/outline';
-
-const COMPANY_ID = '';
 
 const CreateDocumentBase = () => {
   const [baseName, setBaseName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const { createDocumentBase, error } = useDocumentBases();
+  const { companyId } = useCompany(); // Obtener company_id actual
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -23,7 +23,7 @@ const CreateDocumentBase = () => {
     try {
       const data = {
         base_name: baseName.trim(),
-        company_id: COMPANY_ID
+        company_id: companyId || null // Usar company_id actual, null si no hay empresa
       };
       
       const response = await createDocumentBase(data);
@@ -65,6 +65,7 @@ const CreateDocumentBase = () => {
       
       {error && (
         <div className="mt-2 text-sm text-red-500">
+          {error}
         </div>
       )}
     </div>

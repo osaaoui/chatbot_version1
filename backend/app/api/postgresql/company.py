@@ -19,8 +19,11 @@ async def get_companies(
         companies = await company_service.get_company(user_email)
 
         return company_service.success_response(
-            {"companies": companies}
+            message="Companies retrieved successfully", 
+            data={"companies": companies}               
         )
 
     except ServiceError as e:
         handle_service_error(e)
+
+
