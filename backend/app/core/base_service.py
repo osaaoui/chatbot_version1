@@ -93,7 +93,7 @@ class BaseService:
             except Exception as e:
                 print(f"Error releasing connection: {e}")
 
-
+    
     @circuit_breaker(
         name="user_lookup",
         failure_threshold=3,     
