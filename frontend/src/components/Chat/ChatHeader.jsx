@@ -1,7 +1,6 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelLeft, MessageSquare } from 'lucide-react';
-import ButtonModal from '../ui/ButtonModal'; 
+import SettingsModal from './Settings/SettingsModal';
 
 const ChatHeader = ({ 
   currentConversation, 
@@ -36,9 +35,9 @@ const ChatHeader = ({
             {t('chat.conversations')}
           </button>
           
-          <ButtonModal 
-            size="w-8 h-8"
+          <SettingsModal 
             className="ml-1"
+            variant="icon"
           />
         </div>
       </div>
