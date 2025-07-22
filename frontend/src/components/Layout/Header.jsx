@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../context/AuthProvider";
-import { Separator } from "@react-pdf-viewer/core";
+import  Separator  from "../ui/Separator";
 import Avatar from "../ui/Avatar";
 import Modal from "../ui/Modal";
 import ButtonGroup from "../ui/ButtonGroup";

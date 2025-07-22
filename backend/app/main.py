@@ -11,6 +11,9 @@ import os
 from app.api.delete import router as delete_router
 from app.api.serve_files import router as serve_files_router
 from app.api.postgresql import folders, documents, conversation, message, company
+from app.core.circuit_breaker import CircuitBreakerOpenException
+from fastapi.responses import JSONResponse
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,6 +27,22 @@ UPLOAD_DIR = os.path.abspath("uploaded_files")
 
 app.mount("/files", StaticFiles(directory=UPLOAD_DIR), name="uploaded_files")
 
+
+
+@app.middleware("http")
+async def circuit_breaker_middleware(request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except CircuitBreakerOpenException as e:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "success": False,
+                "message": "Service temporarily unavailable",
+                "error": "CIRCUIT_BREAKER_OPEN"
+            }
+        )
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:4321", "https://tiabot.softiabot.com/"],
@@ -32,7 +51,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers (sin cambios)
 app.include_router(chat.router, prefix="/api/v2/chat")
 app.include_router(upload.router, prefix="/api/v2/uploads")
 app.include_router(processing.router, prefix="/api/v2/documents")

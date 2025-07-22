@@ -3,9 +3,17 @@ from app.core.base_service import BaseService, ServiceError
 from app.models.postgresql.user_profile import UserProfile, UpdateUserProfileRequest
 from app.services.user_store import update_user_in_sqlite
 from app.services.auth_service import create_access_token
-
+from app.core.circuit_breaker import circuit_breaker
 class UserProfileService(BaseService):
     
+
+
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def get_user_profile(self, user_id: str) -> UserProfile:
         try:
             async with self.get_connection() as conn:
@@ -45,6 +53,14 @@ class UserProfileService(BaseService):
                 raise e
             raise ServiceError(f"Error al obtener el perfil del usuario: {str(e)}", 500)
     
+
+
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def update_user_profile(self, user_id: str, update_data: UpdateUserProfileRequest, current_email: str) -> Dict[str, Any]:
         try:
             async with self.get_connection() as conn:

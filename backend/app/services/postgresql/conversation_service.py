@@ -1,8 +1,15 @@
 from app.core.base_service import BaseService, ServiceError
 from app.models.postgresql.conversation import ConversationCreate
 from typing import List, Optional, Dict, Any
+from app.core.circuit_breaker import circuit_breaker
 
 class ConversationService(BaseService):
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def create_conversation(self, conversation_create: ConversationCreate, user_email: str) -> str:
 
         try:
@@ -20,7 +27,12 @@ class ConversationService(BaseService):
         except Exception as e:
             raise ServiceError(f"Failed to create conversation: {str(e)}")
         
-
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def get_conversation_by_id(self, user_email: str, limits: Optional[int] = None) -> List[Dict[str, Any]]:
         try:
             user_id = await self.get_user_id_by_email(user_email)
