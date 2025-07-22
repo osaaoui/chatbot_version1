@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 from app.api.delete import router as delete_router
 from app.api.serve_files import router as serve_files_router
-from app.api.postgresql import folders, documents, conversation, message, company
+from app.api.postgresql import folders, documents, conversation, message, company, user_settings
 from app.core.circuit_breaker import CircuitBreakerOpenException
 from fastapi.responses import JSONResponse
 
@@ -64,4 +64,5 @@ app.include_router(conversation.router, prefix="/api/v2/conversations", tags=["c
 app.include_router(message.router, prefix="/api/v2/messages", tags=["messages"])
 app.include_router(user_profile.router, prefix="/api/auth", tags=["user_profile"])
 app.include_router(company.router, prefix="/api/v2/companies", tags=["companies"])
+app.include_router(user_settings.router, prefix="/api/v2/settings", tags=["user_settings"])
 app.include_router(serve_files_router, prefix="/api")  
