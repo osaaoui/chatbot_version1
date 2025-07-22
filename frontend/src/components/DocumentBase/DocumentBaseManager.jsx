@@ -1,6 +1,6 @@
-import React from 'react';
-import CreateDocumentBase from './CreateDocumentBase';
-import DocumentBaseList from './DocumentBaseList';
+import React from "react"
+import CreateDocumentBase from "./CreateDocumentBase"
+import DocumentBaseList from "./DocumentBaseList"
 
 const DocumentBaseManager = ({ 
   onProcessFiles,
@@ -10,15 +10,20 @@ const DocumentBaseManager = ({
   userEmail 
 }) => {
   return (
-    <div className="w-full h-full flex flex-col overflow-x-hidden">
+    <div 
+      className="w-full h-full flex flex-col overflow-x-hidden"
+      style={{ backgroundColor: "var(--bg-secondary)" }}
+    >
       <div className="mb-4">
         <CreateDocumentBase />
       </div>
-      <div className="flex-1 overflow-y-auto scrollbar-hide"
+      <div 
+        className="flex-1 overflow-y-auto chat-scroll-area"
         style={{
-          scrollbarWidth: 'none',    
-          msOverflowStyle: 'none'   
-        }}>
+          scrollbarWidth: "none",    
+          msOverflowStyle: "none"   
+        }}
+      >
         <DocumentBaseList 
           onProcessFiles={onProcessFiles}
           isProcessing={isProcessing}
@@ -28,7 +33,7 @@ const DocumentBaseManager = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DocumentBaseManager;
+export default DocumentBaseManager

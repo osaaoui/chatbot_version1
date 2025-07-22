@@ -9,8 +9,17 @@
     "myProfile": "Mi Perfil",
     "textOnly": "Solo texto",
     "logout": "Cerrar sesión",
+    "legal": "Términos y Condiciones",
+    "settings": "Configuración",
+    "help": "Ayuda"
+  },
+  "buttonModal": {
+    "settings": "Configuración",
     "language": "Idioma",
-    "legal": "Términos y Condiciones"
+    "fontSize": "Tamaño de fuente", 
+    "appearance": "Apariencia",
+    "light": "Claro",
+    "dark": "Oscuro"
   },
   "footer": {
     "version": "TIA v2.1.0",

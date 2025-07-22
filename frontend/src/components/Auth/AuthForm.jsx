@@ -1,7 +1,7 @@
 // src/components/AuthForm.jsx
 import React, { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { useAuth } from "../context/AuthProvider";
+import { useAuth } from "../../context/AuthProvider";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 

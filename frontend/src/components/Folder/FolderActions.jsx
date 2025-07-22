@@ -1,6 +1,5 @@
 "use client"
-import { CheckIcon, XMarkIcon, ArrowUpTrayIcon, PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
-import { getButtonPadding, getIconButtonSize } from "../../utils/folderUtils"
+import { Check, X, Upload, Plus, Edit, Trash2 } from "lucide-react"
 
 const FolderActions = ({
   level,
@@ -16,8 +15,24 @@ const FolderActions = ({
   onEdit,
   onDelete,
 }) => {
-  const buttonPadding = getButtonPadding(level)
-  const iconSize = getIconButtonSize(level)
+  const getResponsiveClasses = (level) => {
+    return {
+      buttonPadding: level > 2 ? "p-0.5" : level > 0 ? "p-1" : "p-1.5",
+      iconSize: level > 2 ? "w-3 h-3" : level > 0 ? "w-4 h-4" : "w-4 h-4"
+    }
+  }
+
+  const { buttonPadding, iconSize } = getResponsiveClasses(level)
+
+  const handleActionButtonHover = (e, isEntering, color, bgColor) => {
+    if (isEntering) {
+      e.target.style.color = color
+      e.target.style.backgroundColor = bgColor
+    } else {
+      e.target.style.color = "var(--text-tertiary)"
+      e.target.style.backgroundColor = "transparent"
+    }
+  }
 
   if (isEditing) {
     return (
@@ -28,20 +43,37 @@ const FolderActions = ({
             onConfirmEdit()
           }}
           disabled={!editName.trim()}
-          className={`rounded ${
-            editName.trim() ? "text-green-600 hover:bg-green-100" : "text-gray-400 cursor-not-allowed"
-          } ${buttonPadding}`}
+          className={`rounded transition-colors ${buttonPadding}`}
+          style={{
+            color: editName.trim() ? "var(--color-success)" : "var(--text-tertiary)",
+            cursor: editName.trim() ? "pointer" : "not-allowed"
+          }}
+          onMouseEnter={(e) => {
+            if (editName.trim()) {
+              e.target.style.backgroundColor = "rgba(34, 197, 94, 0.1)"
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent"
+          }}
         >
-          <CheckIcon className={iconSize} />
+          <Check className={iconSize} />
         </button>
         <button
           onClick={(e) => {
             e.stopPropagation()
             onCancelEdit()
           }}
-          className={`text-gray-500 hover:bg-gray-100 rounded ${buttonPadding}`}
+          className={`rounded transition-colors ${buttonPadding}`}
+          style={{ color: "var(--text-tertiary)" }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "var(--bg-tertiary)"
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent"
+          }}
         >
-          <XMarkIcon className={iconSize} />
+          <X className={iconSize} />
         </button>
       </>
     )
@@ -55,18 +87,32 @@ const FolderActions = ({
             e.stopPropagation()
             onConfirmDelete()
           }}
-          className={`text-red-600 hover:bg-red-100 rounded ${buttonPadding}`}
+          className={`rounded transition-colors ${buttonPadding}`}
+          style={{ color: "var(--color-error)" }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "rgba(239, 68, 68, 0.1)"
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent"
+          }}
         >
-          <CheckIcon className={iconSize} />
+          <Check className={iconSize} />
         </button>
         <button
           onClick={(e) => {
             e.stopPropagation()
-            onCancelDelete()
+            onCancelDelete && onCancelDelete()
           }}
-          className={`text-gray-500 hover:bg-gray-100 rounded ${buttonPadding}`}
+          className={`rounded transition-colors ${buttonPadding}`}
+          style={{ color: "var(--text-tertiary)" }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "var(--bg-tertiary)"
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent"
+          }}
         >
-          <XMarkIcon className={iconSize} />
+          <X className={iconSize} />
         </button>
       </>
     )
@@ -76,31 +122,43 @@ const FolderActions = ({
     <>
       <button
         onClick={onUpload}
-        className={`text-gray-400 hover:text-green-600 hover:bg-green-50 rounded opacity-0 group-hover:opacity-100 transition ${buttonPadding}`}
+        className={`rounded transition-all ${buttonPadding}`}
+        style={{ color: "var(--text-tertiary)" }}
+        onMouseEnter={(e) => handleActionButtonHover(e, true, "var(--color-success)", "rgba(34, 197, 94, 0.1)")}
+        onMouseLeave={(e) => handleActionButtonHover(e, false)}
         title="Subir documento"
       >
-        <ArrowUpTrayIcon className={iconSize} />
+        <Upload className={iconSize} />
       </button>
       <button
         onClick={onCreateSubfolder}
-        className={`text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded opacity-0 group-hover:opacity-100 transition ${buttonPadding}`}
+        className={`rounded transition-all ${buttonPadding}`}
+        style={{ color: "var(--text-tertiary)" }}
+        onMouseEnter={(e) => handleActionButtonHover(e, true, "var(--color-primary-dark)", "rgba(59, 130, 246, 0.1)")}
+        onMouseLeave={(e) => handleActionButtonHover(e, false)}
         title="Crear subcarpeta"
       >
-        <PlusIcon className={iconSize} />
+        <Plus className={iconSize} />
       </button>
       <button
         onClick={onEdit}
-        className={`text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded opacity-0 group-hover:opacity-100 transition ${buttonPadding}`}
+        className={`rounded transition-all ${buttonPadding}`}
+        style={{ color: "var(--text-tertiary)" }}
+        onMouseEnter={(e) => handleActionButtonHover(e, true, "var(--color-warning)", "rgba(251, 191, 36, 0.1)")}
+        onMouseLeave={(e) => handleActionButtonHover(e, false)}
         title="Editar carpeta"
       >
-        <PencilIcon className={iconSize} />
+        <Edit className={iconSize} />
       </button>
       <button
         onClick={onDelete}
-        className={`text-gray-400 hover:text-red-600 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition ${buttonPadding}`}
+        className={`rounded transition-all ${buttonPadding}`}
+        style={{ color: "var(--text-tertiary)" }}
+        onMouseEnter={(e) => handleActionButtonHover(e, true, "var(--color-error)", "rgba(239, 68, 68, 0.1)")}
+        onMouseLeave={(e) => handleActionButtonHover(e, false)}
         title="Eliminar carpeta"
       >
-        <TrashIcon className={iconSize} />
+        <Trash2 className={iconSize} />
       </button>
     </>
   )

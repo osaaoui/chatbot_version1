@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCompany } from '../context/CompanyContext';
+import { useCompany } from '../../context/CompanyContext';
 
 const COUNTRIES = [
   { id: 1, name: "Afghanistan" }, { id: 2, name: "Albania" }, { id: 3, name: "Algeria" },

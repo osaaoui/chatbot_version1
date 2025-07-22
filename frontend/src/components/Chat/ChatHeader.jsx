@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelLeft, MessageSquare } from 'lucide-react';
+import ButtonModal from '../ui/ButtonModal'; 
 
 const ChatHeader = ({ 
   currentConversation, 
   toggleSidebar, 
-  onShowConversations 
+  onShowConversations
 }) => {
   const { t } = useTranslation();
 
@@ -26,13 +27,20 @@ const ChatHeader = ({
           </h3>
         </div>
         
-        <button
-          onClick={onShowConversations}
-          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white hover:bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors"
-        >
-          <MessageSquare className="w-3 h-3" />
-          {t('chat.conversations')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onShowConversations}
+            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white hover:bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors"
+          >
+            <MessageSquare className="w-3 h-3" />
+            {t('chat.conversations')}
+          </button>
+          
+          <ButtonModal 
+            size="w-8 h-8"
+            className="ml-1"
+          />
+        </div>
       </div>
     </div>
   );
