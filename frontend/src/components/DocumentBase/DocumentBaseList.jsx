@@ -1,8 +1,7 @@
-// src/components/DocumentBase/DocumentBaseList.js
-import React from 'react';
-import { useDocumentBases } from '../../context/DocumentBasesContext';
-import { useTranslation } from 'react-i18next';
-import DocumentBaseCard from './DocumentBaseCard';
+import React from "react"
+import { useDocumentBases } from "../../context/DocumentBasesContext"
+import { useTranslation } from "react-i18next"
+import DocumentBaseCard from "./DocumentBaseCard"
 
 const DocumentBaseList = ({ 
   onProcessFiles,
@@ -11,31 +10,40 @@ const DocumentBaseList = ({
   setStagedFiles,
   userEmail 
 }) => {
-  const { documentBases, initialLoading, error } = useDocumentBases();
-  const { t } = useTranslation();
+  const { documentBases, initialLoading, error } = useDocumentBases()
+  const { t } = useTranslation()
 
   if (initialLoading) {
     return (
-      <div className="w-full p-4 text-center text-sm text-gray-500">
-        {t('document_base.loading')}
+      <div 
+        className="w-full p-4 text-center text-sm"
+        style={{ color: "var(--text-tertiary)" }}
+      >
+        {t("document_base.loading")}
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
-      <div className="w-full p-4 text-center text-sm text-red-500">
-        {t('document_base.error')}
+      <div 
+        className="w-full p-4 text-center text-sm"
+        style={{ color: "var(--color-error)" }}
+      >
+        {t("document_base.error")}
       </div>
-    );
+    )
   }
 
   if (!documentBases || documentBases.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-sm text-gray-500">
-        {t('document_base.no_bases_available')}
+      <div 
+        className="w-full p-4 text-center text-sm"
+        style={{ color: "var(--text-tertiary)" }}
+      >
+        {t("document_base.no_bases_available")}
       </div>
-    );
+    )
   }
 
   return (
@@ -52,7 +60,7 @@ const DocumentBaseList = ({
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default DocumentBaseList;
+export default DocumentBaseList

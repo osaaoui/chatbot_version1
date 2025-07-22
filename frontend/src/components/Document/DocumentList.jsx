@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useImperativeHandle, forwardRef, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { DocumentIcon, DocumentTextIcon } from "@heroicons/react/24/outline"
+import { FileText, File, Image, Loader2 } from "lucide-react"
 import { documentService } from "../../services/documentService"
-import { Loader2 } from "lucide-react"
 
 // eslint-disable-next-line no-unused-vars
 const DocumentList = forwardRef(({ folderId, level = 0, stagedFiles = [], setStagedFiles }, ref) => {
@@ -65,19 +64,22 @@ const DocumentList = forwardRef(({ folderId, level = 0, stagedFiles = [], setSta
 
   const getFileIcon = (fileType) => {
     const lowerType = fileType.toLowerCase()
+    
     if (lowerType.includes("pdf")) {
-      return <DocumentIcon className="w-4 h-4 text-red-500" />
+      return <FileText className="w-4 h-4" style={{ color: "var(--color-error)" }} />
     }
     if (lowerType.includes("doc") || lowerType.includes("docx")) {
-      return <DocumentTextIcon className="w-4 h-4 text-blue-500" />
+      return <FileText className="w-4 h-4" style={{ color: "var(--color-primary-dark)" }} />
     }
     if (lowerType.includes("txt")) {
-      return <DocumentTextIcon className="w-4 h-4 text-gray-500" />
+      return <FileText className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
     }
     if (lowerType.includes("jpg") || lowerType.includes("jpeg") || lowerType.includes("png")) {
-      return <DocumentIcon className="w-4 h-4 text-green-500" />
+      return <Image className="w-4 h-4" style={{ color: "var(--color-success)" }} />
     }
-    return <DocumentIcon className="w-4 h-4 text-gray-500" />
+    
+    // Icono por defecto - siempre visible
+    return <File className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
   }
 
   const getStatusColor = (status) => {
@@ -86,47 +88,72 @@ const DocumentList = forwardRef(({ folderId, level = 0, stagedFiles = [], setSta
       case "upload":
       case "uploaded":
       case "processed": 
-        return "bg-green-500"
+        return "var(--color-success)"
       case "processing":
       case "uploading":
       case "loaded":
       case "inactive": 
-        return "bg-yellow-500"
+        return "var(--color-warning)"
       case "error":
       case "failed":
-        return "bg-red-500"
+        return "var(--color-error)"
       default:
-        return "bg-gray-400" 
+        return "var(--text-tertiary)"
     }
   }
 
-  if (loading) {
-    return (
-      <div className="mt-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
-        <div className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-md">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-600" /> {/* Usar Loader2 */}
-          <span className="text-xs text-gray-600">{t("documents.loadingDocuments")}</span>
-        </div>
-      </div>
-    )
+  const getStatusMessage = () => {
+    if (loading) return t("documents.loadingDocuments")
+    if (error) return error
+    return t("documents.noDocumentsInFolder")
   }
 
-  if (error) {
-    return (
-      <div className="mt-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
-        <div className="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded-md">
-          <span className="text-xs text-red-600">{error}</span>
-        </div>
-      </div>
-    )
+  const getStatusIconAndColor = () => {
+    if (loading) {
+      return {
+        icon: <Loader2 className="h-4 w-4 animate-spin" style={{ color: "var(--color-primary-dark)" }} />,
+        textColor: "var(--text-secondary)",
+        bgColor: "var(--bg-primary)",
+        borderColor: "var(--border-light)"
+      }
+    }
+    
+    if (error) {
+      return {
+        icon: <File className="w-4 h-4" style={{ color: "var(--color-error)" }} />,
+        textColor: "var(--color-error)",
+        bgColor: "rgba(239, 68, 68, 0.1)",
+        borderColor: "var(--color-error)"
+      }
+    }
+    
+    return {
+      icon: <File className="w-4 h-4" style={{ color: "var(--text-tertiary)" }} />,
+      textColor: "var(--text-tertiary)",
+      bgColor: "var(--bg-primary)",
+      borderColor: "var(--border-light)"
+    }
   }
 
-  if (documentsToDisplay.length === 0) {
+  if (loading || error || documentsToDisplay.length === 0) {
+    const { icon, textColor, bgColor, borderColor } = getStatusIconAndColor()
+    
     return (
       <div className="mt-1" style={{ paddingLeft: `${24 + paddingLeft}px` }}>
-        <div className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-md">
-          <DocumentIcon className="w-4 h-4 text-gray-400" />
-          <span className="text-xs text-gray-500">{t("documents.noDocumentsInFolder")}</span>
+        <div 
+          className="flex items-center gap-2 p-2 rounded-md transition-colors"
+          style={{
+            backgroundColor: bgColor,
+            border: `1px solid ${borderColor}`
+          }}
+        >
+          {icon}
+          <span 
+            className="text-xs"
+            style={{ color: textColor }}
+          >
+            {getStatusMessage()}
+          </span>
         </div>
       </div>
     )
@@ -137,24 +164,50 @@ const DocumentList = forwardRef(({ folderId, level = 0, stagedFiles = [], setSta
       {documentsToDisplay.map((document) => (
         <div
           key={document.document_id}
-          className="flex items-start gap-2 p-2 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+          className="flex items-start gap-2 p-2 rounded-md transition-colors cursor-pointer"
+          style={{
+            backgroundColor: "var(--bg-primary)",
+            border: "1px solid var(--border-light)"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--bg-tertiary)"
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--bg-primary)"
+          }}
         >
-            <>
-              <div className="flex-shrink-0 mt-0.5">{getFileIcon(document.file_type)}</div>
+          <div className="flex-shrink-0 mt-0.5">
+            {getFileIcon(document.file_type)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 truncate" title={document.document_name}>{document.document_name}</h4>
-                  </div>
-                  <div className="flex gap-1 ml-2">
-                    <span className={`px-1 py-1 h-1 mt-2 rounded-full ${getStatusColor(document.status)}`}></span>
-                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                      {document.file_type}
-                    </span>
-                  </div>
-                </div>
+                <h4 
+                  className="text-sm font-medium truncate" 
+                  style={{ color: "var(--text-primary)" }}
+                  title={document.document_name}
+                >
+                  {document.document_name}
+                </h4>
               </div>
-            </>
+              <div className="flex gap-1 ml-2 items-center">
+                <span 
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: getStatusColor(document.status) }}
+                  title={`Estado: ${document.status || "unknown"}`}
+                ></span>
+                <span 
+                  className="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    color: "var(--text-secondary)"
+                  }}
+                >
+                  {document.file_type}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </div>

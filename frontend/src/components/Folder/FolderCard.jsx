@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { ChevronDownIcon, ChevronRightIcon, FolderIcon } from "@heroicons/react/24/outline"
+import { ChevronDown, ChevronRight, Folder } from "lucide-react"
 import { useLanguage } from "../../hooks/useLanguaje"
 import { useFolderOperations } from "../../hooks/folder/useFolderOperations"
 import { useDragAndDrop } from "../../hooks/folder/useDragAndDrop"
-import { useFileUpload } from "../../hooks/folder/useFileUpload" // Keep this import for internal folder file upload logic if needed, or remove if useGlobalFileUpload replaces it entirely
-import { formatDate, getFolderStyles, getIconSize, getTextSize } from "../../utils/folderUtils"
+import { useFileUpload } from "../../hooks/folder/useFileUpload"
+import { formatDate } from "../../utils/folderUtils"
 import DocumentList from "../Document/DocumentList"
 import FolderActions from "./FolderActions"
 import CreateSubfolder from "./CreateSubfolder"
@@ -18,8 +18,8 @@ const FolderCard = ({
   userEmail,
   onProcessFiles,
   isProcessing = false,
-  stagedFiles = [], // Recibir stagedFiles
-  setStagedFiles, // Recibir setStagedFiles
+  stagedFiles = [],
+  setStagedFiles,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const fileInputRef = useRef(null)
@@ -53,15 +53,18 @@ const FolderCard = ({
     handleDrop,
   } = useDragAndDrop(folder, allFolders, setIsExpanded, isExpanded)
 
-  // Si `useFileUpload` se sigue usando para la subida directa desde la carpeta, mantenerlo.
-  // Si `useGlobalFileUpload` es el único punto de entrada para todas las subidas, esta línea podría ser redundante.
-  // Para este escenario, asumimos que `handleFileUpload` de `useFileUpload` sigue siendo relevante para la subida directa.
   const { handleFileUpload, getCurrentFolderFiles } = useFileUpload(folder, stagedFiles, setStagedFiles)
 
   const hasChildren = folder.children && folder.children.length > 0
   const paddingLeft = level * 16
-  const iconSize = getIconSize(level)
-  const textSize = getTextSize(level)
+  const getResponsiveClasses = (level) => {
+    return {
+      iconSize: level > 2 ? "w-3 h-3" : level > 0 ? "w-4 h-4" : "w-5 h-5",
+      textSize: level > 2 ? "text-xs" : level > 0 ? "text-sm" : "text-base"
+    }
+  }
+
+  const { iconSize: responsiveIconSize, textSize: responsiveTextSize } = getResponsiveClasses(level)
 
   const { filesToProcess, processingFiles, hasFilesToProcess, isProcessingFiles } = getCurrentFolderFiles()
 
@@ -79,7 +82,7 @@ const FolderCard = ({
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files)
     if (files.length > 0) {
-      handleFileUpload(files) // Esto usa el hook useFileUpload local de la carpeta
+      handleFileUpload(files)
     }
   }
 
@@ -132,7 +135,42 @@ const FolderCard = ({
     }
   }
 
-  const folderStyles = getFolderStyles(level, isDragging, isDragOver, showDeleteConfirm, isEditing)
+  const getStatusColor = (status) => {
+    return status === "Active" ? "var(--color-success)" : "var(--color-warning)"
+  }
+
+  const getFolderCardStyles = (level, isDragging, isDragOver, showDeleteConfirm, isEditing) => {
+    const baseStyles = {
+      backgroundColor: "var(--bg-primary)",
+      border: "1px solid var(--border-light)",
+      borderRadius: "0.375rem",
+      padding: "0.5rem",
+      margin: "0.125rem 0",
+      cursor: (!isEditing && !showDeleteConfirm) ? "pointer" : "default",
+      transition: "all 0.2s ease",
+      opacity: isDragging ? 0.5 : 1,
+      transform: isDragging ? "scale(0.95)" : "scale(1)"
+    }
+
+    if (isDragOver) {
+      baseStyles.backgroundColor = "rgba(59, 130, 246, 0.1)"
+      baseStyles.borderColor = "var(--color-primary-dark)"
+    }
+
+    if (showDeleteConfirm) {
+      baseStyles.backgroundColor = "rgba(239, 68, 68, 0.1)"
+      baseStyles.borderColor = "var(--color-error)"
+    }
+
+    if (isEditing) {
+      baseStyles.backgroundColor = "rgba(251, 191, 36, 0.1)"
+      baseStyles.borderColor = "var(--color-warning)"
+    }
+
+    return baseStyles
+  }
+
+  const folderCardStyles = getFolderCardStyles(level, isDragging, isDragOver, showDeleteConfirm, isEditing)
 
   return (
     <div className="w-full">
@@ -144,21 +182,43 @@ const FolderCard = ({
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={folderStyles}
-        style={{ paddingLeft: `${8 + paddingLeft}px` }}
+        className="flex items-center gap-2 group"
+        style={{
+          ...folderCardStyles,
+          paddingLeft: `${8 + paddingLeft}px`
+        }}
         onClick={handleToggleExpand}
+        onMouseEnter={(e) => {
+          if (!isDragOver && !showDeleteConfirm && !isEditing) {
+            e.currentTarget.style.backgroundColor = "var(--bg-tertiary)"
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isDragOver && !showDeleteConfirm && !isEditing) {
+            e.currentTarget.style.backgroundColor = "var(--bg-primary)"
+          }
+        }}
       >
         {hasChildren || showCreateSubfolder ? (
           isExpanded ? (
-            <ChevronDownIcon className={`text-gray-500 ${iconSize}`} />
+            <ChevronDown 
+              className={responsiveIconSize} 
+              style={{ color: "var(--text-tertiary)" }}
+            />
           ) : (
-            <ChevronRightIcon className={`text-gray-500 ${iconSize}`} />
+            <ChevronRight 
+              className={responsiveIconSize} 
+              style={{ color: "var(--text-tertiary)" }}
+            />
           )
         ) : (
-          <div className={iconSize} />
+          <div className={responsiveIconSize} />
         )}
 
-        <FolderIcon className={`text-yellow-500 ${iconSize}`} />
+        <Folder 
+          className={responsiveIconSize} 
+          style={{ color: "var(--color-warning)" }}
+        />
 
         <div className="flex-1 min-w-0">
           {isEditing ? (
@@ -167,29 +227,46 @@ const FolderCard = ({
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               onKeyDown={handleEditKeyPress}
-              className={`bg-transparent border-none outline-none font-medium text-gray-700 w-full ${textSize}`}
+              className={`bg-transparent border-none outline-none font-medium w-full ${responsiveTextSize}`}
+              style={{ color: "var(--text-primary)" }}
               autoFocus
               onClick={(e) => e.stopPropagation()}
             />
           ) : showDeleteConfirm ? (
-            <span className={`font-medium text-red-700 ${textSize}`}>{t("folder.deleteConfirm")}</span>
+            <span 
+              className={`font-medium ${responsiveTextSize}`}
+              style={{ color: "var(--color-error)" }}
+            >
+              {t("folder.deleteConfirm")}
+            </span>
           ) : (
             <>
-              <span className={`font-medium text-gray-700 truncate block ${textSize}`}>{folder.folder_name}</span>
+              <span 
+                className={`font-medium truncate block ${responsiveTextSize}`}
+                style={{ color: "var(--text-primary)" }}
+              >
+                {folder.folder_name}
+              </span>
               {folder.creation_date && level === 0 && (
-                <span className="text-xs text-gray-400 block">
+                <span 
+                  className="text-xs block"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
                   {t("folder.created")}: {formatDate(folder.creation_date)}
                 </span>
               )}
               {(hasFilesToProcess || isProcessingFiles) && (
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs mt-1">
                   {hasFilesToProcess && (
-                    <span className="text-blue-600">
+                    <span style={{ color: "var(--color-primary-dark)" }}>
                       {filesToProcess.length} {t("folder.readyToProcess")}
                     </span>
                   )}
                   {isProcessingFiles && (
-                    <span className="text-orange-600 ml-2">
+                    <span 
+                      className="ml-2"
+                      style={{ color: "var(--color-warning)" }}
+                    >
                       {processingFiles.length > 0 ? processingFiles.length : ""} {t("folder.processing")}
                     </span>
                   )}
@@ -201,7 +278,8 @@ const FolderCard = ({
 
         {!isEditing && !showDeleteConfirm && (
           <span
-            className={`w-2 h-2 rounded-full ${folder.status === "Active" ? "bg-green-500" : "bg-yellow-500"}`}
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: getStatusColor(folder.status) }}
             title={getFolderBaseStatusTooltip(folder.status)}
           ></span>
         )}
@@ -272,8 +350,8 @@ const FolderCard = ({
             ref={documentListRef}
             folderId={folder.folder_id}
             level={level}
-            stagedFiles={stagedFiles} // Pasar stagedFiles al DocumentList
-            setStagedFiles={setStagedFiles} // Pasar setStagedFiles al DocumentList
+            stagedFiles={stagedFiles}
+            setStagedFiles={setStagedFiles}
           />
         </div>
       )}

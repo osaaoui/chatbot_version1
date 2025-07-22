@@ -6,11 +6,20 @@
   },
   "avatar": {
     "myAccount": "Mon Compte",
-    "myProfile": "Mon Profil",
+    "myProfile": "Mon Profil", 
     "textOnly": "Texte Seulement",
     "logout": "Déconnexion",
+    "legal": "Conditions Générales",
+    "settings": "Paramètres",
+    "help": "Aide"
+  },
+  "buttonModal": {
+    "settings": "Paramètres",
     "language": "Langue",
-    "legal": "Conditions Générales"
+    "fontSize": "Taille de police",
+    "appearance": "Apparence", 
+    "light": "Clair",
+    "dark": "Sombre"
   },
   "footer": {
     "version": "TIA v2.1.0",

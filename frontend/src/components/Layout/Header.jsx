@@ -1,15 +1,15 @@
 import React, { useState, useRef } from "react";
 import { useTranslation } from 'react-i18next';
-import { useAuth } from "../context/AuthProvider";
-import Separator from "./ui/Separator";
-import Avatar from "./ui/Avatar";
-import Modal from "./ui/Modal";
-import ButtonGroup from "./ui/ButtonGroup";
-import CompanyInfo from "./ui/CompanyInfo";
-import EmpresaContent from "./Enterprise";
-import EquiposContent from "./Teams";
-import TermsAndConditions from "./TermsAndConditions";
-import ProfileModal from "./Profile/ProfileModal";
+import { useAuth } from "../../context/AuthProvider";
+import  Separator  from "../ui/Separator";
+import Avatar from "../ui/Avatar";
+import Modal from "../ui/Modal";
+import ButtonGroup from "../ui/ButtonGroup";
+import CompanyInfo from "../ui/CompanyInfo";
+import EmpresaContent from "../Enterprise/Enterprise";
+import EquiposContent from "../Teams/Teams";
+import TermsAndConditions from "../TermsAndConditions/TermsAndConditions";
+import ProfileModal from "../Profile/ProfileModal";
 
 const Header = () => {
   const { user, logout } = useAuth();

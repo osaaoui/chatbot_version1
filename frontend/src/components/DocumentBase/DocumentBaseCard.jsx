@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline"
+import { ChevronDown, ChevronRight, Plus, Check, X } from "lucide-react"
 import { useFolders } from "../../context/FoldersContext"
-import { useDocumentBases } from "../../context/DocumentBasesContext" // Importar useDocumentBases
+import { useDocumentBases } from "../../context/DocumentBasesContext"
 import { useLanguage } from "../../hooks/useLanguaje"
 import FolderCard from "../Folder/FolderCard"
 
@@ -25,7 +25,7 @@ const DocumentBaseCard = ({
 
   const { getFoldersForDocumentBase, fetchFolders, createFolder, updateFolder, getFoldersHierarchy, error } =
     useFolders()
-  const { updateDocumentBaseStatus } = useDocumentBases() // OBTENER LA FUNCIÓN DEL CONTEXTO
+  const { updateDocumentBaseStatus } = useDocumentBases()
 
   const folders = getFoldersForDocumentBase(documentBase.document_base_id)
   const folderHierarchy = getFoldersHierarchy(documentBase.document_base_id)
@@ -62,12 +62,10 @@ const DocumentBaseCard = ({
         parent_folder_id: null,
       }
 
-      const response = await createFolder(data) // createFolder ya actualiza el contexto de Folders
+      const response = await createFolder(data)
 
       if (response.success) {
-        // Actualizar el estado del DocumentBase a través del contexto
         updateDocumentBaseStatus(documentBase.document_base_id, "Active")
-
         setFolderName("")
         setShowCreateFolder(false)
       }
@@ -106,6 +104,17 @@ const DocumentBaseCard = ({
     }
   }
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Active":
+        return "var(--color-success)"
+      case "Inactive":
+        return "var(--color-error)"
+      default:
+        return "var(--color-warning)"
+    }
+  }
+
   const handleRootDragEnter = (e) => {
     e.preventDefault()
     setIsDragOverRoot(true)
@@ -140,81 +149,160 @@ const DocumentBaseCard = ({
   }, [shouldLoadFolders, fetchFolders, documentBase.document_base_id, folders.length])
 
   return (
-    <div className="w-full bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+    <div 
+      className="w-full rounded-lg overflow-hidden"
+      style={{
+        backgroundColor: "var(--bg-tertiary)",
+        border: "1px solid var(--border-light)"
+      }}
+    >
       <div
-        className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 transition"
+        className="flex items-center gap-3 p-4 cursor-pointer transition-colors"
+        style={{ backgroundColor: "var(--bg-tertiary)" }}
         onClick={handleToggleExpand}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "var(--bg-secondary)"
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "var(--bg-tertiary)"
+        }}
       >
         {isExpanded ? (
-          <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+          <ChevronDown 
+            className="w-5 h-5" 
+            style={{ color: "var(--text-tertiary)" }}
+          />
         ) : (
-          <ChevronRightIcon className="w-5 h-5 text-gray-500" />
+          <ChevronRight 
+            className="w-5 h-5" 
+            style={{ color: "var(--text-tertiary)" }}
+          />
         )}
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-gray-800 truncate" title={documentBase.base_name}>{documentBase.base_name}</h3>
-          <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-            <span>
+          <h3 
+            className="text-sm font-semibold truncate" 
+            style={{ color: "var(--text-primary)" }}
+            title={documentBase.base_name}
+          >
+            {documentBase.base_name}
+          </h3>
+          <div className="flex items-center gap-4 text-xs mt-1">
+            <span style={{ color: "var(--text-tertiary)" }}>
               {t("document_base.created")}: {formatDate(documentBase.creation_date)}
             </span>
             <span
-              className={`px-1 py-1 rounded-full text-xs font-medium ${
-                documentBase.status === "Active" // USAR EL PROP DIRECTAMENTE
-                  ? "bg-green-500"
-                  : documentBase.status === "Inactive"
-                    ? "bg-red-500"
-                    : "bg-yellow-500"
-              }`}
-              title={getDocumentBaseStatusTooltip(documentBase.status, hasFolders)} // USAR EL PROP DIRECTAMENTE
+              className="px-1 py-1 rounded-full text-xs font-medium"
+              style={{
+                backgroundColor: getStatusColor(documentBase.status),
+                width: "8px",
+                height: "8px",
+                minWidth: "8px",
+                padding: "0"
+              }}
+              title={getDocumentBaseStatusTooltip(documentBase.status, hasFolders)}
             ></span>
           </div>
         </div>
         {isExpanded && (
           <button
             onClick={handleCreateFolderClick}
-            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition"
+            className="p-2 rounded-md transition-colors"
+            style={{ color: "var(--text-tertiary)" }}
+            onMouseEnter={(e) => {
+              e.target.style.color = "var(--color-primary-dark)"
+              e.target.style.backgroundColor = "rgba(59, 130, 246, 0.1)"
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = "var(--text-tertiary)"
+              e.target.style.backgroundColor = "transparent"
+            }}
             title={t("document_base.create_folder")}
           >
-            <PlusIcon className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
           </button>
         )}
       </div>
       {isExpanded && (
         <div
-          className={`border-t border-gray-200 bg-white transition ${isDragOverRoot ? "bg-blue-50" : ""}`}
+          className="transition-colors"
+          style={{
+            borderTop: "1px solid var(--border-light)",
+            backgroundColor: isDragOverRoot ? "rgba(59, 130, 246, 0.1)" : "var(--bg-primary)"
+          }}
           onDragOver={handleRootDragOver}
           onDragEnter={handleRootDragEnter}
           onDragLeave={handleRootDragLeave}
           onDrop={handleRootDrop}
         >
           {isDragOverRoot && (
-            <div className="p-2 m-2 border-2 border-dashed border-blue-300 bg-blue-100 rounded-md text-center text-sm text-blue-600">
+            <div 
+              className="p-2 m-2 border-2 border-dashed rounded-md text-center text-sm"
+              style={{
+                borderColor: "var(--color-primary-dark)",
+                backgroundColor: "rgba(59, 130, 246, 0.1)",
+                color: "var(--color-primary-dark)"
+              }}
+            >
               {t("document_base.drop_here_root")}
             </div>
           )}
           {showCreateFolder && (
-            <div className="p-3 border-b border-gray-100">
-              <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
+            <div 
+              className="p-3"
+              style={{ borderBottom: "1px solid var(--border-light)" }}
+            >
+              <div 
+                className="flex items-center gap-2 p-2 border rounded-md"
+                style={{
+                  backgroundColor: "rgba(59, 130, 246, 0.1)",
+                  borderColor: "var(--color-primary-dark)"
+                }}
+              >
                 <input
                   type="text"
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
                   onKeyDown={handleKeyPress}
                   placeholder={t("document_base.folder_name_placeholder")}
-                  className="flex-1 bg-transparent border-none outline-none text-sm placeholder-gray-500"
+                  className="flex-1 bg-transparent border-none outline-none text-sm"
+                  style={{ 
+                    color: "var(--text-primary)",
+                    "::placeholder": { color: "var(--text-tertiary)" }
+                  }}
                   autoFocus
                 />
                 <button
                   onClick={handleCreateFolder}
                   disabled={!folderName.trim()}
-                  className={`p-1 rounded ${
-                    folderName.trim() ? "text-green-600 hover:bg-green-100" : "text-gray-400 cursor-not-allowed"
-                  }`}
+                  className="p-1 rounded transition-colors"
+                  style={{
+                    color: folderName.trim() ? "var(--color-success)" : "var(--text-tertiary)",
+                    cursor: folderName.trim() ? "pointer" : "not-allowed"
+                  }}
+                  onMouseEnter={(e) => {
+                    if (folderName.trim()) {
+                      e.target.style.backgroundColor = "rgba(34, 197, 94, 0.1)"
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent"
+                  }}
                 >
-                  <CheckIcon className="w-4 h-4" />
+                  <Check className="w-4 h-4" />
                 </button>
-                <button onClick={handleCancelCreateFolder} className="p-1 text-gray-500 hover:bg-gray-100 rounded">
-                  <XMarkIcon className="w-4 h-4" />
+                <button 
+                  onClick={handleCancelCreateFolder} 
+                  className="p-1 rounded transition-colors"
+                  style={{ color: "var(--text-tertiary)" }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "var(--bg-tertiary)"
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent"
+                  }}
+                >
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -231,14 +319,30 @@ const DocumentBaseCard = ({
                   isProcessing={isProcessing}
                   stagedFiles={stagedFiles}
                   setStagedFiles={setStagedFiles}
-                  setDocumentBaseStatus={updateDocumentBaseStatus} // PASAR LA FUNCIÓN DEL CONTEXTO
+                  setDocumentBaseStatus={updateDocumentBaseStatus}
                 />
               ))}
             </div>
           ) : !showCreateFolder ? (
-            <div className="p-4 text-center text-sm text-gray-500">{t("document_base.no_folders")}</div>
+            <div 
+              className="p-4 text-center text-sm"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              {t("document_base.no_folders")}
+            </div>
           ) : null}
-          {error && <div className="p-3 text-sm text-red-500 bg-red-50 border-t border-red-100">{error}</div>}
+          {error && (
+            <div 
+              className="p-3 text-sm"
+              style={{
+                color: "var(--color-error)",
+                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                borderTop: "1px solid var(--color-error)"
+              }}
+            >
+              {error}
+            </div>
+          )}
         </div>
       )}
     </div>

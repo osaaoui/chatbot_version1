@@ -2,9 +2,16 @@ from typing import Optional, Dict, Any, List
 from app.core.base_service import BaseService, ServiceError
 from app.models.postgresql.document import DocumentCreate, DocumentResponse, DocumentFolderResponse
 from uuid import UUID
+from app.core.circuit_breaker import circuit_breaker
+
 
 class DocumentService(BaseService):
-    
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def create_document(self, document_data: DocumentCreate, user_email: str, file_content: bytes = None) -> str:
         """
         Create a new document in PostgreSQL
@@ -46,7 +53,12 @@ class DocumentService(BaseService):
             raise ServiceError(f"Failed to create document: {str(e)}")
         
 
-        
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def get_documents_by_folder(self, folder_id: UUID, user_email: str) -> List[DocumentFolderResponse]:
         try:
             # Verify user has access to this folder/document base
@@ -79,6 +91,13 @@ class DocumentService(BaseService):
         except Exception as e:
             raise ServiceError(f"Failed to get documents from folder: {str(e)}")
         
+
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def get_document_by_id(self, document_id: str) -> Optional[Dict[str, Any]]:
         """Get document by ID"""
         try:
@@ -87,7 +106,14 @@ class DocumentService(BaseService):
                 return dict(result) if result else None
         except Exception as e:
             raise ServiceError(f"Failed to retrieve document: {str(e)}")
-    
+        
+
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def update_document(self, document_id: str, document_name: str, user_email: str) -> bool:
         """Update document name"""
         try:
@@ -103,7 +129,14 @@ class DocumentService(BaseService):
             raise
         except Exception as e:
             raise ServiceError(f"Failed to update document: {str(e)}")
-    
+        
+
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def delete_document(self, document_id: str, user_email: str) -> bool:
         try:
             user_id = await self.get_user_id_by_email(user_email)
@@ -116,6 +149,13 @@ class DocumentService(BaseService):
         except Exception as e:
             raise ServiceError(f"Failed to delete document: {str(e)}")
         
+
+    @circuit_breaker(
+        name="user_lookup",
+        failure_threshold=3,     
+        recovery_timeout=30.0,   
+        timeout=10.0            
+    )
     async def update_document_status(self, document_id: str, user_email: str, status: str) -> bool:
         try:
             user_id = await self.get_user_id_by_email(user_email)

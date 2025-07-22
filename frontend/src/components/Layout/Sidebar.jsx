@@ -5,7 +5,7 @@ import {
   DocumentIcon
 } from "@heroicons/react/24/outline";
 
-import DocumentBaseManager from './DocumentBase/DocumentBaseManager';
+import DocumentBaseManager from '../DocumentBase/DocumentBaseManager';
 
 const Sidebar = ({
   stagedFiles,

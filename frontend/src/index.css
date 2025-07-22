@@ -76,6 +76,62 @@
     /* Layout heights */
     --header-height: 57px;
   }
+
+  /* MODO OSCURO */
+  .dark {
+    /* Colores principales para modo oscuro */
+    --color-primary: #1e293b;
+    --color-primary-dark: #3b82f6;
+    --color-primary-light: #60a5fa;
+    
+    /* Colores secundarios para modo oscuro */
+    --color-secondary: #334155;
+    --color-secondary-dark: #475569;
+    --color-secondary-light: #64748b;
+    
+    /* Colores de estado ajustados para modo oscuro */
+    --color-success: #22c55e;
+    --color-warning: #fbbf24;
+    --color-error: #f87171;
+    --color-info: #38bdf8;
+    
+    /* Colores de fondo para modo oscuro */
+    --bg-primary: #1e293b;
+    --bg-secondary: #0f172a;
+    --bg-secondary-dark: #334155;
+    --bg-tertiary: #374151;
+    --bg-dark: #0f172a;
+    
+    /* Colores de texto para modo oscuro */
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --text-white: #ffffff;
+    --text-dark: #1e293b;
+    
+    /* Bordes para modo oscuro */
+    --border-light: #334155;
+    --border-medium: #475569;
+    --border-dark: #64748b;
+    
+    /* Sombras para modo oscuro */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+
+    /* Highlight colors para modo oscuro */
+    --highlight-bg: rgba(255, 255, 0, 0.3);
+    --highlight-bg-active: rgba(255, 255, 0, 0.5);
+  }
+
+  /* Transiciones suaves para cambio de tema */
+  *, *::before, *::after {
+    transition: 
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
 }
 
 /* Clases globales reutilizables */
@@ -152,7 +208,7 @@
   .btn-primary {
     @apply btn-base;
     background-color: var(--color-secondary);
-    color: var(--text-dark);
+    color: var(--text-primary);
   }
   
   .btn-primary:hover {
@@ -162,7 +218,7 @@
   .btn-secondary {
     @apply btn-base;
     background-color: transparent;
-    color: var(--color-secondary-dark);
+    color: var(--text-secondary);
     border: 1px solid var(--border-medium);
   }
   
@@ -204,11 +260,12 @@
     font-size: var(--text-base);
     transition: border-color 0.2s ease-in-out;
     background-color: var(--bg-primary);
+    color: var(--text-primary);
   }
   
   .input-base:focus {
     outline: none;
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-dark);
     box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
   }
   
@@ -310,11 +367,166 @@
   }
 }
 
-/* Mark element styling */
+/* Mark element styling - adaptado para modo oscuro */
 mark {
-  background-color: #fff59d; /* Soft yellow */
+  background-color: var(--highlight-bg);
   color: inherit;
   padding: 0.05em 0.2em;
   border-radius: 0.15rem;
   font-weight: 500;
+}
+
+/* ButtonModal Styles - actualizados para modo oscuro */
+@layer components {
+  .button-modal-trigger {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .button-modal-trigger:hover {
+    background-color: var(--bg-tertiary);
+  }
+
+  .button-modal-trigger:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary-dark);
+  }
+
+  .button-modal-dropdown {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .button-modal-select {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-medium);
+    color: var(--text-secondary);
+  }
+
+  .button-modal-select:hover {
+    background-color: var(--bg-tertiary);
+  }
+
+  .button-modal-select:focus {
+    outline: none;
+    border-color: var(--border-medium);
+    box-shadow: none;
+  }
+
+  .button-modal-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .button-modal-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    border: none;
+  }
+
+  .button-modal-slider:focus {
+    outline: none;
+  }
+
+  /* Estilos específicos para scrollbars en modo oscuro */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-dark);
+  }
+}
+
+.dark strong,
+.dark b,
+.dark .font-bold,
+.dark [style*="font-weight: bold"],
+.dark [style*="font-weight:bold"],
+.dark [style*="font-weight: 700"],
+.dark [style*="font-weight:700"] {
+  color: var(--text-white) !important;
+  font-weight: 700 !important;
+}
+
+/* Específico para contenido de chat y prose */
+.dark .prose strong,
+.dark .prose b {
+  color: var(--text-white) !important;
+  font-weight: 700 !important;
+}
+
+/* Para elementos que podrían tener negrita dinámica */
+.dark .prose *[style*="font-weight"],
+.dark *[style*="font-weight: bold"],
+.dark *[style*="font-weight:bold"] {
+  color: var(--text-white) !important;
+}
+
+/* Asegurar que headings también se vean bien */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: var(--text-white) !important;
+  font-weight: 600 !important;
+}
+
+.dark .prose h1, .dark .prose h2, .dark .prose h3, 
+.dark .prose h4, .dark .prose h5, .dark .prose h6 {
+  color: var(--text-white) !important;
+  font-weight: 600 !important;
+}
+
+/* Para listas y otros elementos */
+.dark li strong,
+.dark li b,
+.dark p strong,
+.dark p b,
+.dark span strong,
+.dark span b {
+  color: var(--text-white) !important;
+  font-weight: 700 !important;
+}
+
+/* Para código en negrita */
+.dark code strong,
+.dark code b,
+.dark pre strong,
+.dark pre b {
+  color: var(--text-white) !important;
+}
+
+/* Enlaces en negrita */
+.dark a strong,
+.dark a b {
+  color: var(--color-primary-light) !important;
+  font-weight: 700 !important;
+}
+
+/* Tablas en negrita */
+.dark th,
+.dark .prose th {
+  color: var(--text-white) !important;
+  font-weight: 700 !important;
 }

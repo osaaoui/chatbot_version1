@@ -2,17 +2,19 @@
 
 import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import Sidebar from "./components/Sidebar"
+import Sidebar from "./components/Layout/Sidebar"
 import ChatPane from "./components/Chat/ChatPane"
-import AuthForm from "./components/AuthForm"
-import Header from "./components/Header"
-import Footer from "./components/Footer"
+import AuthForm from "./components/Auth/AuthForm"
+import Header from "./components/Layout/Header"
+import Footer from "./components/Layout/Footer"
 import { useAuth } from "./context/AuthProvider"
 import { ConversationProvider } from "./context/ConversationProvider"
 import { DocumentBasesProvider } from "./context/DocumentBasesContext"
 import { FoldersProvider } from "./context/FoldersContext"
 import { CompanyProvider } from "./context/CompanyContext"
-import PDFViewerComponent from "./components/PDFViewerComponent"
+import { FontSizeProvider } from "./context/FontSizeContext"
+import { ThemeProvider } from "./context/ThemeContext"
+import PDFViewerComponent from "./components/chat/PDF/PDFViewerComponent"
 import { useFileManagement } from "./hooks/app/useFileManagement"
 import { useChatLogic } from "./hooks/chat/useChatLogic"
 import { useGlobalFileUpload } from "./hooks/chat/useGlobalFileUpload"
@@ -147,14 +149,18 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ConversationProvider>
-      <CompanyProvider>
-        <DocumentBasesProvider>
-          <FoldersProvider>
-            <AppContent />
-          </FoldersProvider>
-        </DocumentBasesProvider>
-      </CompanyProvider>
-    </ConversationProvider>
+    <ThemeProvider>
+      <ConversationProvider>
+        <CompanyProvider>
+          <DocumentBasesProvider>
+            <FoldersProvider>
+              <FontSizeProvider>
+                <AppContent />
+              </FontSizeProvider>
+            </FoldersProvider>
+          </DocumentBasesProvider>
+        </CompanyProvider>
+      </ConversationProvider>
+    </ThemeProvider>
   )
 }
