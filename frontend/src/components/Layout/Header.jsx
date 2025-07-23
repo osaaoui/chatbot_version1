@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../context/AuthProvider";
-import  Separator  from "../ui/Separator";
+import { useProfileImage } from "../../context/useProfileImage"; 
+import Separator from "../ui/Separator";
 import Avatar from "../ui/Avatar";
 import Modal from "../ui/Modal";
 import ButtonGroup from "../ui/ButtonGroup";
@@ -14,6 +15,7 @@ import ProfileModal from "../Profile/ProfileModal";
 const Header = () => {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+  const { profileImage } = useProfileImage();
   const [activeModal, setActiveModal] = useState(null);
   const empresaRef = useRef(null);
 
@@ -101,7 +103,11 @@ const Header = () => {
       <div className="flex items-center text-sm text-body">
         <Separator orientation="vertical" className="h-6 mr-4 bg-tertiary" />
         <span className="mr-4">{user.fullName}</span> 
-        <Avatar name={user.fullName} menuItems={avatarMenuItems} />
+        <Avatar 
+          name={user.fullName} 
+          menuItems={avatarMenuItems}
+          profileImage={profileImage} 
+        />
       </div>
       
       <ProfileModal 

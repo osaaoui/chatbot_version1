@@ -35,9 +35,12 @@
   },
   "profile": {
     "title": "My Profile",
+    "fullName": "Full Name",
     "email": "Email:",
     "status": "Status:",
     "active": "Active",
+    "uploadPhoto": "Click the camera icon to upload a photo",
+    "removePhoto": "Remove photo",
     "success": {
       "updated": "Profile updated successfully"
     },
@@ -177,7 +180,7 @@
   "company": {
     "title": "Company Profile",
     "companyName": "Company Name",
-    "companyNameRequired": "Company Name *",
+    "companyNameRequired": "Company Name",
     "companyEmail": "Company Email",
     "companyWebsite": "Company Website",
     "taxId": "Tax ID Number",
@@ -189,19 +192,21 @@
     "selectCompanyOption": "Select a company",
     "selectCompanyToEdit": "Select a company to edit",
     "logo": "Logo",
+    "logoPlaceholder": "Logo",
+    "uploadLogo": "Upload Logo",
     "changeLogo": "Change logo",
     "removeLogo": "Remove logo",
     "noLogo": "No logo",
     "logoAlt": "Company logo",
     "placeholders": {
       "companyName": "Enter your company name",
-      "companyEmail": "📧 email@company.com",
-      "companyWebsite": "🌐 https://yourcompany.com",
-      "taxId": "🏢 Tax ID or fiscal number",
-      "selectCountry": "🌍 Select a country",
-      "billingAddress": "📍 Enter billing address",
-      "postalCode": "📮 Enter postal code",
-      "comments": "💬 Additional comments"
+      "companyEmail": "Email@company.com",
+      "companyWebsite": "https://yourcompany.com",
+      "taxId": "Tax ID or fiscal number",
+      "selectCountry": "Select a country",
+      "billingAddress": "Enter billing address",
+      "postalCode": "Enter postal code",
+      "comments": "Additional comments"
     },
     "errors": {
       "savingData": "Error saving company data",

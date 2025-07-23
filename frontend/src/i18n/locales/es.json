@@ -35,9 +35,12 @@
   },
   "profile": {
     "title": "Mi Perfil",
+    "fullName": "Nombre Completo",
     "email": "Email:",
     "status": "Estado:",
     "active": "Activo",
+    "uploadPhoto": "Haz clic en el ícono para subir una foto",
+    "removePhoto": "Eliminar foto",
     "success": {
       "updated": "Perfil actualizado exitosamente"
     },
@@ -177,7 +180,7 @@
   "company": {
     "title": "Perfil empresa",
     "companyName": "Nombre de la empresa",
-    "companyNameRequired": "Nombre de la empresa *",
+    "companyNameRequired": "Nombre de la empresa",
     "companyEmail": "Email de la empresa",
     "companyWebsite": "Sitio web de la empresa",
     "taxId": "Número de identificación fiscal",
@@ -189,19 +192,21 @@
     "selectCompanyOption": "Selecciona una empresa",
     "selectCompanyToEdit": "Selecciona una empresa para editar",
     "logo": "Logo",
+    "logoPlaceholder": "Logo",
+    "uploadLogo": "Subir Logo",
     "changeLogo": "Cambiar logo",
     "removeLogo": "Eliminar logo",
     "noLogo": "Sin logo",
     "logoAlt": "Logo de la empresa",
     "placeholders": {
       "companyName": "Ingresa el nombre de tu empresa",
-      "companyEmail": "📧 email@empresa.com",
-      "companyWebsite": "🌐 https://tuempresa.com",
-      "taxId": "🏢 NIT o número fiscal",
-      "selectCountry": "🌍 Selecciona un país",
-      "billingAddress": "📍 Ingresa dirección de facturación",
-      "postalCode": "📮 Ingresa código postal",
-      "comments": "💬 Comentarios adicionales"
+      "companyEmail": "Email@empresa.com",
+      "companyWebsite": "https://tuempresa.com",
+      "taxId": "NIT o número fiscal",
+      "selectCountry": "Selecciona un país",
+      "billingAddress": "Ingresa dirección de facturación",
+      "postalCode": "Ingresa código postal",
+      "comments": "Comentarios adicionales"
     },
     "errors": {
       "savingData": "Error al guardar los datos de la empresa",

@@ -1,3 +1,7 @@
+/* ========================================
+   RESET Y CONFIGURACIÓN BASE
+   ======================================== */
+
 body {
   font-family: var(--font-family);
   margin: 0;
@@ -14,6 +18,10 @@ body {
   overflow: hidden;
   transition: background-color 0.3s ease;
 }
+
+/* ========================================
+   LOGO Y BRANDING
+   ======================================== */
 
 .logo {
   height: 6em;
@@ -45,6 +53,10 @@ body {
   }
 }
 
+/* ========================================
+   LAYOUT PRINCIPAL
+   ======================================== */
+
 .app-main {
   padding: var(--spacing-xl) 0;
   background-color: var(--bg-secondary);
@@ -60,7 +72,10 @@ body {
   font-size: var(--text-sm);
 }
 
-/* Animación de carga para el chat - adaptada para modo oscuro */
+/* ========================================
+   ANIMACIONES DE CARGA
+   ======================================== */
+
 .loading-animation {
   display: flex;
   align-items: center;
@@ -104,7 +119,10 @@ body {
   }
 }
 
-/* Estilos específicos para elementos de formulario en modo oscuro */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - FORMULARIOS
+   ======================================== */
+
 .dark input, 
 .dark textarea, 
 .dark select {
@@ -120,7 +138,10 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Estilos para botones en modo oscuro */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - BOTONES
+   ======================================== */
+
 .dark button {
   color: var(--text-primary);
 }
@@ -134,7 +155,11 @@ body {
   background-color: var(--bg-tertiary);
 }
 
-/* Estilos para tooltips y popups en modo oscuro */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - UI COMPONENTS
+   ======================================== */
+
+/* Tooltips y popups */
 .dark .tooltip,
 .dark [role="tooltip"] {
   background-color: var(--bg-dark);
@@ -142,14 +167,14 @@ body {
   border: 1px solid var(--border-medium);
 }
 
-/* Estilos para modales en modo oscuro */
+/* Modales */
 .dark .modal,
 .dark [role="dialog"] {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-light);
 }
 
-/* Estilos para dropdowns en modo oscuro */
+/* Dropdowns */
 .dark .dropdown-menu,
 .dark [role="menu"] {
   background-color: var(--bg-primary);
@@ -162,7 +187,10 @@ body {
   background-color: var(--bg-tertiary);
 }
 
-/* Estilos para tablas en modo oscuro */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - TABLAS
+   ======================================== */
+
 .dark table {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -181,7 +209,10 @@ body {
   background-color: var(--bg-secondary);
 }
 
-/* Estilos para código en modo oscuro */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - CÓDIGO
+   ======================================== */
+
 .dark pre,
 .dark code {
   background-color: var(--bg-dark);
@@ -189,7 +220,10 @@ body {
   border: 1px solid var(--border-medium);
 }
 
-/* Estilos para alertas/notificaciones en modo oscuro */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - ALERTAS
+   ======================================== */
+
 .dark .alert {
   border-color: var(--border-medium);
 }
@@ -214,46 +248,10 @@ body {
   border-color: var(--color-info);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  :root {
-    --header-height: 60px; /* Slightly taller on mobile */
-  }
-}
+/* ========================================
+   ESTILOS PARA MODO OSCURO - PDF VIEWER
+   ======================================== */
 
-@media (max-width: 480px) {
-  :root {
-    --header-height: 64px; /* Even taller on very small screens */
-  }
-}
-
-/* Transición suave para el cambio de tema en elementos específicos */
-.theme-transition {
-  transition: 
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-/* Utilidad para ocultar elementos en ciertos temas */
-.light-only {
-  display: block;
-}
-
-.dark-only {
-  display: none;
-}
-
-.dark .light-only {
-  display: none;
-}
-
-.dark .dark-only {
-  display: block;
-}
-
-/* Estilos para el PDF viewer en modo oscuro */
 .dark .rpv-core__viewer {
   background-color: var(--bg-primary);
 }
@@ -269,7 +267,10 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
-/* Personalización adicional para elementos específicos de la aplicación */
+/* ========================================
+   ESTILOS PARA MODO OSCURO - ELEMENTOS ESPECÍFICOS
+   ======================================== */
+
 .dark .chat-message {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-light);
@@ -289,7 +290,54 @@ body {
   border-bottom: 1px solid var(--border-light);
 }
 
-/* Animaciones mejoradas para el cambio de tema */
+/* ========================================
+   UTILIDADES DE TEMA
+   ======================================== */
+
+.theme-transition {
+  transition: 
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.light-only {
+  display: block;
+}
+
+.dark-only {
+  display: none;
+}
+
+.dark .light-only {
+  display: none;
+}
+
+.dark .dark-only {
+  display: block;
+}
+
+/* ========================================
+   MEDIA QUERIES Y RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-height: 64px;
+  }
+}
+
+/* ========================================
+   ANIMACIONES Y TRANSICIONES
+   ======================================== */
+
 @media (prefers-reduced-motion: no-preference) {
   * {
     transition: 
@@ -300,7 +348,6 @@ body {
   }
 }
 
-/* Para usuarios que prefieren movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;

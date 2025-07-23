@@ -1,12 +1,10 @@
-from typing import  Dict, Any
+from typing import Dict, Any
 from app.core.base_service import BaseService, ServiceError
 from app.models.postgresql.user_profile import UserProfile, UpdateUserProfileRequest
 from app.services.user_store import update_user_in_sqlite
 from app.services.auth_service import create_access_token
 from app.core.circuit_breaker import circuit_breaker
 class UserProfileService(BaseService):
-    
-
 
     @circuit_breaker(
         name="user_lookup",
@@ -52,7 +50,6 @@ class UserProfileService(BaseService):
             if isinstance(e, ServiceError):
                 raise e
             raise ServiceError(f"Error al obtener el perfil del usuario: {str(e)}", 500)
-    
 
 
     @circuit_breaker(
@@ -65,34 +62,25 @@ class UserProfileService(BaseService):
         try:
             async with self.get_connection() as conn:
                 existing_user = await conn.fetchrow(
-                    "SELECT user_id FROM public.sp_readuserbyid($1) LIMIT 1",
+                    "SELECT user_id, full_name FROM public.sp_readuserbyid($1) LIMIT 1",
                     user_id
                 )
                 
                 if not existing_user:
                     raise ServiceError(f"Usuario con ID {user_id} no encontrado", 404)
                 
-                email_changed = False
+                name_changed = False
                 new_token = None
                 
-                if update_data.email and update_data.email != current_email:
-                    existing_email = await conn.fetchrow(
-                        "SELECT user_id FROM public.sp_readuserbyemail($1) WHERE user_id != $2 LIMIT 1",
-                        update_data.email,
-                        user_id
-                    )
-                    
-                    if existing_email:
-                        raise ServiceError("El correo electrónico ya está registrado", 400)
-                    
-                    email_changed = True
+                if update_data.full_name and update_data.full_name != existing_user['full_name']:
+                    name_changed = True
                 
                 await conn.execute(
                     "SELECT public.sp_updateuser($1, $2, $3, $4, $5, $6, $7, $8)",
                     user_id,                   
                     user_id,                   
-                    None,                       
-                    update_data.email,         
+                    update_data.full_name,
+                    None,
                     None,                       
                     None,                      
                     None,                      
@@ -101,11 +89,12 @@ class UserProfileService(BaseService):
                 
                 updated_profile = await self.get_user_profile(user_id)
                 
-                if email_changed:
-                    await update_user_in_sqlite(current_email, update_data.email, updated_profile.full_name, updated_profile.role)
+                # Si el nombre cambió, actualizamos en SQLite y regeneramos el token
+                if name_changed:
+                    await update_user_in_sqlite(current_email, current_email, updated_profile.full_name, updated_profile.role)
                     
                     new_token = create_access_token({
-                        "sub": update_data.email,
+                        "sub": current_email,
                         "role": updated_profile.role,
                         "fullName": updated_profile.full_name
                     })
@@ -113,7 +102,7 @@ class UserProfileService(BaseService):
                 return {
                     "profile": updated_profile,
                     "new_token": new_token,
-                    "token_regenerated": email_changed
+                    "token_regenerated": name_changed
                 }
                 
         except Exception as e:

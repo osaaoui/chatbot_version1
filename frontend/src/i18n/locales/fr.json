@@ -35,9 +35,12 @@
   },
   "profile": {
     "title": "Mon Profil",
+    "fullName": "Nom Complet",
     "email": "Email:",
     "status": "Statut:",
     "active": "Actif",
+    "uploadPhoto": "Cliquez sur l'icône pour téléverser une photo",
+    "removePhoto": "Supprimer la photo",
     "success": {
       "updated": "Profil mis à jour avec succès"
     },
@@ -177,7 +180,7 @@
   "company": {
     "title": "Profil Entreprise",
     "companyName": "Nom de l'entreprise",
-    "companyNameRequired": "Nom de l'entreprise *",
+    "companyNameRequired": "Nom de l'entreprise",
     "companyEmail": "Email de l'entreprise",
     "companyWebsite": "Site web de l'entreprise",
     "taxId": "Numéro d'identification fiscale",
@@ -189,19 +192,21 @@
     "selectCompanyOption": "Sélectionnez une entreprise",
     "selectCompanyToEdit": "Sélectionnez une entreprise à modifier",
     "logo": "Logo",
+    "logoPlaceholder": "Logo",
+    "uploadLogo": "Télécharger Logo",
     "changeLogo": "Changer logo",
     "removeLogo": "Supprimer logo",
     "noLogo": "Pas de logo",
     "logoAlt": "Logo de l'entreprise",
     "placeholders": {
       "companyName": "Entrez le nom de votre entreprise",
-      "companyEmail": "📧 email@entreprise.com",
-      "companyWebsite": "🌐 https://votreentreprise.com",
-      "taxId": "🏢 Numéro fiscal ou d'identification",
-      "selectCountry": "🌍 Sélectionnez un pays",
-      "billingAddress": "📍 Entrez l'adresse de facturation",
-      "postalCode": "📮 Entrez le code postal",
-      "comments": "💬 Commentaires supplémentaires"
+      "companyEmail": "Email@entreprise.com",
+      "companyWebsite": "https://votreentreprise.com",
+      "taxId": "Numéro fiscal ou d'identification",
+      "selectCountry": "Sélectionnez un pays",
+      "billingAddress": "Entrez l'adresse de facturation",
+      "postalCode": "Entrez le code postal",
+      "comments": "Commentaires supplémentaires"
     },
     "errors": {
       "savingData": "Erreur lors de l'enregistrement des données de l'entreprise",

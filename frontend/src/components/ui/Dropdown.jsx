@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const CustomDropdown = ({ 
+const Dropdown = ({ 
   options = [],
   value,
   onChange,
@@ -13,7 +13,12 @@ const CustomDropdown = ({
   labelKey = "name",
   disabled = false,
   searchable = true,
-  translationKey = "dropdown" 
+  translationKey = "dropdown",
+  allowNumbers = true,
+  allowLetters = true,
+  allowSpecialChars = false,
+  maxLength = 50,
+  validateInput = true
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +28,56 @@ const CustomDropdown = ({
   const finalPlaceholder = placeholder || t('dropdown.search');
   const finalSearchPlaceholder = searchPlaceholder || t('dropdown.search');
   const finalNoResultsText = noResultsText || t('dropdown.noResults');
+
+  const sanitizeInput = (input) => {
+    if (!validateInput) return input;
+
+    let sanitized = input
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remover tags script
+      .replace(/<[^>]*>?/gm, '') // Remover tags HTML
+      .replace(/javascript:/gi, '') // Remover javascript:
+      .replace(/on\w+\s*=/gi, '') // Remover event handlers
+      .replace(/expression\s*\(/gi, '') // Remover CSS expressions
+      .replace(/vbscript:/gi, '') // Remover vbscript:
+      .replace(/data:/gi, ''); // Remover data URLs
+
+    // Validar tipos de caracteres permitidos
+    let pattern = '';
+    if (allowLetters) pattern += 'a-zA-ZÀ-ÿ\\u00f1\\u00d1\\s'; // Incluye acentos y ñ
+    if (allowNumbers) pattern += '0-9';
+    if (allowSpecialChars) pattern += '\\-_\\.@';
+
+    if (pattern) {
+      const regex = new RegExp(`[^${pattern}]`, 'g');
+      sanitized = sanitized.replace(regex, '');
+    }
+
+    // Aplicar límite de longitud
+    if (maxLength && sanitized.length > maxLength) {
+      sanitized = sanitized.substring(0, maxLength);
+    }
+
+    return sanitized;
+  };
+
+  // Función para validar en tiempo real
+  const isValidInput = (input) => {
+    if (!validateInput) return true;
+
+    // Verificar patrones maliciosos
+    const maliciousPatterns = [
+      /<script/i,
+      /javascript:/i,
+      /on\w+\s*=/i,
+      /expression\s*\(/i,
+      /vbscript:/i,
+      /data:/i,
+      /<[^>]*>/,
+      /[<>'"]/
+    ];
+
+    return !maliciousPatterns.some(pattern => pattern.test(input));
+  };
 
   const filteredOptions = searchable 
     ? options.filter(option =>
@@ -50,6 +105,30 @@ const CustomDropdown = ({
     onChange({ target: { value: optionValue } });
     setIsOpen(false);
     setSearchTerm('');
+  };
+
+  const handleSearchChange = (e) => {
+    const inputValue = e.target.value;
+    
+    if (!isValidInput(inputValue)) {
+      return;
+    }
+
+    const sanitizedValue = sanitizeInput(inputValue);
+    setSearchTerm(sanitizedValue);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+      setTimeout(() => {
+        const input = e.target;
+        const sanitized = sanitizeInput(input.value);
+        if (input.value !== sanitized) {
+          input.value = sanitized;
+          setSearchTerm(sanitized);
+        }
+      }, 0);
+    }
   };
 
   return (
@@ -113,7 +192,8 @@ const CustomDropdown = ({
                   '--focus-ring-color': 'rgba(59, 130, 246, 0.1)'
                 }}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
                 onFocus={(e) => {
                   e.target.style.borderColor = 'var(--color-primary-dark)';
                   e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
@@ -122,6 +202,9 @@ const CustomDropdown = ({
                   e.target.style.borderColor = 'var(--border-medium)';
                   e.target.style.boxShadow = 'none';
                 }}
+                maxLength={maxLength}
+                autoComplete="off"
+                spellCheck="false"
                 autoFocus
               />
             </div>
@@ -181,4 +264,4 @@ const CustomDropdown = ({
   );
 };
 
-export default CustomDropdown;
+export default Dropdown;
