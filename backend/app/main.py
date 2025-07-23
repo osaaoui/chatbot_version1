@@ -11,6 +11,7 @@ import os
 from app.api.delete import router as delete_router
 from app.api.serve_files import router as serve_files_router
 from app.api.postgresql import folders, documents, conversation, message, company, user_settings
+from app.api.postgresql import country
 from app.core.circuit_breaker import CircuitBreakerOpenException
 from fastapi.responses import JSONResponse
 
@@ -66,3 +67,4 @@ app.include_router(user_profile.router, prefix="/api/auth", tags=["user_profile"
 app.include_router(company.router, prefix="/api/v2/companies", tags=["companies"])
 app.include_router(user_settings.router, prefix="/api/v2/settings", tags=["user_settings"])
 app.include_router(serve_files_router, prefix="/api")  
+app.include_router(country.router, prefix="/api/v2/countries", tags=["countries"])

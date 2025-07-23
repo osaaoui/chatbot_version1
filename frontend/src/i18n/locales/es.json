@@ -65,7 +65,8 @@
     "close": "Cerrar",
     "today": "Hoy",
     "yesterday": "Ayer",
-    "daysAgo": "Hace {{days}} días"
+    "daysAgo": "Hace {{days}} días",
+    "dismiss": "Descartar"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -181,6 +182,12 @@
     "companyWebsite": "Sitio web de la empresa",
     "taxId": "Número de identificación fiscal",
     "country": "País",
+    "billingAddress": "Dirección de facturación",
+    "postalCode": "Código postal",
+    "comments": "Comentarios",
+    "selectCompany": "Seleccionar empresa",
+    "selectCompanyOption": "Selecciona una empresa",
+    "selectCompanyToEdit": "Selecciona una empresa para editar",
     "logo": "Logo",
     "changeLogo": "Cambiar logo",
     "removeLogo": "Eliminar logo",
@@ -191,15 +198,24 @@
       "companyEmail": "📧 email@empresa.com",
       "companyWebsite": "🌐 https://tuempresa.com",
       "taxId": "🏢 NIT o número fiscal",
-      "selectCountry": "🌍 Selecciona un país"
+      "selectCountry": "🌍 Selecciona un país",
+      "billingAddress": "📍 Ingresa dirección de facturación",
+      "postalCode": "📮 Ingresa código postal",
+      "comments": "💬 Comentarios adicionales"
     },
     "errors": {
       "savingData": "Error al guardar los datos de la empresa",
-      "loadingData": "Error al cargar los datos de la empresa"
+      "loadingData": "Error al cargar los datos de la empresa",
+      "countriesLoad": "Error al cargar países"
     },
     "success": {
       "dataSaved": "Datos de la empresa guardados correctamente"
     }
+  },
+  "dropdown": {
+    "search": "Buscar...",
+    "noResults": "No se encontraron resultados",
+    "searchCountry": "Buscar país..."
   },
   "document_base": {
     "created": "Creado",
@@ -250,6 +266,16 @@
       "unknown": "Estado desconocido"
     }
   },
+  "uploadModal": {
+    "title": "Subir Archivos",
+    "filesToUpload": "Archivos a subir",
+    "selectDocumentBase": "Seleccionar Base de Documentos",
+    "chooseDocumentBase": "Elige una base de documentos",
+    "noDocumentBases": "No se encontraron bases de documentos.",
+    "selectFolder": "Seleccionar Carpeta",
+    "chooseFolder": "Elige una carpeta",
+    "noFolders": "No se encontraron carpetas para esta base de documentos."
+  },
   "legal": {
     "title": "Términos de Uso y Documentos Legales",
     "description": "Accede a nuestros documentos legales y políticas sobre el manejo de datos y uso de la plataforma.",
@@ -269,15 +295,5 @@
     "updateDocumentBase": "Error al actualizar la base de documentos",
     "deleteDocumentBase": "Error al eliminar la base de documentos",
     "failed": "Error"
-  },
-  "uploadModal": {
-    "title": "Subir Archivos",
-    "filesToUpload": "Archivos a subir",
-    "selectDocumentBase": "Seleccionar Base de Documentos",
-    "chooseDocumentBase": "Elige una base de documentos",
-    "noDocumentBases": "No se encontraron bases de documentos.",
-    "selectFolder": "Seleccionar Carpeta",
-    "chooseFolder": "Elige una carpeta",
-    "noFolders": "No se encontraron carpetas para esta base de documentos."
   }
 }

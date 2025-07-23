@@ -59,20 +59,22 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+      <div className="relative w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg border border-gray-200 dark:border-gray-700">
         {/* Dialog Header */}
         <div className="flex flex-col space-y-1.5 text-center sm:text-left">
-          <h2 className="text-lg font-semibold leading-none tracking-tight">{t("uploadModal.title")}</h2>
+          <h2 className="text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100">
+            {t("uploadModal.title")}
+          </h2>
         </div>
 
         {/* Dialog Content */}
         <div className="grid gap-4 py-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t("uploadModal.filesToUpload")}: {files.map((f) => f.name).join(", ")}
           </p>
 
           <div className="grid gap-2">
-            <label htmlFor="document-base-select" className="text-sm font-medium">
+            <label htmlFor="document-base-select" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {t("uploadModal.selectDocumentBase")}
             </label>
             <div className="relative">
@@ -81,16 +83,14 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
                 value={selectedDocumentBaseId}
                 onChange={handleDocumentBaseChange}
                 disabled={loadingDocumentBases || isUploading}
-                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                className="input-base w-full appearance-none pr-8"
               >
                 <option value="" disabled>
                   {t("uploadModal.chooseDocumentBase")}
                 </option>
                 {loadingDocumentBases ? (
                   <option disabled>
-                    <div className="flex items-center justify-center p-2">
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("common.loading")}
-                    </div>
+                    {t("common.loading")}
                   </option>
                 ) : documentBases.length === 0 ? (
                   <option disabled>{t("uploadModal.noDocumentBases")}</option>
@@ -102,11 +102,16 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
                   ))
                 )}
               </select>
+              {loadingDocumentBases && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                </div>
+              )}
             </div>
           </div>
 
           <div className="grid gap-2">
-            <label htmlFor="folder-select" className="text-sm font-medium">
+            <label htmlFor="folder-select" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {t("uploadModal.selectFolder")}
             </label>
             <div className="relative">
@@ -115,7 +120,7 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
                 value={selectedFolderId}
                 onChange={handleFolderChange}
                 disabled={!selectedDocumentBaseId || currentFolders.length === 0 || isUploading}
-                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                className="input-base w-full appearance-none pr-8"
               >
                 <option value="" disabled>
                   {t("uploadModal.chooseFolder")}
@@ -135,12 +140,12 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
         </div>
 
         {/* Dialog Footer */}
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 space-y-2 space-y-reverse sm:space-y-0">
           <button
             type="button"
             onClick={onClose}
             disabled={isUploading}
-            className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            className="btn-secondary h-10 px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t("common.cancel")}
           </button>
@@ -148,7 +153,7 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
             type="button"
             onClick={handleConfirm}
             disabled={isConfirmDisabled}
-            className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            className="btn-primary h-10 px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {isUploading ? (
               <>

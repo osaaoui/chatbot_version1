@@ -65,7 +65,8 @@
     "close": "Close",
     "today": "Today",
     "yesterday": "Yesterday",
-    "daysAgo": "{{days}} days ago"
+    "daysAgo": "{{days}} days ago",
+    "dismiss": "Dismiss"
   },
   "auth": {
     "login": "Login",
@@ -122,7 +123,8 @@
     "creating": "Creating...",
     "create": "Create",
     "newConversationButton": "New Conversation",
-    "goToEnd": "Go to end"
+    "goToEnd": "Go to end",
+    "dropFilesHere": "Drop files here to upload"
   },
   "teams": {
     "title": "Work Teams",
@@ -180,6 +182,12 @@
     "companyWebsite": "Company Website",
     "taxId": "Tax ID Number",
     "country": "Country",
+    "billingAddress": "Billing Address",
+    "postalCode": "Postal Code",
+    "comments": "Comments",
+    "selectCompany": "Select Company",
+    "selectCompanyOption": "Select a company",
+    "selectCompanyToEdit": "Select a company to edit",
     "logo": "Logo",
     "changeLogo": "Change logo",
     "removeLogo": "Remove logo",
@@ -190,15 +198,24 @@
       "companyEmail": "📧 email@company.com",
       "companyWebsite": "🌐 https://yourcompany.com",
       "taxId": "🏢 Tax ID or fiscal number",
-      "selectCountry": "🌍 Select a country"
+      "selectCountry": "🌍 Select a country",
+      "billingAddress": "📍 Enter billing address",
+      "postalCode": "📮 Enter postal code",
+      "comments": "💬 Additional comments"
     },
     "errors": {
       "savingData": "Error saving company data",
-      "loadingData": "Error loading company data"
+      "loadingData": "Error loading company data",
+      "countriesLoad": "Error loading countries"
     },
     "success": {
       "dataSaved": "Company data saved successfully"
     }
+  },
+  "dropdown": {
+    "search": "Search...",
+    "noResults": "No results found",
+    "searchCountry": "Search country..."
   },
   "document_base": {
     "created": "Created",
@@ -248,6 +265,16 @@
       "empty": "Empty folder",
       "unknown": "Unknown status"
     }
+  },
+  "uploadModal": {
+    "title": "Upload Files",
+    "filesToUpload": "Files to upload",
+    "selectDocumentBase": "Select Document Base",
+    "chooseDocumentBase": "Choose a document base",
+    "noDocumentBases": "No document bases found.",
+    "selectFolder": "Select Folder",
+    "chooseFolder": "Choose a folder",
+    "noFolders": "No folders found for this document base."
   },
   "legal": {
     "title": "Terms of Use & Legal Documents",

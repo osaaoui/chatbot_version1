@@ -38,7 +38,6 @@
     "email": "Email:",
     "status": "Statut:",
     "active": "Actif",
-    
     "success": {
       "updated": "Profil mis à jour avec succès"
     },
@@ -47,7 +46,7 @@
       "updateFailed": "Échec de la mise à jour du profil"
     }
   },
-   "languages": {
+  "languages": {
     "spanish": "Español",
     "english": "English",
     "french": "Français"
@@ -66,7 +65,8 @@
     "close": "Fermer",
     "today": "Aujourd'hui",
     "yesterday": "Hier",
-    "daysAgo": "Il y a {{days}} jours"
+    "daysAgo": "Il y a {{days}} jours",
+    "dismiss": "Ignorer"
   },
   "auth": {
     "login": "Connexion",
@@ -123,7 +123,8 @@
     "creating": "Création...",
     "create": "Créer",
     "newConversationButton": "Nouvelle Conversation",
-    "goToEnd": "Aller à la fin"
+    "goToEnd": "Aller à la fin",
+    "dropFilesHere": "Déposez les fichiers ici pour télécharger"
   },
   "teams": {
     "title": "Équipes de Travail",
@@ -181,6 +182,12 @@
     "companyWebsite": "Site web de l'entreprise",
     "taxId": "Numéro d'identification fiscale",
     "country": "Pays",
+    "billingAddress": "Adresse de facturation",
+    "postalCode": "Code postal",
+    "comments": "Commentaires",
+    "selectCompany": "Sélectionner entreprise",
+    "selectCompanyOption": "Sélectionnez une entreprise",
+    "selectCompanyToEdit": "Sélectionnez une entreprise à modifier",
     "logo": "Logo",
     "changeLogo": "Changer logo",
     "removeLogo": "Supprimer logo",
@@ -191,15 +198,24 @@
       "companyEmail": "📧 email@entreprise.com",
       "companyWebsite": "🌐 https://votreentreprise.com",
       "taxId": "🏢 Numéro fiscal ou d'identification",
-      "selectCountry": "🌍 Sélectionnez un pays"
+      "selectCountry": "🌍 Sélectionnez un pays",
+      "billingAddress": "📍 Entrez l'adresse de facturation",
+      "postalCode": "📮 Entrez le code postal",
+      "comments": "💬 Commentaires supplémentaires"
     },
     "errors": {
       "savingData": "Erreur lors de l'enregistrement des données de l'entreprise",
-      "loadingData": "Erreur lors du chargement des données de l'entreprise"
+      "loadingData": "Erreur lors du chargement des données de l'entreprise",
+      "countriesLoad": "Erreur lors du chargement des pays"
     },
     "success": {
       "dataSaved": "Données de l'entreprise enregistrées avec succès"
     }
+  },
+  "dropdown": {
+    "search": "Rechercher...",
+    "noResults": "Aucun résultat trouvé",
+    "searchCountry": "Rechercher pays..."
   },
   "document_base": {
     "created": "Créé",
@@ -212,7 +228,7 @@
     "loading": "Chargement des bases de documents...",
     "error": "En raison de l'inactivité, votre session a été fermée. Nous protégeons vos informations. Veuillez vous reconnecter pour continuer à discuter.",
     "no_bases_available": "Aucune base de documents disponible",
-   "status": {
+    "status": {
       "active": "Actif",
       "inactive": "Inactif",
       "empty": "Base de documents Actif (sans contenu)",
@@ -242,13 +258,23 @@
     "processFilesError": "Erreur lors du traitement des fichiers",
     "noFilesToProcess": "Aucun fichier à traiter dans ce dossier",
     "fileProcessedSuccess": "Fichiers traités avec succès dans le dossier",
-      "status": {
+    "status": {
       "active": "Dossier actif",
       "inactive": "Dossier inactif",
       "deleted": "Dossier supprimé",
       "empty": "Dossier vide",
       "unknown": "Statut inconnu"
     }
+  },
+  "uploadModal": {
+    "title": "Télécharger Fichiers",
+    "filesToUpload": "Fichiers à télécharger",
+    "selectDocumentBase": "Sélectionner Base de Documents",
+    "chooseDocumentBase": "Choisissez une base de documents",
+    "noDocumentBases": "Aucune base de documents trouvée.",
+    "selectFolder": "Sélectionner Dossier",
+    "chooseFolder": "Choisissez un dossier",
+    "noFolders": "Aucun dossier trouvé pour cette base de documents."
   },
   "legal": {
     "title": "Conditions d'Utilisation et Documents Légaux",
