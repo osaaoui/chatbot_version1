@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, UploadCloud, FileText, Send } from "lucide-react";
+import { Loader2, UploadCloud, Send } from "lucide-react";
 import { SelectorIA } from "../ui/SelectorIA"; 
 import Separator from "../ui/Separator";
 
@@ -103,36 +103,32 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
         />
 
         <div className="flex items-center gap-3">
-          {/* Document Reading Toggle */}
-          <div className="flex items-center">
+          {/* Document Reading Switch */}
+          <div className="flex flex-col items-center gap-1">
             <button
               onClick={() => setEnableDocumentReading(!enableDocumentReading)}
-              className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border ${
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 enableDocumentReading 
-                  ? 'text-blue-700 hover:bg-blue-100' 
-                  : 'hover:opacity-80'
+                  ? 'bg-blue-600' 
+                  : 'bg-gray-300'
               }`}
               style={{
-                backgroundColor: enableDocumentReading ? 'rgba(59, 130, 246, 0.1)' : 'var(--bg-secondary)',
-                borderColor: enableDocumentReading ? '#3b82f6' : 'var(--border-light)',
-                color: enableDocumentReading ? '#1d4ed8' : 'var(--text-secondary)'
+                backgroundColor: enableDocumentReading ? '#2563eb' : 'var(--text-tertiary)'
               }}
               title={enableDocumentReading ? t("chat.disconnectDocumentBase") : t("chat.connectDocumentBase")}
             >
-              <FileText 
-                className="w-3.5 h-3.5 transition-colors" 
-                style={{
-                  color: enableDocumentReading ? '#2563eb' : 'var(--text-tertiary)'
-                }}
-              />
-              <span>{t("chat.readDocs")}</span>
-              <div 
-                className="w-2 h-2 rounded-full transition-colors"
-                style={{
-                  backgroundColor: enableDocumentReading ? '#3b82f6' : 'var(--text-tertiary)'
-                }}
+              <span
+                className={`inline-block h-3 w-3 transform rounded-full bg-white transition duration-200 ${
+                  enableDocumentReading ? 'translate-x-5' : 'translate-x-1'
+                }`}
               />
             </button>
+            <span 
+              className="text-xs font-medium text-center"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {enableDocumentReading ? t("chat.disconnectDocumentBase") : t("chat.connectDocumentBase")}
+            </span>
           </div>
 
           <Separator orientation="vertical" />
@@ -164,7 +160,6 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
         <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
           {t("chat.enterToSend")}
         </p>
-        {/* Mostrar siempre el estado de la base de documentos */}
         <div className="flex items-center gap-1.5">
           <div 
             className={`w-1.5 h-1.5 rounded-full ${

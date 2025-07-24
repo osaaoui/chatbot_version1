@@ -1,11 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import { PanelLeft, MessageSquare } from 'lucide-react';
 import SettingsModal from '../Profile/Settings/SettingsModal';
+import ButtonModal from '../ui/ButtonModal';
+import ConversationsModal from './ConversationsModal';
 
 const ChatHeader = ({ 
   currentConversation, 
   toggleSidebar, 
-  onShowConversations
+  onShowConversations,
+  // Nuevas props para el ButtonModal
+  conversations,
+  isLoadingConversations,
+  onSelectConversation,
+  onCreateNew,
+  formatDate
 }) => {
   const { t } = useTranslation();
 
@@ -27,13 +35,27 @@ const ChatHeader = ({
         </div>
         
         <div className="flex items-center gap-2">
-          <button
-            onClick={onShowConversations}
-            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white hover:bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors"
+          <ButtonModal
+            trigger={
+              <button className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white hover:bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors">
+                <MessageSquare className="w-3 h-3" />
+                {t('chat.conversations')}
+              </button>
+            }
+            position="right"
+            width="w-72"
+            className="z-50"
+            dropdownClassName="shadow-lg border-0"
           >
-            <MessageSquare className="w-3 h-3" />
-            {t('chat.conversations')}
-          </button>
+            <ConversationsModal
+              conversations={conversations}
+              currentConversation={currentConversation}
+              isLoadingConversations={isLoadingConversations}
+              onSelectConversation={onSelectConversation}
+              onCreateNew={onCreateNew}
+              formatDate={formatDate}
+            />
+          </ButtonModal>
           
           <SettingsModal 
             className="ml-1"

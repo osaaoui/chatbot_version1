@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getUserSettings, updateUserSettings } from "../services/settingsService";
 import { useAuth } from "./AuthProvider";
 
@@ -16,33 +16,30 @@ export const ThemeProvider = ({ children }) => {
   const { token } = useAuth();
   const [theme, setThemeState] = useState("light");
   const [isLoading, setIsLoading] = useState(true);
+  const hasInitialized = useRef(false);
+  const lastTokenRef = useRef(null);
+  const isUpdatingRef = useRef(false);
 
   // Cargar tema desde el backend al iniciar
   useEffect(() => {
     const fetchSettings = async () => {
-      if (!token) {
-        setIsLoading(false);
+      // Evitar múltiples llamadas para el mismo token
+      if (!token || hasInitialized.current || lastTokenRef.current === token) {
+        if (!token) setIsLoading(false);
         return;
       }
+
+      hasInitialized.current = true;
+      lastTokenRef.current = token;
 
       try {
         setIsLoading(true);
         const settings = await getUserSettings(token);
-        if (settings && settings.interface_mode) {
-          setThemeState(settings.interface_mode);
-        } else {
-          // Usar preferencia del sistema si no hay tema guardado
-          const prefersDark =
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches;
-          setThemeState(prefersDark ? "dark" : "light");
+        if (settings && settings.theme) {
+          setThemeState(settings.theme);
         }
       } catch (error) {
         console.error("Error al cargar el tema:", error);
-        const prefersDark =
-          window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches;
-        setThemeState(prefersDark ? "dark" : "light");
       } finally {
         setIsLoading(false);
       }
@@ -51,15 +48,35 @@ export const ThemeProvider = ({ children }) => {
     fetchSettings();
   }, [token]);
 
+  // Reset solo cuando cambia el token
+  useEffect(() => {
+    if (!token) {
+      hasInitialized.current = false;
+      lastTokenRef.current = null;
+    }
+  }, [token]);
+
   // Guardar tema en el backend cuando cambia
   const setTheme = async (newTheme) => {
+    // Prevenir múltiples actualizaciones simultáneas
+    if (isUpdatingRef.current || newTheme === theme || isLoading) {
+      return;
+    }
+
+    isUpdatingRef.current = true;
     setThemeState(newTheme);
 
-    if (token && !isLoading) {
+    if (token) {
       try {
-        await updateUserSettings({ interface_mode: newTheme }, token);
+        await updateUserSettings({ theme: newTheme }, token);
       } catch (error) {
         console.error("Error al guardar el tema:", error);
+        // Revertir cambio local en caso de error
+        setThemeState(theme);
+      } finally {
+        setTimeout(() => {
+          isUpdatingRef.current = false;
+        }, 100);
       }
     }
   };
@@ -85,8 +102,8 @@ export const ThemeProvider = ({ children }) => {
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
       const handleChange = (e) => {
-        if (isLoading) {
-          setThemeState(e.matches ? "dark" : "light");
+        if (!isLoading) {
+          setTheme(e.matches ? "dark" : "light");
         }
       };
 

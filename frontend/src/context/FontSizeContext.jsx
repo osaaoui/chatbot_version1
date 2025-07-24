@@ -9,14 +9,20 @@ export const FontSizeProvider = ({ children }) => {
   const [fontSize, setFontSizeState] = useState(16);
   const [isLoading, setIsLoading] = useState(true);
   const saveTimeoutRef = useRef(null);
+  const hasInitialized = useRef(false);
+  const lastTokenRef = useRef(null);
 
   // Cargar tamaño de fuente desde el backend
   useEffect(() => {
     const fetchSettings = async () => {
-      if (!token) {
-        setIsLoading(false);
+      // Evitar múltiples llamadas para el mismo token
+      if (!token || hasInitialized.current || lastTokenRef.current === token) {
+        if (!token) setIsLoading(false);
         return;
       }
+      
+      hasInitialized.current = true;
+      lastTokenRef.current = token;
       
       try {
         setIsLoading(true);
@@ -34,6 +40,14 @@ export const FontSizeProvider = ({ children }) => {
     fetchSettings();
   }, [token]);
 
+  // Reset solo cuando cambia el token
+  useEffect(() => {
+    if (!token) {
+      hasInitialized.current = false;
+      lastTokenRef.current = null;
+    }
+  }, [token]);
+
   // Setter personalizado con debounce
   const setFontSize = (size) => {
     setFontSizeState(size);
@@ -45,7 +59,7 @@ export const FontSizeProvider = ({ children }) => {
     
     // Configurar nuevo timeout de 3 segundos
     saveTimeoutRef.current = setTimeout(() => {
-      if (token) {
+      if (token && !isLoading) {
         updateUserSettings({ font_size: size }, token).catch(error => {
           console.error("Error al guardar el tamaño de fuente:", error);
         });

@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useEffect } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react"
 import { folderService } from "../services/folderService"
 import { useAuth } from "./AuthProvider"
 
@@ -18,6 +18,7 @@ export const FoldersProvider = ({ children }) => {
   const { user, token } = useAuth() 
   const [foldersByDocumentBase, setFoldersByDocumentBase] = useState({})
   const [error, setError] = useState(null)
+  const lastTokenRef = useRef(null)
 
   const getFoldersForDocumentBase = useCallback(
     (documentBaseId) => {
@@ -59,11 +60,10 @@ export const FoldersProvider = ({ children }) => {
           return response
         } else {
           setError(response.message || "Error creating folder")
-          return response
+          throw new Error(response.message || "Error creating folder")
         }
       } catch (err) {
-        const errorMessage = err.message || "Error creating folder"
-        setError(errorMessage)
+        setError(err.message || "Error creating folder")
         throw err
       }
     },
@@ -80,11 +80,10 @@ export const FoldersProvider = ({ children }) => {
           return response
         } else {
           setError(response.message || "Error updating folder")
-          return response
+          throw new Error(response.message || "Error updating folder")
         }
       } catch (err) {
-        const errorMessage = err.message || "Error updating folder"
-        setError(errorMessage)
+        setError(err.message || "Error updating folder")
         throw err
       }
     },
@@ -92,15 +91,12 @@ export const FoldersProvider = ({ children }) => {
   )
 
   const updateFolderStatus = useCallback((folderId, documentBaseId, newStatus) => {
-    setFoldersByDocumentBase((prev) => {
-      const updatedFolders = (prev[documentBaseId] || []).map((folder) =>
+    setFoldersByDocumentBase((prev) => ({
+      ...prev,
+      [documentBaseId]: prev[documentBaseId]?.map((folder) =>
         folder.folder_id === folderId ? { ...folder, status: newStatus } : folder,
-      )
-      return {
-        ...prev,
-        [documentBaseId]: updatedFolders,
-      }
-    })
+      ) || [],
+    }))
   }, [])
 
   const deleteFolder = useCallback(
@@ -113,11 +109,10 @@ export const FoldersProvider = ({ children }) => {
           return response
         } else {
           setError(response.message || "Error deleting folder")
-          return response
+          throw new Error(response.message || "Error deleting folder")
         }
       } catch (err) {
-        const errorMessage = err.message || "Error deleting folder"
-        setError(errorMessage)
+        setError(err.message || "Error deleting folder")
         throw err
       }
     },
@@ -130,18 +125,20 @@ export const FoldersProvider = ({ children }) => {
       const folderMap = new Map()
       const rootFolders = []
 
+      // Create a map of all folders
       folders.forEach((folder) => {
         folderMap.set(folder.folder_id, { ...folder, children: [] })
       })
 
+      // Build the hierarchy
       folders.forEach((folder) => {
-        if (folder.parent_folder_id) {
+        if (folder.parent_folder_id === null) {
+          rootFolders.push(folderMap.get(folder.folder_id))
+        } else {
           const parent = folderMap.get(folder.parent_folder_id)
           if (parent) {
             parent.children.push(folderMap.get(folder.folder_id))
           }
-        } else {
-          rootFolders.push(folderMap.get(folder.folder_id))
         }
       })
 
@@ -153,13 +150,16 @@ export const FoldersProvider = ({ children }) => {
   const clearFoldersData = useCallback(() => {
     setFoldersByDocumentBase({})
     setError(null)
+    lastTokenRef.current = null
   }, [])
 
   useEffect(() => {
     if (!user || !token) {
       clearFoldersData()
     }
-  }, [user, token, clearFoldersData])
+    // Actualizar referencia del token
+    lastTokenRef.current = token
+  }, [user, token]) // Eliminar clearFoldersData
 
   const value = {
     foldersByDocumentBase,

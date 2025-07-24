@@ -3,7 +3,6 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { useAuth } from "../../context/AuthProvider"
 import ChatMessage from "./ChatMessage"
-import ConversationsModal from "./ConversationsModal"
 import ChatHeader from "./ChatHeader"
 import ChatInput from "./ChatInput"
 import ChatMessagesArea from "./ChatMessageArea"
@@ -111,12 +110,7 @@ function ChatPane({
         currentConversation={currentConversation}
         toggleSidebar={toggleSidebar}
         onShowConversations={() => setShowConversations(true)}
-      />
-      <ConversationsModal
-        isOpen={showConversations}
-        onClose={() => setShowConversations(false)}
         conversations={conversations}
-        currentConversation={currentConversation}
         isLoadingConversations={isLoadingConversations}
         onSelectConversation={(conv) => selectConversation(token, conv)}
         onCreateNew={handleCreateNewConversation}

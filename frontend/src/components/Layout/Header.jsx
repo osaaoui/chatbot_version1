@@ -1,149 +1,56 @@
-import React, { useState, useRef } from "react";
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
 import { useAuth } from "../../context/AuthProvider";
-import { useProfileImage } from "../../context/useProfileImage"; 
+import { useProfileImage } from "../../context/useProfileImage";
+
+// UI Components
 import Separator from "../ui/Separator";
 import Avatar from "../ui/Avatar";
 import Modal from "../ui/Modal";
 import ButtonGroup from "../ui/ButtonGroup";
 import CompanyInfo from "../ui/CompanyInfo";
-import EmpresaContent from "../Enterprise/Enterprise";
-import EquiposContent from "../Teams/Teams";
-import TermsAndConditions from "../TermsAndConditions/TermsAndConditions";
+
+// Header specific components
+import PlanSelector from "./Header/PlanSelector"; // ← Agregar este import
+import { useHeaderButtons, useAvatarMenuItems } from "./Header/headerConfig";
+import { useModalConfig } from "./Header/useModalConfig";
+
+// Specific modals
 import ProfileModal from "../Profile/ProfileModal";
 import SecurityModal from "../Security/SecurityModal";
+import CurrentPlanModal from "../Plan/CurrentPlanModal";
 
 const Header = () => {
   const { user, logout } = useAuth();
-  const { t } = useTranslation();
   const { profileImage } = useProfileImage();
   const [activeModal, setActiveModal] = useState(null);
-  const empresaRef = useRef(null);
 
   const openModal = (modalType) => setActiveModal(modalType);
   const closeModal = () => setActiveModal(null);
 
-  const handleLogout = () => {
-    logout();
-  };
+  // Custom hooks para configuración
+  const headerButtons = useHeaderButtons(openModal);
+  const avatarMenuItems = useAvatarMenuItems(openModal, logout);
+  const modalConfig = useModalConfig(closeModal);
 
-  const handleSaveCompany = async () => {
-    if (empresaRef.current?.saveCompanyData) {
-      const result = await empresaRef.current.saveCompanyData();
-      if (result.success) {
-        alert(t('company.success.dataSaved'));
-        closeModal();
-      } else {
-        alert(t('company.errors.savingData'));
-      }
-    }
-  };
+  // Effect para manejar el evento del plan actual
+  React.useEffect(() => {
+    const handleOpenCurrentPlanModal = () => {
+      setActiveModal('currentPlan');
+    };
+
+    document.addEventListener('openCurrentPlanModal', handleOpenCurrentPlanModal);
+    
+    return () => {
+      document.removeEventListener('openCurrentPlanModal', handleOpenCurrentPlanModal);
+    };
+  }, []);
 
   const handleSecuritySave = async (securityData) => {
     try {
-      // Aquí iría la lógica para guardar los cambios de seguridad
-      console.log('Saving security changes:', securityData);
+      console.log("Saving security changes:", securityData);
       return Promise.resolve();
     } catch (error) {
       return Promise.reject(error);
-    }
-  };
-
-  const headerButtons = [
-    {
-      text: t('header.company'),
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M13 3a2 2 0 0 1 1.995 1.85L15 5v4h3a2 2 0 0 1 1.995 1.85L20 11v8h1a1 1 0 0 1 .117 1.993L21 21H3a1 1 0 0 1-.117-1.993L3 19h1V5a2 2 0 0 1 1.85-1.995L6 3h7Zm5 8h-3v8h3v-8Zm-5-6H6v14h7V5Zm-2 10v2H8v-2h3Zm0-4v2H8v-2h3Zm0-4v2H8V7h3Z"/>
-        </svg>
-      ),
-      onClick: () => openModal('company'),
-      variant: 'primary'
-    },
-    {
-      text: t('header.teams'),
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 12c1.873 0 3.57.62 4.815 1.487c1.183.825 2.185 2.051 2.185 3.37c0 .724-.309 1.324-.796 1.77c-.458.421-1.056.694-1.672.88C15.301 19.88 13.68 20 12 20c-1.68 0-3.301-.12-4.532-.493c-.616-.186-1.214-.459-1.673-.88C5.31 18.182 5 17.582 5 16.858c0-1.319 1.002-2.545 2.185-3.37C8.43 12.62 10.127 12 12 12m7 1c1.044 0 1.992.345 2.693.833c.64.447 1.307 1.19 1.307 2.096c0 .517-.225.946-.56 1.253c-.306.281-.684.446-1.029.55c-.47.142-1.025.215-1.601.247c.122-.345.19-.72.19-1.122c0-1.535-.959-2.839-2.032-3.744A4.78 4.78 0 0 1 19 13M5 13c.357 0 .703.04 1.032.113C4.96 14.018 4 15.322 4 16.857c0 .402.068.777.19 1.122c-.576-.032-1.13-.105-1.601-.247c-.345-.104-.723-.269-1.03-.55A1.677 1.677 0 0 1 1 15.93c0-.905.666-1.649 1.307-2.096A4.756 4.756 0 0 1 5 13m13.5-6a2.5 2.5 0 1 1 0 5a2.5 2.5 0 0 1 0-5m-13 0a2.5 2.5 0 1 1 0 5a2.5 2.5 0 0 1 0-5M12 3a4 4 0 1 1 0 8a4 4 0 0 1 0-8"/>
-        </svg>
-      ),
-      onClick: () => openModal('teams'),
-      variant: 'primary'
-    },
-    { 
-      text: t('header.yourPlan'),
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22L12 18.77L5.82 22L7 14.14l-5-4.87l6.91-1.01L12 2m0 4.68L10.36 10l-3.56.51l2.58 2.51l-.61 3.55L12 14.85l3.23 1.72l-.61-3.55L17.2 10.51L13.64 10L12 6.68Z"/>
-        </svg>
-      ),
-      onClick: () => console.log('Showing plan information...'),
-      variant: 'primary'
-    }
-  ];
-
-  const avatarMenuItems = [
-    { 
-      label: t('avatar.myProfile'), 
-      onClick: () => openModal('profile'),
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"/>
-        </svg>
-      )
-    },
-    { 
-      label: t('avatar.legal'), 
-      onClick: () => openModal('legal'),
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6m4 18H6V4h7v5h5v11M8 12v1h8v-1H8m0 3v1h8v-1H8m0-6v1h5v-1H8"/>
-        </svg>
-      )
-    },
-    { 
-      label: t('avatar.security'), 
-      onClick: () => openModal('security'),
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5l-9-4m0 6c1.4 0 2.8 1.1 2.8 2.5V11c.6 0 1.2.6 1.2 1.3v3.5c0 .6-.6 1.2-1.3 1.2H9.3c-.7 0-1.3-.6-1.3-1.2v-3.5C8 11.6 8.6 11 9.2 11v-1.5C9.2 8.1 10.6 7 12 7m0 1.2c-.8 0-1.5.5-1.5 1.3V11h3v-1.5c0-.8-.7-1.3-1.5-1.3"/>
-        </svg>
-      )
-    },
-    { separator: true },
-    { 
-      label: t('avatar.logout'), 
-      onClick: handleLogout,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M16 17v-3H9v-4h7V7l5 5l-5 5M14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9Z"/>
-        </svg>
-      )
-    },
-  ];
-
-  const modalConfig = {
-    company: {
-      buttons: [
-        { label: t('modal.close'), onClick: closeModal, variant: "secondary" },
-        { label: t('modal.save'), onClick: handleSaveCompany, variant: "primary" }
-      ],
-      content: <EmpresaContent ref={empresaRef} />,
-      size: "large"
-    },
-    teams: {
-      buttons: [
-        { label: t('modal.close'), onClick: closeModal, variant: "secondary" },
-        { label: t('modal.addTeam'), onClick: () => console.log("Add team"), variant: "primary" }
-      ],
-      content: <EquiposContent />
-    },
-    legal: {
-      buttons: [
-        { label: t('modal.close'), onClick: closeModal, variant: "secondary" }
-      ],
-      content: <TermsAndConditions />,
-      size: "large"
     }
   };
 
@@ -155,39 +62,44 @@ const Header = () => {
         <CompanyInfo />
         <Separator orientation="vertical" className="h-6 mx-4 bg-tertiary" />
         <ButtonGroup buttons={headerButtons} spacing="md" />
+        <PlanSelector /> {/* ← Agregar este componente */}
       </div>
-      
+
       <div className="flex items-center text-sm text-body">
         <Separator orientation="vertical" className="h-6 mr-4 bg-tertiary" />
-        <span className="mr-4">{user.fullName}</span> 
-        <Avatar 
-          name={user.fullName} 
+        <span className="mr-4">{user.fullName}</span>
+        <Avatar
+          name={user.fullName}
           menuItems={avatarMenuItems}
-          profileImage={profileImage} 
+          profileImage={profileImage}
         />
       </div>
-      
-      <ProfileModal 
-        isOpen={activeModal === 'profile'} 
-        onClose={closeModal} 
-      />
-      
-      <SecurityModal 
-        isOpen={activeModal === 'security'} 
+
+      {/* Modales específicos */}
+      <ProfileModal isOpen={activeModal === "profile"} onClose={closeModal} />
+      <SecurityModal
+        isOpen={activeModal === "security"}
         onClose={closeModal}
         onSave={handleSecuritySave}
       />
-      
-      {activeModal && !['profile', 'security'].includes(activeModal) && modalConfig[activeModal] && (
-        <Modal 
-          isOpen={true} 
-          onClose={closeModal}
-          buttons={modalConfig[activeModal].buttons}
-          size={modalConfig[activeModal].size}
-        >
-          {modalConfig[activeModal].content}
-        </Modal>
-      )}
+      <CurrentPlanModal 
+        isOpen={activeModal === "currentPlan"} 
+        onClose={closeModal} 
+      />
+
+      {/* Modales genéricos */}
+      {activeModal &&
+        !["profile", "security", "currentPlan"].includes(activeModal) &&
+        modalConfig[activeModal] && (
+          <Modal
+            isOpen={true}
+            onClose={closeModal}
+            buttons={modalConfig[activeModal].buttons}
+            size={modalConfig[activeModal].size}
+          >
+            {modalConfig[activeModal].content}
+          </Modal>
+        )}
     </header>
   );
 };

@@ -9,7 +9,13 @@ export const getUserSettings = async (token) => {
         Authorization: `Bearer ${token}`
       }
     });
-    return response.data.data;
+    
+    const data = response.data.data;
+    if (data && data.interface_mode) {
+      data.theme = data.interface_mode;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error al obtener la configuración del usuario:', error);
     throw error;
@@ -18,9 +24,15 @@ export const getUserSettings = async (token) => {
 
 export const updateUserSettings = async (settings, token) => {
   try {
+    const backendSettings = { ...settings };
+    if (backendSettings.theme) {
+      backendSettings.interface_mode = backendSettings.theme;
+      delete backendSettings.theme;
+    }
+    
     const response = await axios.patch(
       `${API_URL}/api/v2/settings/`, 
-      settings,
+      backendSettings,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -28,7 +40,13 @@ export const updateUserSettings = async (settings, token) => {
         }
       }
     );
-    return response.data.data;
+    
+    const data = response.data.data;
+    if (data && data.interface_mode) {
+      data.theme = data.interface_mode;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error al actualizar la configuración del usuario:', error);
     throw error;
