@@ -20,6 +20,7 @@ const EmpresaContent = forwardRef((props, ref) => {
 
   const [countries, setCountries] = useState([]);
   const [loadingCountries, setLoadingCountries] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // Estado para la carga inicial
   const [companyLogo, setCompanyLogo] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -36,6 +37,7 @@ const EmpresaContent = forwardRef((props, ref) => {
         setError(t('company.errors.countriesLoad'));
       } finally {
         setLoadingCountries(false);
+        setInitialLoading(false); // Finalizar la carga inicial
       }
     };
 
@@ -101,10 +103,14 @@ const EmpresaContent = forwardRef((props, ref) => {
     saveCompanyData: handleSave
   }), [handleSave]);
 
-  if (loading) {
+  // Mostrar estado de carga inicial (similar a ProfileModal)
+  if (loading || initialLoading) {
     return (
-      <div className="w-full flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="w-full flex flex-col items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+        <div className="text-center" style={{ color: 'var(--text-secondary)' }}>
+          {t('common.loading')}
+        </div>
       </div>
     );
   }
@@ -147,7 +153,7 @@ const EmpresaContent = forwardRef((props, ref) => {
             {t('company.selectCompany')}
           </label>
           <select
-            value={currentCompany?.company_id}
+            value={currentCompany?.company_id || ''}
             onChange={(e) => selectCompany(e.target.value)}
             className="input-base w-full"
           >
@@ -236,7 +242,7 @@ const EmpresaContent = forwardRef((props, ref) => {
           <Input
             name="company_name"
             label={`${t('company.companyName')} *`}
-            value={currentCompany.company_name}
+            value={currentCompany.company_name || ''}
             onChange={handleFormInputChange}
             required
             allowNumbers={true}
@@ -251,7 +257,7 @@ const EmpresaContent = forwardRef((props, ref) => {
             type="email"
             name="company_email"
             label={t('company.companyEmail')}
-            value={currentCompany.company_email}
+            value={currentCompany.company_email || ''}
             onChange={handleFormInputChange}
             allowNumbers={true}
             allowLetters={true}
@@ -304,7 +310,7 @@ const EmpresaContent = forwardRef((props, ref) => {
           <Input
             name="postal_code"
             label={t('company.postalCode')}
-            value={currentCompany.postal_code}
+            value={currentCompany.postal_code || ''}
             onChange={handleFormInputChange}
             allowNumbers={true}
             allowLetters={true}

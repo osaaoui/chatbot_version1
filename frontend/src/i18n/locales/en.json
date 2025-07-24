@@ -7,11 +7,28 @@
   "avatar": {
     "myAccount": "My Account",
     "myProfile": "My Profile",
+    "security": "Security",
     "textOnly": "Text Only",
     "logout": "Logout",
     "legal": "Terms & Conditions",
     "settings": "Settings",
     "help": "Help"
+  },
+  "security": {
+    "title": "Security Settings",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "passwordRequirements": "Password must be at least 8 characters and include uppercase, lowercase, numbers, and special characters.",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "enable2FA": "Enable 2FA",
+    "twoFactorDescription": "Add an extra layer of security to your account",
+    "placeholders": {
+      "currentPassword": "Enter current password",
+      "newPassword": "Enter new password",
+      "confirmPassword": "Confirm new password"
+    }
   },
   "buttonModal": {
     "settings": "Settings",
@@ -31,6 +48,7 @@
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
+    "saveChanges": "Save Changes",
     "addTeam": "Add Team"
   },
   "profile": {
@@ -129,9 +147,10 @@
     "goToEnd": "Go to end",
     "dropFilesHere": "Drop files here to upload",
     "readDocs": "Read docs",
-    "enableDocumentReading": "Enable document reading",
-    "disableDocumentReading": "Disable document reading",
-    "documentReadingOff": "Document reading disabled"
+    "connectDocumentBase": "Connect document base",
+    "disconnectDocumentBase": "Disconnect document base",
+    "documentBaseConnected": "Document base connected",
+    "documentBaseDisconnected": "Document base disconnected"
   },
   "teams": {
     "title": "Work Teams",

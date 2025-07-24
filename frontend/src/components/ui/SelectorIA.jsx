@@ -4,6 +4,15 @@ import { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 
 const AIIcons = {
+  TIA: () => (
+    <div className="ml-[-4px]"> 
+      <img 
+        src="/img/image4.png" 
+        alt="TIA" 
+        className="w-7 h-7 object-contain flex-shrink-0" 
+      />
+    </div>
+  ),
   chatgpt: () => (
     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
       <path
@@ -79,6 +88,11 @@ const AIIcons = {
 
 export const AI_MODELS = [
   {
+    id: 'tia',
+    name: 'TIA',
+    icon: AIIcons.TIA,
+  },
+  {
     id: 'chatgpt',
     name: 'ChatGPT',
     icon: AIIcons.chatgpt,
@@ -112,7 +126,7 @@ export const AI_MODELS = [
 
 export const SelectorIA = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedAI, setSelectedAI] = useState('chatgpt');
+  const [selectedAI, setSelectedAI] = useState('TIA');
   const dropdownRef = useRef(null);
 
   useEffect(() => {

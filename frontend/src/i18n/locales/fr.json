@@ -7,11 +7,28 @@
   "avatar": {
     "myAccount": "Mon Compte",
     "myProfile": "Mon Profil",
+    "security": "Sécurité",
     "textOnly": "Texte Seulement",
     "logout": "Déconnexion",
     "legal": "Conditions Générales",
     "settings": "Paramètres",
     "help": "Aide"
+  },
+  "security": {
+    "title": "Paramètres de Sécurité",
+    "changePassword": "Changer le Mot de Passe",
+    "currentPassword": "Mot de Passe Actuel",
+    "newPassword": "Nouveau Mot de Passe",
+    "confirmNewPassword": "Confirmer le Nouveau Mot de Passe",
+    "passwordRequirements": "Le mot de passe doit comporter au moins 8 caractères et inclure des majuscules, des minuscules, des chiffres et des caractères spéciaux.",
+    "twoFactorAuth": "Authentification à Deux Facteurs",
+    "enable2FA": "Activer 2FA",
+    "twoFactorDescription": "Ajoutez une couche de sécurité supplémentaire à votre compte",
+    "placeholders": {
+      "currentPassword": "Entrez le mot de passe actuel",
+      "newPassword": "Entrez le nouveau mot de passe",
+      "confirmPassword": "Confirmez le nouveau mot de passe"
+    }
   },
   "buttonModal": {
     "settings": "Paramètres",
@@ -31,6 +48,7 @@
     "edit": "Modifier",
     "save": "Enregistrer",
     "cancel": "Annuler",
+    "saveChanges": "Enregistrer les Modifications",
     "addTeam": "Ajouter Équipe"
   },
   "profile": {
@@ -129,9 +147,10 @@
     "goToEnd": "Aller à la fin",
     "dropFilesHere": "Déposez les fichiers ici pour télécharger",
     "readDocs": "Lire docs",
-    "enableDocumentReading": "Activer la lecture de documents",
-    "disableDocumentReading": "Désactiver la lecture de documents",
-    "documentReadingOff": "Lecture de documents désactivée"
+    "connectDocumentBase": "Connecter base de documents",
+    "disconnectDocumentBase": "Déconnecter base de documents",
+    "documentBaseConnected": "Base de documents connectée",
+    "documentBaseDisconnected": "Base de documents déconnectée"
   },
   "teams": {
     "title": "Équipes de Travail",

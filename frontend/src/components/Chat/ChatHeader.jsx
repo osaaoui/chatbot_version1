@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { PanelLeft, MessageSquare } from 'lucide-react';
-import SettingsModal from './Settings/SettingsModal';
+import SettingsModal from '../Profile/Settings/SettingsModal';
 
 const ChatHeader = ({ 
   currentConversation, 

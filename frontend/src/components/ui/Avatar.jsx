@@ -87,7 +87,7 @@ const Avatar = ({
                   }
                   setIsOpen(false)
                 }}
-                className="w-full text-left px-4 py-2 text-sm transition-colors"
+                className="w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-3"
                 style={{ color: "var(--text-secondary)" }}
                 onMouseEnter={(e) => {
                   e.target.style.backgroundColor = "var(--bg-tertiary)"
@@ -96,7 +96,12 @@ const Avatar = ({
                   e.target.style.backgroundColor = "transparent"
                 }}
               >
-                {item.label}
+                {item.icon && (
+                  <span style={{ color: "var(--text-tertiary)" }}>
+                    {item.icon}
+                  </span>
+                )}
+                <span>{item.label}</span>
               </button>
             )
           ))}

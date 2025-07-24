@@ -117,7 +117,7 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
                 borderColor: enableDocumentReading ? '#3b82f6' : 'var(--border-light)',
                 color: enableDocumentReading ? '#1d4ed8' : 'var(--text-secondary)'
               }}
-              title={enableDocumentReading ? t("chat.disableDocumentReading") : t("chat.enableDocumentReading")}
+              title={enableDocumentReading ? t("chat.disconnectDocumentBase") : t("chat.connectDocumentBase")}
             >
               <FileText 
                 className="w-3.5 h-3.5 transition-colors" 
@@ -164,12 +164,21 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
         <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
           {t("chat.enterToSend")}
         </p>
-        {!enableDocumentReading && (
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-            <p className="text-xs text-amber-600 font-medium">{t("chat.documentReadingOff")}</p>
-          </div>
-        )}
+        {/* Mostrar siempre el estado de la base de documentos */}
+        <div className="flex items-center gap-1.5">
+          <div 
+            className={`w-1.5 h-1.5 rounded-full ${
+              enableDocumentReading ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
+            }`}
+          />
+          <p 
+            className={`text-xs font-medium ${
+              enableDocumentReading ? 'text-green-600' : 'text-amber-600'
+            }`}
+          >
+            {enableDocumentReading ? t("chat.documentBaseConnected") : t("chat.documentBaseDisconnected")}
+          </p>
+        </div>
       </div>
     </footer>
   );
