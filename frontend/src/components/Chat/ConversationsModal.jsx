@@ -44,7 +44,7 @@ const ConversationsModal = ({
 
   return (
     <div 
-      className="bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-80 flex flex-col"
+      className="rounded-lg shadow-xl w-72 max-h-80 flex flex-col"
       style={{
         backgroundColor: "var(--bg-primary)",
         border: "1px solid var(--border-light)"
@@ -67,8 +67,16 @@ const ConversationsModal = ({
         </h3>
         <button
           onClick={closeModal}
-          className="p-1 rounded hover:bg-gray-100 transition-colors"
+          className="p-1 rounded transition-colors"
           style={{ color: "var(--text-tertiary)" }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "var(--bg-tertiary)"
+            e.target.style.color = "var(--text-secondary)"
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent"
+            e.target.style.color = "var(--text-tertiary)"
+          }}
         >
           <X className="w-4 h-4" />
         </button>
@@ -105,13 +113,21 @@ const ConversationsModal = ({
                 <div
                   key={conv.conversation_id}
                   onClick={() => handleSelectConversation(conv)}
-                  className={`p-2 rounded cursor-pointer text-xs transition-colors hover:bg-gray-50 ${
-                    isActive ? 'bg-blue-50 border-blue-200' : ''
-                  }`}
+                  className="p-2 rounded cursor-pointer text-xs transition-colors"
                   style={{
-                    backgroundColor: isActive ? "rgba(59, 130, 246, 0.1)" : "transparent",
-                    border: isActive ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid transparent",
-                    color: isActive ? "var(--color-primary-dark)" : "var(--text-primary)"
+                    backgroundColor: isActive ? "var(--bg-tertiary)" : "transparent",
+                    border: isActive ? "1px solid var(--border-medium)" : "1px solid transparent",
+                    color: isActive ? "var(--text-primary)" : "var(--text-primary)"
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.target.style.backgroundColor = "var(--bg-tertiary)"
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.target.style.backgroundColor = "transparent"
+                    }
                   }}
                 >
                   <div className="font-medium truncate mb-1" title={conv.title}>
@@ -120,7 +136,7 @@ const ConversationsModal = ({
                   <div 
                     className="text-[10px]"
                     style={{ 
-                      color: isActive ? "rgba(59, 130, 246, 0.8)" : "var(--text-tertiary)" 
+                      color: "var(--text-tertiary)"
                     }}
                   >
                     {formatDate(conv.last_modification_date)}
@@ -144,11 +160,19 @@ const ConversationsModal = ({
               value={newConversationTitle}
               onChange={(e) => setNewConversationTitle(e.target.value)}
               placeholder={t("chat.conversationName")}
-              className="w-full px-2 py-1.5 rounded border text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-2 py-1.5 rounded border text-xs focus:outline-none transition-colors"
               style={{
                 backgroundColor: "var(--bg-primary)",
                 border: "1px solid var(--border-medium)",
                 color: "var(--text-primary)"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "var(--border-medium)"
+                e.target.style.boxShadow = "0 0 0 1px var(--border-medium)"
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "var(--border-medium)"
+                e.target.style.boxShadow = "none"
               }}
               autoFocus
               onKeyDown={(e) => {
@@ -165,7 +189,24 @@ const ConversationsModal = ({
               <button
                 onClick={handleCreateNew}
                 disabled={!newConversationTitle.trim() || isCreating}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-medium transition-colors"
+                style={{
+                  backgroundColor: "var(--bg-secondary-dark)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-medium)",
+                  opacity: (!newConversationTitle.trim() || isCreating) ? 0.5 : 1,
+                  cursor: (!newConversationTitle.trim() || isCreating) ? "not-allowed" : "pointer"
+                }}
+                onMouseEnter={(e) => {
+                  if (!(!newConversationTitle.trim() || isCreating)) {
+                    e.target.style.backgroundColor = "var(--bg-tertiary)"
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!(!newConversationTitle.trim() || isCreating)) {
+                    e.target.style.backgroundColor = "var(--bg-secondary-dark)"
+                  }
+                }}
               >
                 {isCreating ? (
                   <>
@@ -181,9 +222,17 @@ const ConversationsModal = ({
               </button>
               <button
                 onClick={handleCancelCreate}
-                className="px-2 py-1.5 rounded text-xs font-medium border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="px-2 py-1.5 rounded text-xs font-medium border transition-colors"
                 style={{
+                  backgroundColor: "transparent",
+                  border: "1px solid var(--border-medium)",
                   color: "var(--text-secondary)"
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "var(--bg-tertiary)"
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "transparent"
                 }}
               >
                 {t("common.cancel")}
@@ -193,9 +242,17 @@ const ConversationsModal = ({
         ) : (
           <button
             onClick={handleShowCreateForm}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-medium transition-colors"
             style={{
-              color: "var(--text-primary)"
+              backgroundColor: "var(--bg-secondary)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border-medium)"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = "var(--bg-tertiary)"
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = "var(--bg-secondary)"
             }}
           >
             <Plus className="w-3 h-3" />
