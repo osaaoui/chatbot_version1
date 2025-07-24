@@ -4,15 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 
 const AIIcons = {
-  TIA: () => (
-    <div className="ml-[-4px]"> 
-      <img 
-        src="/img/image4.png" 
-        alt="TIA" 
-        className="w-7 h-7 object-contain flex-shrink-0" 
-      />
-    </div>
-  ),
   chatgpt: () => (
     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
       <path
@@ -54,7 +45,7 @@ const AIIcons = {
     </svg>
   ),
   mistral: () => (
-    <svg viewBox="0 0 24 24" className="w-8 h-8" fill="currentColor">
+    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
       <path d="M10.204 9.544h.513l.212.765.073.299h.013l.072-.299.212-.765h.513v2.159h-.414v-.668l.0002-.035c.0036-.256.043-.745.065-.968h-.01l-.166.58-.168.52h-.237l-.171-.52-.155-.58h-.011l.005.052c.025.252.06.725.06.951v.668h-.407v-2.159Zm2.044 1.75h.504v-1.34h-.504v-.410h1.498v.410h-.504v1.34h.504v.410h-1.498v-.410Zm1.911.138.28-.336c.164.134.365.225.574.225.208 0 .303-.08.303-.186 0-.155-.128-.193-.333-.279l-.281-.12c-.24-.09-.458-.274-.458-.589 0-.357.322-.643.792-.643.26 0 .522.097.717.283l-.246.308c-.152-.109-.287-.169-.498-.169-.161 0-.27.067-.27.193 0 .13.145.177.352.255l.264.112c.283.106.462.282.462.587 0 .359-.301.67-.836.67-.292 0-.593-.107-.822-.312Zm2.572-1.477h-.648v-.410h1.784v.410H17.219v1.750h-.489v-1.750Zm1.959-.022h.238c.257 0 .395.072.395.285 0 .211-.138.322-.395.322h-.238v-.607Zm1.216 1.771-.489-.864c.231-.104.385-.305.385-.623 0-.508-.369-.67-.82-.673l-.782-.00005v2.159h.490v-.777h.257l.412.777h.547Zm.812-.894.051-.199.168-.696h.013c.037.163.081.338.123.504l.1.391h-.455Zm.683.894h.518l-.673-2.159h-.586l-.673 2.159h.500l.132-.513h.650l.131.513Zm.9-2.159h.488v1.750h.962v.410h-1.450v-2.159Z" />
       <path d="m10.772 14.273.051-.199.168-.696h.013c.037.163.081.338.123.504l.100.391h-.455Zm.683.895h.519l-.673-2.16h-.586l-.673 2.16h.500l.132-.514h.650l.131.514Zm.793-.411h.504v-1.34h-.504v-.410h1.498v.410h-.504v1.34h.504v.410h-1.498v-.410Zm1.933.625h1.600v.372H14.180v-.372Z" />
       <path d="M7.302 8.245h-1.41v1.411h1.41V8.245Z" fill="#f7d046" />
@@ -87,12 +78,6 @@ const AIIcons = {
 };
 
 export const AI_MODELS = [
-  {
-    id: 'TIA',
-    name: 'TIA',
-    icon: AIIcons.TIA,
-    color: 'text-gray-600'
-  },
   {
     id: 'chatgpt',
     name: 'ChatGPT',
@@ -127,7 +112,7 @@ export const AI_MODELS = [
 
 export const SelectorIA = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedAI, setSelectedAI] = useState('TIA');
+  const [selectedAI, setSelectedAI] = useState('chatgpt');
   const dropdownRef = useRef(null);
 
   useEffect(() => {

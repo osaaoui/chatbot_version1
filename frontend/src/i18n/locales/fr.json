@@ -6,7 +6,7 @@
   },
   "avatar": {
     "myAccount": "Mon Compte",
-    "myProfile": "Mon Profil", 
+    "myProfile": "Mon Profil",
     "textOnly": "Texte Seulement",
     "logout": "Déconnexion",
     "legal": "Conditions Générales",
@@ -17,7 +17,7 @@
     "settings": "Paramètres",
     "language": "Langue",
     "fontSize": "Taille de police",
-    "appearance": "Apparence", 
+    "appearance": "Apparence",
     "light": "Clair",
     "dark": "Sombre"
   },
@@ -127,7 +127,11 @@
     "create": "Créer",
     "newConversationButton": "Nouvelle Conversation",
     "goToEnd": "Aller à la fin",
-    "dropFilesHere": "Déposez les fichiers ici pour télécharger"
+    "dropFilesHere": "Déposez les fichiers ici pour télécharger",
+    "readDocs": "Lire docs",
+    "enableDocumentReading": "Activer la lecture de documents",
+    "disableDocumentReading": "Désactiver la lecture de documents",
+    "documentReadingOff": "Lecture de documents désactivée"
   },
   "teams": {
     "title": "Équipes de Travail",

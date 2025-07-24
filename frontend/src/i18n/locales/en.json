@@ -15,7 +15,7 @@
   },
   "buttonModal": {
     "settings": "Settings",
-    "language": "Language", 
+    "language": "Language",
     "fontSize": "Font Size",
     "appearance": "Appearance",
     "light": "Light",
@@ -127,7 +127,11 @@
     "create": "Create",
     "newConversationButton": "New Conversation",
     "goToEnd": "Go to end",
-    "dropFilesHere": "Drop files here to upload"
+    "dropFilesHere": "Drop files here to upload",
+    "readDocs": "Read docs",
+    "enableDocumentReading": "Enable document reading",
+    "disableDocumentReading": "Disable document reading",
+    "documentReadingOff": "Document reading disabled"
   },
   "teams": {
     "title": "Work Teams",

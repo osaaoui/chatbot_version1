@@ -16,7 +16,7 @@
   "buttonModal": {
     "settings": "Configuración",
     "language": "Idioma",
-    "fontSize": "Tamaño de fuente", 
+    "fontSize": "Tamaño de fuente",
     "appearance": "Apariencia",
     "light": "Claro",
     "dark": "Oscuro"
@@ -127,7 +127,11 @@
     "create": "Crear",
     "newConversationButton": "Nueva Conversación",
     "goToEnd": "Ir al final",
-    "dropFilesHere": "Suelta los archivos aquí para subir"
+    "dropFilesHere": "Suelta los archivos aquí para subir",
+    "readDocs": "Leer docs",
+    "enableDocumentReading": "Habilitar lectura de documentos",
+    "disableDocumentReading": "Deshabilitar lectura de documentos",
+    "documentReadingOff": "Lectura de documentos desactivada"
   },
   "teams": {
     "title": "Equipos de Trabajo",
