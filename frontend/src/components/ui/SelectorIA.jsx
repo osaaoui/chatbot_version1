@@ -150,9 +150,9 @@ export const SelectorIA = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="btn-secondary flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium"
+        className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-md border transition-all duration-200 hover:shadow-sm"
         style={{
-          backgroundColor: 'var(--bg-secondary)',
+          backgroundColor: 'var(--bg-primary)',
           borderColor: 'var(--border-light)',
           color: 'var(--text-primary)'
         }}
@@ -166,18 +166,17 @@ export const SelectorIA = () => {
       
       {isDropdownOpen && (
         <div 
-          className="absolute bottom-full mb-1 left-0 py-0.5 min-w-[100px] z-20 shadow-lg"
+          className="absolute bottom-full mb-1 left-0 py-0.5 min-w-[100px] z-20 shadow-lg rounded-md border"
           style={{
             backgroundColor: 'var(--bg-primary)',
-            border: '1px solid var(--border-light)',
-            borderRadius: 'var(--radius-md)'
+            borderColor: 'var(--border-light)'
           }}
         >
           {AI_MODELS.map((ai) => (
             <button
               key={ai.id}
               onClick={() => handleAISelect(ai.id)}
-              className={`w-full flex items-center gap-1.5 px-2 py-1 text-left text-xs transition-colors ${
+              className={`w-full flex items-center gap-1.5 px-2 py-1 text-left text-xs transition-colors rounded-sm ${
                 selectedAI === ai.id ? 'font-medium' : ''
               }`}
               style={{
