@@ -2,11 +2,23 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, UploadCloud, Send } from "lucide-react";
-import { SelectorIA } from "../ui/SelectorIA"; 
+import {
+  Loader2,
+  UploadCloud,
+  Send,
+  Database,
+  DatabaseZap,
+} from "lucide-react";
+import { SelectorIA } from "../ui/SelectorIA";
 import Separator from "../ui/Separator";
 
-const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentConversation, onFilesDropped,
+const ChatInput = ({
+  question,
+  onQuestionChange,
+  onSubmit,
+  isLoading,
+  currentConversation,
+  onFilesDropped,
 }) => {
   const { t } = useTranslation();
   const textareaRef = useRef(null);
@@ -57,21 +69,26 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
         onFilesDropped(files);
       }
     },
-    [onFilesDropped],
+    [onFilesDropped]
   );
 
   return (
-    <footer className="flex-shrink-0 border-t px-6 py-3" style={{ 
-      borderColor: 'var(--border-light)', 
-      backgroundColor: 'var(--bg-primary)' 
-    }}>
+    <footer
+      className="flex-shrink-0 border-t px-6 py-3"
+      style={{
+        borderColor: "var(--border-light)",
+        backgroundColor: "var(--bg-primary)",
+      }}
+    >
       <div
         className={`relative flex items-center gap-3 p-3 rounded-2xl border-2 transition-all duration-200 shadow-sm ${
           isDragOver ? "border-blue-500" : ""
         }`}
         style={{
-          backgroundColor: isDragOver ? 'rgba(59, 130, 246, 0.1)' : 'var(--bg-primary)',
-          borderColor: isDragOver ? '#3b82f6' : 'var(--border-light)'
+          backgroundColor: isDragOver
+            ? "rgba(59, 130, 246, 0.1)"
+            : "var(--bg-primary)",
+          borderColor: isDragOver ? "#3b82f6" : "var(--border-light)",
         }}
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
@@ -79,11 +96,16 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
         onDrop={handleDrop}
       >
         {isDragOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-2xl" style={{
-            backgroundColor: 'rgba(59, 130, 246, 0.15)'
-          }}>
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-2xl"
+            style={{
+              backgroundColor: "rgba(59, 130, 246, 0.15)",
+            }}
+          >
             <UploadCloud className="w-8 h-8 text-blue-600 mb-2" />
-            <p className="text-blue-700 font-medium">{t("chat.dropFilesHere")}</p>
+            <p className="text-blue-700 font-medium">
+              {t("chat.dropFilesHere")}
+            </p>
           </div>
         )}
 
@@ -93,58 +115,76 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
           value={question}
           onChange={onQuestionChange}
           onKeyDown={handleKeyDown}
-          placeholder={currentConversation ? t("chat.continueConversationPlaceholder") : t("chat.askToStart")}
+          placeholder={
+            currentConversation
+              ? t("chat.continueConversationPlaceholder")
+              : t("chat.askToStart")
+          }
           className="flex-1 resize-none bg-transparent border-none outline-none text-sm leading-6 max-h-32"
-          style={{ 
-            minHeight: '24px',
-            color: 'var(--text-primary)',
+          style={{
+            minHeight: "24px",
+            color: "var(--text-primary)",
           }}
           disabled={isLoading}
         />
 
-        <div className="flex items-center gap-3">
-          {/* Document Reading Switch */}
-          <div className="flex flex-col items-center gap-1">
-            <button
-              onClick={() => setEnableDocumentReading(!enableDocumentReading)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                enableDocumentReading 
-                  ? 'bg-blue-600' 
-                  : 'bg-gray-300'
-              }`}
-              style={{
-                backgroundColor: enableDocumentReading ? '#2563eb' : 'var(--text-tertiary)'
-              }}
-              title={enableDocumentReading ? t("chat.disconnectDocumentBase") : t("chat.connectDocumentBase")}
-            >
-              <span
-                className={`inline-block h-3 w-3 transform rounded-full bg-white transition duration-200 ${
-                  enableDocumentReading ? 'translate-x-5' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            <span 
-              className="text-xs font-medium text-center"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              {enableDocumentReading ? t("chat.disconnectDocumentBase") : t("chat.connectDocumentBase")}
-            </span>
-          </div>
-
-          <Separator orientation="vertical" />
-
+        <div className="flex flex-col items-center gap-2">
           <SelectorIA />
-          
+          <button
+            onClick={() => setEnableDocumentReading(!enableDocumentReading)}
+            className="flex items-center gap-2 px-1 py-1 rounded-full text-xs font-medium transition-all duration-200"
+            style={{
+              backgroundColor: enableDocumentReading
+                ? "var(--color-secondary-dark)"
+                : "var(--bg-tertiary)",
+              color: enableDocumentReading
+                ? "var(--text-primary)"
+                : "var(--text-secondary)",
+              border: `1px solid ${
+                enableDocumentReading
+                  ? "var(--border-medium)"
+                  : "var(--border-light)"
+              }`,
+            }}
+            title={
+              enableDocumentReading
+                ? t("chat.disconnectDocumentBase")
+                : t("chat.connectDocumentBase")
+            }
+          >
+            {enableDocumentReading ? (
+              <>
+                <DatabaseZap className="h-3.5 w-3.5" />
+                <div
+                  className="w-2 h-2 rounded-full ml-1"
+                  style={{ backgroundColor: "var(--color-success)" }}
+                />
+              </>
+            ) : (
+              <>
+                <Database className="h-3.5 w-3.5" />
+                <div
+                  className="w-2 h-2 rounded-full ml-1"
+                  style={{ backgroundColor: "var(--text-tertiary)" }}
+                />
+              </>
+            )}
+          </button>
         </div>
+
+        <Separator orientation="vertical" />
 
         <button
           onClick={onSubmit}
           disabled={!question.trim() || isLoading}
           className="flex-shrink-0 p-2.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
           style={{
-            backgroundColor: (!question.trim() || isLoading) ? 'var(--text-tertiary)' : '#3b82f6',
-            color: 'white',
-            cursor: (!question.trim() || isLoading) ? 'not-allowed' : 'pointer'
+            backgroundColor:
+              !question.trim() || isLoading
+                ? "var(--text-tertiary)"
+                : "#3b82f6",
+            color: "white",
+            cursor: !question.trim() || isLoading ? "not-allowed" : "pointer",
           }}
           title={t("chat.sendButton")}
         >
@@ -155,23 +195,27 @@ const ChatInput = ({ question, onQuestionChange, onSubmit, isLoading, currentCon
           )}
         </button>
       </div>
-      
+
       <div className="flex items-center justify-between mt-3 px-2">
-        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+        <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
           {t("chat.enterToSend")}
         </p>
         <div className="flex items-center gap-1.5">
-          <div 
+          <div
             className={`w-1.5 h-1.5 rounded-full ${
-              enableDocumentReading ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
+              enableDocumentReading
+                ? "bg-green-500"
+                : "bg-amber-500 animate-pulse"
             }`}
           />
-          <p 
+          <p
             className={`text-xs font-medium ${
-              enableDocumentReading ? 'text-green-600' : 'text-amber-600'
+              enableDocumentReading ? "text-green-600" : "text-amber-600"
             }`}
           >
-            {enableDocumentReading ? t("chat.documentBaseConnected") : t("chat.documentBaseDisconnected")}
+            {enableDocumentReading
+              ? t("chat.documentBaseConnected")
+              : t("chat.documentBaseDisconnected")}
           </p>
         </div>
       </div>
