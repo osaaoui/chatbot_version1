@@ -12,7 +12,6 @@ const DocumentBaseManager = ({
   return (
     <div 
       className="w-full h-full flex flex-col overflow-x-hidden"
-      style={{ backgroundColor: "var(--bg-secondary)" }}
     >
       <div className="mb-4">
         <CreateDocumentBase />

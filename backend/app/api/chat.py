@@ -1,7 +1,7 @@
 # app/api/chat.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.services.qa_service import get_answer
+from app.services.qa_service_pg import get_answer
 from app.services.postgresql.message_service import MessageService
 from app.models.postgresql.message import  MessageCreate, MessageRequest
 router = APIRouter()

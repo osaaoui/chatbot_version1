@@ -61,7 +61,7 @@ const Sidebar = ({
   
  
   return (
-    <div className="bg-bg-secondary flex flex-col items-center w-80 h-full px-4 pt-6 pb-6 border-r border-border-light flex-shrink-0">
+    <div className="bg-bg-secondary flex flex-col items-center w-96 h-full px-4 pt-6 pb-6 border-r border-border-light flex-shrink-0">
       <div className="w-full mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="flex items-center gap-2 text-base font-semibold text-text-secondary">
@@ -71,7 +71,7 @@ const Sidebar = ({
         </div>
       </div>
 
-      <div className="w-full flex-1 overflow-y-auto">
+      <div className="w-96 p-4 flex-1 overflow-y-auto">
         <DocumentBaseManager 
           onProcessFiles={onProcess}
           isProcessing={isProcessing}
@@ -97,7 +97,7 @@ const Sidebar = ({
         <button
           onClick={onProcess}
           disabled={isProcessing}
-          className={`w-full px-4 py-2 border rounded-md transition font-medium ${
+          className={`w-full py-2 border rounded-md transition font-medium ${
             isProcessing
               ? "bg-bg-primary cursor-not-allowed"
               : "bg-bg-primary hover:bg-bg-tertiary"

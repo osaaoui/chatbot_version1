@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import { documentBaseService } from "../services/documentBaseService"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "./AuthProvider"
+import { useCompany } from "./CompanyContext"
 
 const DocumentBasesContext = createContext()
 
@@ -17,18 +18,18 @@ export const useDocumentBases = () => {
 
 export const DocumentBasesProvider = ({ children }) => {
   const { t } = useTranslation()
-  const { user, token } = useAuth() // Agregar dependencia de auth
+  const { user, token } = useAuth()
+  const { companyId } = useCompany()
   const [documentBases, setDocumentBases] = useState([])
-  const [initialLoading, setInitialLoading] = useState(false) // Cambiar a false inicialmente
+  const [initialLoading, setInitialLoading] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false) // Nuevo estado para refresh
   const [error, setError] = useState(null)
   const hasInitialized = useRef(false)
   const lastTokenRef = useRef(null)
   
-  // Memoizar el mensaje de timeout para evitar re-renders
   const sessionTimeoutMessage = useRef("Due to inactivity, your session has been closed. We're protecting your information. Please log back in to continue chatting.")
 
-  const fetchDocumentBases = useCallback(async () => {
-    // Evitar múltiples llamadas para el mismo token
+  const fetchDocumentBases = useCallback(async (isRefresh = false) => {
     if (!user || !token || lastTokenRef.current === token) {
       return
     }
@@ -36,7 +37,13 @@ export const DocumentBasesProvider = ({ children }) => {
     hasInitialized.current = true
     lastTokenRef.current = token
     setError(null)
-    setInitialLoading(true)
+    
+    // Usar diferentes estados de loading según el contexto
+    if (isRefresh) {
+      setIsRefreshing(true)
+    } else {
+      setInitialLoading(true)
+    }
     
     try {
       const response = await documentBaseService.getDocumentBases()
@@ -49,17 +56,47 @@ export const DocumentBasesProvider = ({ children }) => {
     } catch (err) {
       setError(err.message || sessionTimeoutMessage.current)
     } finally {
-      setInitialLoading(false)
+      if (isRefresh) {
+        setIsRefreshing(false)
+      } else {
+        setInitialLoading(false)
+      }
     }
-  }, [user, token]) // Eliminar 't' de las dependencias
+  }, [user, token])
 
   const createDocumentBase = useCallback(
     async (data) => {
+      if (!companyId) {
+        const errorMessage = t("errors.noCompanySelected", {
+          defaultValue: "No company selected. Please select a company first.",
+        })
+        setError(errorMessage)
+        throw new Error(errorMessage)
+      }
+
       setError(null)
       try {
-        const response = await documentBaseService.createDocumentBase(data)
+        const dataWithCompanyId = {
+          ...data,
+          company_id: companyId
+        }
+        
+        const response = await documentBaseService.createDocumentBase(dataWithCompanyId)
         if (response.success) {
-          await fetchDocumentBases()
+          // Actualización optimista: agregar inmediatamente el nuevo documento base
+          const newDocumentBase = {
+            document_base_id: response.data?.document_base_id || Date.now(),
+            base_name: data.base_name,
+            creation_date: new Date().toISOString(),
+            status: response.data?.status || "Pending", // Respetar el estado real del servidor
+            company_id: companyId,
+            ...response.data // Sobrescribir con datos reales del servidor
+          }
+          
+          setDocumentBases(prev => [newDocumentBase, ...prev])
+          
+          // Luego hacer refresh en background para sincronizar
+          await fetchDocumentBases(true) // isRefresh = true
           return response
         } else {
           const errorMessage = t("errors.createDocumentBase", {
@@ -76,7 +113,7 @@ export const DocumentBasesProvider = ({ children }) => {
         throw err
       }
     },
-    [fetchDocumentBases, t],
+    [fetchDocumentBases, t, companyId],
   )
 
   const updateDocumentBase = useCallback(
@@ -85,7 +122,17 @@ export const DocumentBasesProvider = ({ children }) => {
       try {
         const response = await documentBaseService.updateDocumentBase(documentBaseId, data)
         if (response.success) {
-          await fetchDocumentBases()
+          // Actualización optimista
+          setDocumentBases(prev => 
+            prev.map(db => 
+              db.document_base_id === documentBaseId 
+                ? { ...db, ...data, ...response.data }
+                : db
+            )
+          )
+          
+          // Refresh en background
+          await fetchDocumentBases(true)
           return response
         } else {
           const errorMessage = t("errors.updateDocumentBase", {
@@ -117,13 +164,17 @@ export const DocumentBasesProvider = ({ children }) => {
     async (documentBaseId) => {
       setError(null)
       try {
+        // Actualización optimista: remover inmediatamente
+        setDocumentBases((prev) =>
+          prev.filter((db) => db.document_base_id !== documentBaseId),
+        )
+        
         const response = await documentBaseService.deleteDocumentBase(documentBaseId)
         if (response.success) {
-          setDocumentBases((prev) =>
-            prev.filter((db) => db.document_base_id !== documentBaseId),
-          )
           return response
         } else {
+          // Si falla, restaurar
+          await fetchDocumentBases(true)
           const errorMessage = t("errors.deleteDocumentBase", {
             defaultValue: "Error deleting document base. Please try again.",
           })
@@ -131,6 +182,8 @@ export const DocumentBasesProvider = ({ children }) => {
           throw new Error(response.message || errorMessage)
         }
       } catch (err) {
+        // Si falla, restaurar
+        await fetchDocumentBases(true)
         const errorMessage = t("errors.deleteDocumentBase", {
           defaultValue: "Error deleting document base. Please try again.",
         })
@@ -138,32 +191,30 @@ export const DocumentBasesProvider = ({ children }) => {
         throw err
       }
     },
-    [t],
+    [t, fetchDocumentBases],
   )
 
-  // Limpiar estado cuando no hay usuario autenticado
   const clearDocumentBasesData = useCallback(() => {
     setDocumentBases([])
     setInitialLoading(false)
+    setIsRefreshing(false)
     setError(null)
     hasInitialized.current = false
     lastTokenRef.current = null
   }, [])
 
-  // Efecto para reaccionar SOLO a cambios en user/token
   useEffect(() => {
     if (user && token) {
-      // Usuario autenticado: cargar bases de documentos
-      fetchDocumentBases()
+      fetchDocumentBases(false) // isRefresh = false para carga inicial
     } else {
-      // No hay usuario: limpiar datos
       clearDocumentBasesData()
     }
-  }, [user, token]) // Eliminar fetchDocumentBases y clearDocumentBasesData
+  }, [user, token])
 
   const value = {
     documentBases,
     initialLoading,
+    isRefreshing, // Nuevo valor en el contexto
     error,
     fetchDocumentBases,
     createDocumentBase,

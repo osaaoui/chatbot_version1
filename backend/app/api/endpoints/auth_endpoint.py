@@ -14,17 +14,21 @@ async def register(user: UserCreate):
     users = load_users()
     if user.email in users:
         raise HTTPException(status_code=400, detail="Email already registered")
-
+    
+    # Crear user_data base
     user_data = {
         "fullName": user.fullName,
         "email": user.email,
         "hashed_password": get_password_hash(user.password),
-        "role": user.role
+        "role": user.role,
     }
+    
+    if user.packageId is not None:
+        user_data["packageId"] = user.packageId
     
     users[user.email] = user_data
     await save_users(users, user_data)
-
+    
     token = create_access_token({"sub": user.email, "role": user.role, "fullName": user.fullName})
     return {"access_token": token, "token_type": "bearer"}
 

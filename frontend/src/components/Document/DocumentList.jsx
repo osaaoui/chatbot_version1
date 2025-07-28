@@ -183,8 +183,8 @@ const DocumentList = forwardRef(({ folderId, level = 0, stagedFiles = [], setSta
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <h4 
-                  className="text-sm font-medium truncate" 
-                  style={{ color: "var(--text-primary)" }}
+                  className="text-sm  truncate" 
+                
                   title={document.document_name}
                 >
                   {document.document_name}

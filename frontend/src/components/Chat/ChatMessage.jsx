@@ -32,7 +32,11 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
           className="prose prose-sm max-w-none"
           style={{ 
             fontSize: `${fontSize}px`,
-            color: 'var(--text-primary)'
+            color: 'var(--text-primary)',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
+            maxWidth: '100%'
           }}
         >
           {msg.text || (
@@ -63,7 +67,11 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
           className="prose prose-sm max-w-none"
           style={{ 
             fontSize: `${fontSize}px`,
-            color: 'var(--text-primary)'
+            color: 'var(--text-primary)',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
+            maxWidth: '100%'
           }}
         >
           {renderFormattedAnswer(msg.text)}
@@ -75,7 +83,9 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
         className="italic"
         style={{ 
           fontSize: `${fontSize}px`,
-          color: 'var(--text-tertiary)'
+          color: 'var(--text-tertiary)',
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word'
         }}
       >
         {msg.isPending ? "Generando respuesta..." : "Sin respuesta"}
@@ -86,7 +96,11 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
   const getMessageStyles = () => {
     const baseStyles = {
       fontSize: `${fontSize}px`,
-      transition: 'background-color 0.3s ease, border-color 0.3s ease'
+      transition: 'background-color 0.3s ease, border-color 0.3s ease',
+      wordWrap: 'break-word',
+      overflowWrap: 'break-word',
+      maxWidth: '100%',
+      minWidth: 0 
     }
 
     if (msg.type === "user") {
@@ -117,11 +131,11 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
   return (
     <div 
       ref={messageRef} 
-      className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
+      className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"} w-full`}
       data-message-id={msg.id}
     >
       {msg.type === "bot" && (
-        <div className="flex items-end mr-2">
+        <div className="flex items-end mr-2 flex-shrink-0">
           <div className="flex p-0 items-center justify-center text-sm font-bold">
             <img 
               src="/img/image4.png" 
@@ -132,12 +146,17 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
         </div>
       )}
       <div
-        className={`max-w-[70%] px-4 py-3 text-sm rounded-2xl ${
+        className={`px-4 py-3 text-sm rounded-2xl ${
           msg.type === "user" ? "rounded-br-none" : "rounded-bl-none"
         } ${msg.isPending ? "opacity-70" : ""}`}
-        style={getMessageStyles()}
+        style={{
+          ...getMessageStyles(),
+          width: 'fit-content',
+          maxWidth: '70%',
+          minWidth: '0'
+        }}
       >
-        <div>
+        <div style={{ wordWrap: 'break-word', overflowWrap: 'break-word', maxWidth: '100%' }}>
           {isVisible ? (
             renderMessageContent()
           ) : (
@@ -156,7 +175,8 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
                   className="ml-1 underline transition-colors hover:opacity-80"
                   style={{
                     color: 'var(--color-primary-dark)',
-                    fontSize: `${Math.max(fontSize - 2, 10)}px`
+                    fontSize: `${Math.max(fontSize - 2, 10)}px`,
+                    wordWrap: 'break-word'
                   }}
                   title={`Fuente ${sidx + 1}`}
                 >
@@ -180,7 +200,7 @@ const ChatMessage = React.memo(({ msg, handleSourceClick, renderFormattedAnswer 
         </div>
       </div>
       {msg.type === "user" && (
-        <div className="flex items-end ml-2">
+        <div className="flex items-end ml-2 flex-shrink-0">
           <UserCircle 
             className="w-5 h-5" 
             style={{ color: 'var(--text-tertiary)' }}

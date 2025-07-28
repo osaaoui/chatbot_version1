@@ -59,7 +59,7 @@ const UploadModal = ({ isOpen, onClose, files, onConfirmUpload, isUploading }) =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="relative w-full max-w-md rounded-lg bg-bg-primary p-6 shadow-lg border border-border-light">
         {/* Dialog Header */}
         <div className="flex flex-col space-y-1.5 text-center sm:text-left">
           <h2 className="text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100">

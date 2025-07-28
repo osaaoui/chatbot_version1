@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Loader2,
@@ -12,7 +12,7 @@ import {
 import { SelectorIA } from "../ui/SelectorIA";
 import Separator from "../ui/Separator";
 
-const ChatInput = ({
+const ChatInput = React.memo(({
   question,
   onQuestionChange,
   onSubmit,
@@ -24,20 +24,68 @@ const ChatInput = ({
   const textareaRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [enableDocumentReading, setEnableDocumentReading] = useState(true);
+  
+  // Estado local para el input - esto elimina los re-renders del padre
+  const [localValue, setLocalValue] = useState(question || "");
+  const debounceRef = useRef(null);
 
-  const handleKeyDown = (e) => {
+  // Sincronizar con la prop externa solo cuando sea necesario
+  useEffect(() => {
+    if (question !== localValue) {
+      setLocalValue(question || "");
+    }
+  }, [question]); // Solo cuando la prop question cambie desde el padre
+
+  // Handler optimizado que solo actualiza el estado local
+  const handleInputChange = useCallback((e) => {
+    const newValue = e.target.value;
+    setLocalValue(newValue);
+
+    // Debounce para notificar al padre (opcional)
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      onQuestionChange(e); // Solo notificar al padre después del debounce
+    }, 100);
+  }, [onQuestionChange]);
+
+  // Handler de keydown optimizado
+  const handleKeyDown = useCallback((e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSubmit();
+      // Asegurar que el valor esté sincronizado antes del submit
+      if (localValue.trim()) {
+        // Crear un evento sintético con el valor actual
+        const syntheticEvent = {
+          target: { value: localValue }
+        };
+        onQuestionChange(syntheticEvent);
+        setTimeout(() => onSubmit(), 0);
+      }
     }
-  };
+  }, [localValue, onQuestionChange, onSubmit]);
 
+  // Optimizar el focus effect
   useEffect(() => {
     if (!isLoading && textareaRef.current) {
-      textareaRef.current.focus();
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isLoading]);
 
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
+
+  // Drag and drop handlers (sin cambios)
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -58,19 +106,31 @@ const ChatInput = ({
     }
   }, []);
 
-  const handleDrop = useCallback(
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragOver(false);
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      onFilesDropped(files);
+    }
+  }, [onFilesDropped]);
 
-      const files = Array.from(e.dataTransfer.files);
-      if (files.length > 0) {
-        onFilesDropped(files);
-      }
-    },
-    [onFilesDropped]
-  );
+  const handleSubmitClick = useCallback(() => {
+    if (localValue.trim() && !isLoading) {
+      // Sincronizar valor antes del submit
+      const syntheticEvent = {
+        target: { value: localValue }
+      };
+      onQuestionChange(syntheticEvent);
+      setTimeout(() => onSubmit(), 0);
+    }
+  }, [localValue, isLoading, onQuestionChange, onSubmit]);
+
+  // Placeholder memoizado
+  const placeholder = currentConversation
+    ? t("chat.continueConversationPlaceholder")
+    : t("chat.askToStart");
 
   return (
     <footer
@@ -112,25 +172,56 @@ const ChatInput = ({
         <textarea
           ref={textareaRef}
           rows={1}
-          value={question}
-          onChange={onQuestionChange}
+          value={localValue} // Usar el valor local
+          onChange={handleInputChange} // Usar el handler local
           onKeyDown={handleKeyDown}
-          placeholder={
-            currentConversation
-              ? t("chat.continueConversationPlaceholder")
-              : t("chat.askToStart")
-          }
+          placeholder={placeholder}
           className="flex-1 resize-none bg-transparent border-none outline-none text-sm leading-6 max-h-32"
           style={{
-            minHeight: "24px",
+            minHeight: "2.5rem",
             color: "var(--text-primary)",
+             border: "none",
+            outline: "none",
+            boxShadow: "none",
+            WebkitScrollSnapType: "none",
+            scrollSnapType: "none",
+            scrollbarWidth: "none",
           }}
           disabled={isLoading}
         />
 
         <div className="flex flex-col items-center gap-2">
           <SelectorIA />
-          <button
+        
+        </div>
+
+        <Separator orientation="vertical" />
+
+        <button
+          onClick={handleSubmitClick}
+          disabled={!localValue.trim() || isLoading}
+          className="flex-shrink-0 p-2.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
+          style={{
+            backgroundColor: !localValue.trim() || isLoading ? "var(--text-tertiary)" : "#3b82f6",
+            color: "white",
+            cursor: !localValue.trim() || isLoading ? "not-allowed" : "pointer",
+          }}
+          title={t("chat.sendButton")}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+        </button>
+      </div>
+
+      <div className="flex items-center justify-between mt-3 px-2">
+        <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+          {t("chat.enterToSend")}
+        </p>
+        <div className="flex items-center gap-1.5">
+            <button
             onClick={() => setEnableDocumentReading(!enableDocumentReading)}
             className="flex items-center gap-2 px-1 py-1 rounded-full text-xs font-medium transition-all duration-200"
             style={{
@@ -170,44 +261,6 @@ const ChatInput = ({
               </>
             )}
           </button>
-        </div>
-
-        <Separator orientation="vertical" />
-
-        <button
-          onClick={onSubmit}
-          disabled={!question.trim() || isLoading}
-          className="flex-shrink-0 p-2.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
-          style={{
-            backgroundColor:
-              !question.trim() || isLoading
-                ? "var(--text-tertiary)"
-                : "#3b82f6",
-            color: "white",
-            cursor: !question.trim() || isLoading ? "not-allowed" : "pointer",
-          }}
-          title={t("chat.sendButton")}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-
-      <div className="flex items-center justify-between mt-3 px-2">
-        <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-          {t("chat.enterToSend")}
-        </p>
-        <div className="flex items-center gap-1.5">
-          <div
-            className={`w-1.5 h-1.5 rounded-full ${
-              enableDocumentReading
-                ? "bg-green-500"
-                : "bg-amber-500 animate-pulse"
-            }`}
-          />
           <p
             className={`text-xs font-medium ${
               enableDocumentReading ? "text-green-600" : "text-amber-600"
@@ -221,6 +274,8 @@ const ChatInput = ({
       </div>
     </footer>
   );
-};
+});
+
+ChatInput.displayName = 'ChatInput';
 
 export default ChatInput;
