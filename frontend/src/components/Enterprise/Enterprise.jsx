@@ -1,74 +1,9 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCompany } from '../../context/CompanyContext';
-
-const COUNTRIES = [
-  { id: 1, name: "Afghanistan" }, { id: 2, name: "Albania" }, { id: 3, name: "Algeria" },
-  { id: 4, name: "Andorra" }, { id: 5, name: "Angola" }, { id: 6, name: "Argentina" },
-  { id: 7, name: "Armenia" }, { id: 8, name: "Australia" }, { id: 9, name: "Austria" },
-  { id: 10, name: "Azerbaijan" }, { id: 11, name: "Bahamas" }, { id: 12, name: "Bahrain" },
-  { id: 13, name: "Bangladesh" }, { id: 14, name: "Barbados" }, { id: 15, name: "Belarus" },
-  { id: 16, name: "Belgium" }, { id: 17, name: "Belize" }, { id: 18, name: "Benin" },
-  { id: 19, name: "Bhutan" }, { id: 20, name: "Bolivia" }, { id: 21, name: "Bosnia and Herzegovina" },
-  { id: 22, name: "Botswana" }, { id: 23, name: "Brazil" }, { id: 24, name: "Brunei" },
-  { id: 25, name: "Bulgaria" }, { id: 26, name: "Burkina Faso" }, { id: 27, name: "Burundi" },
-  { id: 28, name: "Cambodia" }, { id: 29, name: "Cameroon" }, { id: 30, name: "Canada" },
-  { id: 31, name: "Cape Verde" }, { id: 32, name: "Central African Republic" }, { id: 33, name: "Chad" },
-  { id: 34, name: "Chile" }, { id: 35, name: "China" }, { id: 36, name: "Colombia" },
-  { id: 37, name: "Comoros" }, { id: 38, name: "Congo" }, { id: 39, name: "Costa Rica" },
-  { id: 40, name: "Croatia" }, { id: 41, name: "Cuba" }, { id: 42, name: "Cyprus" },
-  { id: 43, name: "Czech Republic" }, { id: 44, name: "Denmark" }, { id: 45, name: "Djibouti" },
-  { id: 46, name: "Dominica" }, { id: 47, name: "Dominican Republic" }, { id: 48, name: "Ecuador" },
-  { id: 49, name: "Egypt" }, { id: 50, name: "El Salvador" }, { id: 51, name: "Equatorial Guinea" },
-  { id: 52, name: "Eritrea" }, { id: 53, name: "Estonia" }, { id: 54, name: "Eswatini" },
-  { id: 55, name: "Ethiopia" }, { id: 56, name: "Fiji" }, { id: 57, name: "Finland" },
-  { id: 58, name: "France" }, { id: 59, name: "Gabon" }, { id: 60, name: "Gambia" },
-  { id: 61, name: "Georgia" }, { id: 62, name: "Germany" }, { id: 63, name: "Ghana" },
-  { id: 64, name: "Greece" }, { id: 65, name: "Grenada" }, { id: 66, name: "Guatemala" },
-  { id: 67, name: "Guinea" }, { id: 68, name: "Guinea-Bissau" }, { id: 69, name: "Guyana" },
-  { id: 70, name: "Haiti" }, { id: 71, name: "Honduras" }, { id: 72, name: "Hungary" },
-  { id: 73, name: "Iceland" }, { id: 74, name: "India" }, { id: 75, name: "Indonesia" },
-  { id: 76, name: "Iran" }, { id: 77, name: "Iraq" }, { id: 78, name: "Ireland" },
-  { id: 79, name: "Israel" }, { id: 80, name: "Italy" }, { id: 81, name: "Jamaica" },
-  { id: 82, name: "Japan" }, { id: 83, name: "Jordan" }, { id: 84, name: "Kazakhstan" },
-  { id: 85, name: "Kenya" }, { id: 86, name: "Kiribati" }, { id: 87, name: "Kuwait" },
-  { id: 88, name: "Kyrgyzstan" }, { id: 89, name: "Laos" }, { id: 90, name: "Latvia" },
-  { id: 91, name: "Lebanon" }, { id: 92, name: "Lesotho" }, { id: 93, name: "Liberia" },
-  { id: 94, name: "Libya" }, { id: 95, name: "Liechtenstein" }, { id: 96, name: "Lithuania" },
-  { id: 97, name: "Luxembourg" }, { id: 98, name: "Madagascar" }, { id: 99, name: "Malawi" },
-  { id: 100, name: "Malaysia" }, { id: 101, name: "Maldives" }, { id: 102, name: "Mali" },
-  { id: 103, name: "Malta" }, { id: 104, name: "Marshall Islands" }, { id: 105, name: "Mauritania" },
-  { id: 106, name: "Mauritius" }, { id: 107, name: "Mexico" }, { id: 108, name: "Micronesia" },
-  { id: 109, name: "Moldova" }, { id: 110, name: "Monaco" }, { id: 111, name: "Mongolia" },
-  { id: 112, name: "Montenegro" }, { id: 113, name: "Morocco" }, { id: 114, name: "Mozambique" },
-  { id: 115, name: "Myanmar" }, { id: 116, name: "Namibia" }, { id: 117, name: "Nauru" },
-  { id: 118, name: "Nepal" }, { id: 119, name: "Netherlands" }, { id: 120, name: "New Zealand" },
-  { id: 121, name: "Nicaragua" }, { id: 122, name: "Niger" }, { id: 123, name: "Nigeria" },
-  { id: 124, name: "North Korea" }, { id: 125, name: "North Macedonia" }, { id: 126, name: "Norway" },
-  { id: 127, name: "Oman" }, { id: 128, name: "Pakistan" }, { id: 129, name: "Palau" },
-  { id: 130, name: "Panama" }, { id: 131, name: "Papua New Guinea" }, { id: 132, name: "Paraguay" },
-  { id: 133, name: "Peru" }, { id: 134, name: "Philippines" }, { id: 135, name: "Poland" },
-  { id: 136, name: "Portugal" }, { id: 137, name: "Qatar" }, { id: 138, name: "Romania" },
-  { id: 139, name: "Russia" }, { id: 140, name: "Rwanda" }, { id: 141, name: "Saint Kitts and Nevis" },
-  { id: 142, name: "Saint Lucia" }, { id: 143, name: "Saint Vincent and the Grenadines" },
-  { id: 144, name: "Samoa" }, { id: 145, name: "San Marino" }, { id: 146, name: "Sao Tome and Principe" },
-  { id: 147, name: "Saudi Arabia" }, { id: 148, name: "Senegal" }, { id: 149, name: "Serbia" },
-  { id: 150, name: "Seychelles" }, { id: 151, name: "Sierra Leone" }, { id: 152, name: "Singapore" },
-  { id: 153, name: "Slovakia" }, { id: 154, name: "Slovenia" }, { id: 155, name: "Solomon Islands" },
-  { id: 156, name: "Somalia" }, { id: 157, name: "South Africa" }, { id: 158, name: "South Korea" },
-  { id: 159, name: "South Sudan" }, { id: 160, name: "Spain" }, { id: 161, name: "Sri Lanka" },
-  { id: 162, name: "Sudan" }, { id: 163, name: "Suriname" }, { id: 164, name: "Sweden" },
-  { id: 165, name: "Switzerland" }, { id: 166, name: "Syria" }, { id: 167, name: "Taiwan" },
-  { id: 168, name: "Tajikistan" }, { id: 169, name: "Tanzania" }, { id: 170, name: "Thailand" },
-  { id: 171, name: "Timor-Leste" }, { id: 172, name: "Togo" }, { id: 173, name: "Tonga" },
-  { id: 174, name: "Trinidad and Tobago" }, { id: 175, name: "Tunisia" }, { id: 176, name: "Turkey" },
-  { id: 177, name: "Turkmenistan" }, { id: 178, name: "Tuvalu" }, { id: 179, name: "Uganda" },
-  { id: 180, name: "Ukraine" }, { id: 181, name: "United Arab Emirates" }, { id: 182, name: "United Kingdom" },
-  { id: 183, name: "United States" }, { id: 184, name: "Uruguay" }, { id: 185, name: "Uzbekistan" },
-  { id: 186, name: "Vanuatu" }, { id: 187, name: "Vatican City" }, { id: 188, name: "Venezuela" },
-  { id: 189, name: "Vietnam" }, { id: 190, name: "Yemen" }, { id: 191, name: "Zambia" },
-  { id: 192, name: "Zimbabwe" }
-];
+import axios from 'axios';
+import Dropdown from '../ui/Dropdown';
+import Input from '../ui/Input';
 
 const EmpresaContent = forwardRef((props, ref) => {
   const { t } = useTranslation();
@@ -83,9 +18,65 @@ const EmpresaContent = forwardRef((props, ref) => {
     setError
   } = useCompany();
 
+  const [countries, setCountries] = useState([]);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // Estado para la carga inicial
+  const [companyLogo, setCompanyLogo] = useState(null);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      setLoadingCountries(true);
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/v2/countries`
+        );
+        setCountries(response.data.data.countries);
+      } catch (error) {
+        console.error('Error loading countries:', error);
+        setError(t('company.errors.countriesLoad'));
+      } finally {
+        setLoadingCountries(false);
+        setInitialLoading(false); // Finalizar la carga inicial
+      }
+    };
+
+    fetchCountries();
+  }, [setError, t]);
+
   const handleInputChange = (field, value) => {
-    if (field === 'country') value = value ? parseInt(value) : null;
+    if (field === 'country_id') value = value ? parseInt(value) : null;
     updateLocalData({ [field]: value });
+  };
+
+  const handleFormInputChange = (e) => {
+    const { name, value } = e.target;
+    handleInputChange(name, value);
+  };
+
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      console.log('Invalid file type');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      console.log('File too large');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setCompanyLogo(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleLogoClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleSave = async () => {
@@ -94,6 +85,7 @@ const EmpresaContent = forwardRef((props, ref) => {
     try {
       const result = await updateCompany({
         company_name: currentCompany.company_name,
+        company_email: currentCompany.company_email,
         website: currentCompany.website,
         nuid: currentCompany.nuid,
         country_id: currentCompany.country_id,
@@ -111,31 +103,53 @@ const EmpresaContent = forwardRef((props, ref) => {
     saveCompanyData: handleSave
   }), [handleSave]);
 
-  if (loading) {
+  // Mostrar estado de carga inicial (similar a ProfileModal)
+  if (loading || initialLoading) {
     return (
-      <div className="w-full flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="w-full flex flex-col items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+        <div className="text-center" style={{ color: 'var(--text-secondary)' }}>
+          {t('common.loading')}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      <h2 className="text-heading text-2xl font-bold mb-6">{t('company.title')}</h2>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
+        <svg className="w-6 h-6" style={{ color: 'var(--text-primary)' }} fill="currentColor" viewBox="0 0 24 24">
+          <path d="M13 3a2 2 0 0 1 1.995 1.85L15 5v4h3a2 2 0 0 1 1.995 1.85L20 11v8h1a1 1 0 0 1 .117 1.993L21 21H3a1 1 0 0 1-.117-1.993L3 19h1V5a2 2 0 0 1 1.85-1.995L6 3h7Zm5 8h-3v8h3v-8Zm-5-6H6v14h7V5Zm-2 10v2H8v-2h3Zm0-4v2H8v-2h3Zm0-4v2H8V7h3Z"/>
+        </svg>
+        <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+          {t('company.title')}
+        </h2>
+      </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700 text-sm">{error}</p>
-          <button onClick={() => setError(null)} className="text-red-500 text-xs mt-1">
-            {t('common.dismiss')}
+        <div className="mb-6 p-4 rounded-lg" style={{ 
+          backgroundColor: 'rgba(239, 68, 68, 0.1)', 
+          border: '1px solid var(--color-error)' 
+        }}>
+          <p className="text-sm" style={{ color: 'var(--color-error)' }}>{error}</p>
+          <button 
+            onClick={() => setError(null)} 
+            className="text-xs mt-1 hover:underline"
+            style={{ color: 'var(--color-error)' }}
+          >
+            {t('common.close')}
           </button>
         </div>
       )}
 
       {/* Selector de Empresa */}
       {companies.length > 1 && (
-        <div className="mb-6 p-4 bg-bg-secondary rounded-lg border">
-          <label className="block text-sm font-medium mb-2">
+        <div className="mb-6 p-4 rounded-lg" style={{ 
+          backgroundColor: 'var(--bg-secondary)', 
+          border: '1px solid var(--border-light)' 
+        }}>
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
             {t('company.selectCompany')}
           </label>
           <select
@@ -153,108 +167,196 @@ const EmpresaContent = forwardRef((props, ref) => {
         </div>
       )}
 
+      {/* Logo Section */}
+      <div className="mb-8">
+        <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-secondary)' }}>
+          {t('company.logo')}
+        </label>
+        
+        <div className="flex items-center gap-4">
+          {/* Logo Preview */}
+          <div 
+            className="w-20 h-20 rounded-lg border-2 border-dashed flex items-center justify-center transition-all duration-200 cursor-pointer hover:border-opacity-80"
+            style={{ 
+              borderColor: 'var(--border-medium)',
+              backgroundColor: companyLogo ? 'transparent' : 'var(--bg-tertiary)'
+            }}
+            onClick={handleLogoClick}
+          >
+            {companyLogo ? (
+              <img 
+                src={companyLogo} 
+                alt="Company Logo" 
+                className="w-full h-full object-contain rounded-lg"
+              />
+            ) : (
+              <div className="flex flex-col items-center">
+                <svg className="w-8 h-8 mb-1" style={{ color: 'var(--text-tertiary)' }} fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  {t('company.logoPlaceholder')}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Upload Button */}
+          <button
+            onClick={handleLogoClick}
+            className="px-4 py-2 rounded-md border transition-all duration-200"
+            style={{
+              backgroundColor: 'var(--bg-primary)',
+              borderColor: 'var(--border-medium)',
+              color: 'var(--text-secondary)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'var(--bg-tertiary)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'var(--bg-primary)';
+            }}
+          >
+            <svg className="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+            </svg>
+            {t('company.uploadLogo')}
+          </button>
+
+          {/* Hidden File Input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+          />
+        </div>
+      </div>
+
       {/* Formulario */}
       {currentCompany && (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
           {/* Nombre de la empresa */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('company.companyNameRequired')}
-            </label>
-            <input
-              type="text"
-              value={currentCompany.company_name || ''}
-              onChange={(e) => handleInputChange('company_name', e.target.value)}
-              className="input-base w-full"
-              placeholder={t('company.placeholders.companyName')}
-            />
-          </div>
+          <Input
+            name="company_name"
+            label={`${t('company.companyName')} *`}
+            value={currentCompany.company_name || ''}
+            onChange={handleFormInputChange}
+            required
+            allowNumbers={true}
+            allowLetters={true}
+            allowSpecialChars={true}
+            maxLength={100}
+            placeholder={t('company.placeholders.companyName')}
+          />
+
+          {/* Email de la empresa */}
+          <Input
+            type="email"
+            name="company_email"
+            label={t('company.companyEmail')}
+            value={currentCompany.company_email || ''}
+            onChange={handleFormInputChange}
+            allowNumbers={true}
+            allowLetters={true}
+            allowSpecialChars={true}
+            maxLength={100}
+            placeholder={t('company.placeholders.companyEmail')}
+          />
 
           {/* Sitio web */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('company.companyWebsite')}
-            </label>
-            <input
-              type="url"
-              value={currentCompany.website || ''}
-              onChange={(e) => handleInputChange('website', e.target.value)}
-              className="input-base w-full"
-              placeholder={t('company.placeholders.companyWebsite')}
-            />
-          </div>
+          <Input
+            type="url"
+            name="website"
+            label={t('company.companyWebsite')}
+            value={currentCompany.website || ''}
+            onChange={handleFormInputChange}
+            allowNumbers={true}
+            allowLetters={true}
+            allowSpecialChars={true}
+            maxLength={200}
+            placeholder={t('company.placeholders.companyWebsite')}
+          />
 
           {/* NIT/Número fiscal */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('company.taxId')}
-            </label>
-            <input
-              type="text"
-              value={currentCompany.nuid || ''}
-              onChange={(e) => handleInputChange('nuid', e.target.value)}
-              className="input-base w-full"
-              placeholder={t('company.placeholders.taxId')}
-            />
-          </div>
-
-          {/* País */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('company.country')}
-            </label>
-            <select
-              value={currentCompany.country_id || ''}
-              onChange={(e) => handleInputChange('country', e.target.value)}
-              className="input-base w-full"
-            >
-              <option value="">{t('company.placeholders.selectCountry')}</option>
-              {COUNTRIES.map((country) => (
-                <option key={country.id} value={country.id}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
+          <Input
+            name="nuid"
+            label={t('company.taxId')}
+            value={currentCompany.nuid || ''}
+            onChange={handleFormInputChange}
+            allowNumbers={true}
+            allowLetters={true}
+            allowSpecialChars={false}
+            maxLength={20}
+            placeholder={t('company.placeholders.taxId')}
+          />
+          
           {/* Dirección de facturación */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('company.billingAddress')}
-            </label>
-            <input
-              type="text"
-              value={currentCompany.billing_address || ''}
-              onChange={(e) => handleInputChange('billing_address', e.target.value)}
-              className="input-base w-full"
-              placeholder={t('company.placeholders.billingAddress')}
-            />
-          </div>
+          <Input
+            name="billing_address"
+            label={t('company.billingAddress')}
+            value={currentCompany.billing_address || ''}
+            onChange={handleFormInputChange}
+            allowNumbers={true}
+            allowLetters={true}
+            allowSpecialChars={true}
+            maxLength={200}
+            placeholder={t('company.placeholders.billingAddress')}
+          />
 
           {/* Código postal */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('company.postalCode')}
+          <Input
+            name="postal_code"
+            label={t('company.postalCode')}
+            value={currentCompany.postal_code || ''}
+            onChange={handleFormInputChange}
+            allowNumbers={true}
+            allowLetters={true}
+            allowSpecialChars={false}
+            maxLength={10}
+            placeholder={t('company.placeholders.postalCode')}
+          />
+
+          {/* País - Span completo */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+              {t('company.country')}
             </label>
-            <input
-              type="text"
-              value={currentCompany.postal_code || ''}
-              onChange={(e) => handleInputChange('postal_code', e.target.value)}
-              className="input-base w-full"
-              placeholder={t('company.placeholders.postalCode')}
-            />
+            {loadingCountries ? (
+              <div className="input-base w-full animate-pulse h-10 rounded" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
+            ) : (
+              <Dropdown
+                options={countries}
+                value={currentCompany.country_id || ''}
+                onChange={(e) => handleInputChange('country_id', e.target.value)}
+                placeholder={t('company.placeholders.selectCountry')}
+                valueKey="country_id"
+                labelKey="country_name"
+                searchPlaceholder={t('dropdown.searchCountry')}
+                noResultsText={t('dropdown.noResults')}
+                allowNumbers={false}
+                allowLetters={true}
+                allowSpecialChars={false}
+                maxLength={25}
+                validateInput={true}
+              />
+            )}
           </div>
 
-          {/* Comentarios */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
+          {/* Comentarios - Span completo */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
               {t('company.comments')}
             </label>
             <textarea
+              name="comments"
               value={currentCompany.comments || ''}
-              onChange={(e) => handleInputChange('comments', e.target.value)}
+              onChange={handleFormInputChange}
               className="input-base w-full h-20 resize-none"
               placeholder={t('company.placeholders.comments')}
+              maxLength={500}
             />
           </div>
         </div>
@@ -262,7 +364,9 @@ const EmpresaContent = forwardRef((props, ref) => {
 
       {!currentCompany && companies.length > 0 && (
         <div className="text-center py-8">
-          <p className="text-text-secondary">{t('company.selectCompanyToEdit')}</p>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            {t('company.selectCompanyToEdit')}
+          </p>
         </div>
       )}
     </div>

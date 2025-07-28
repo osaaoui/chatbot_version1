@@ -14,6 +14,7 @@ import { FoldersProvider } from "./context/FoldersContext"
 import { CompanyProvider } from "./context/CompanyContext"
 import { FontSizeProvider } from "./context/FontSizeContext"
 import { ThemeProvider } from "./context/ThemeContext"
+import { LanguageProvider } from "./context/LanguageContext"
 import PDFViewerComponent from "./components/chat/PDF/PDFViewerComponent"
 import { useFileManagement } from "./hooks/app/useFileManagement"
 import { useChatLogic } from "./hooks/chat/useChatLogic"
@@ -150,17 +151,19 @@ function AppContent() {
 export default function App() {
   return (
     <ThemeProvider>
-      <ConversationProvider>
-        <CompanyProvider>
-          <DocumentBasesProvider>
-            <FoldersProvider>
-              <FontSizeProvider>
-                <AppContent />
-              </FontSizeProvider>
-            </FoldersProvider>
-          </DocumentBasesProvider>
-        </CompanyProvider>
-      </ConversationProvider>
+      <LanguageProvider>
+        <ConversationProvider>
+          <CompanyProvider>
+            <DocumentBasesProvider>
+              <FoldersProvider>
+                <FontSizeProvider>
+                  <AppContent />
+                </FontSizeProvider>
+              </FoldersProvider>
+            </DocumentBasesProvider>
+          </CompanyProvider>
+        </ConversationProvider>
+      </LanguageProvider>
     </ThemeProvider>
   )
 }

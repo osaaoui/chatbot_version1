@@ -1,6 +1,6 @@
 # app/api/delete.py
 from fastapi import APIRouter, HTTPException, Depends, Query
-from app.services.vectorstore_service import delete_file_chunks
+from app.services.vectorstore_service_pg import delete_file_chunks
 from app.services.metadata_store import load_metadata, save_metadata
 from app.services.auth_service import get_current_user as authenticate_token  # ✅ fixed
 import os

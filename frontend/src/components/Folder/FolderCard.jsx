@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { ChevronDown, ChevronRight, Folder } from "lucide-react"
-import { useLanguage } from "../../hooks/useLanguaje"
-import { useFolderOperations } from "../../hooks/folder/useFolderOperations"
-import { useDragAndDrop } from "../../hooks/folder/useDragAndDrop"
-import { useFileUpload } from "../../hooks/folder/useFileUpload"
-import { formatDate } from "../../utils/folderUtils"
-import DocumentList from "../Document/DocumentList"
-import FolderActions from "./FolderActions"
-import CreateSubfolder from "./CreateSubfolder"
+import { useState, useRef } from "react";
+import { ChevronDown, ChevronRight, Folder } from "lucide-react";
+import { useLanguage } from "../../hooks/useLanguaje";
+import { useFolderOperations } from "../../hooks/folder/useFolderOperations";
+import { useDragAndDrop } from "../../hooks/folder/useDragAndDrop";
+import { useFileUpload } from "../../hooks/folder/useFileUpload";
+import { formatDate } from "../../utils/folderUtils";
+import DocumentList from "../Document/DocumentList";
+import FolderActions from "./FolderActions";
+import CreateSubfolder from "./CreateSubfolder";
 
 const FolderCard = ({
   folder,
@@ -21,10 +21,10 @@ const FolderCard = ({
   stagedFiles = [],
   setStagedFiles,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const fileInputRef = useRef(null)
-  const documentListRef = useRef(null)
-  const { t } = useLanguage()
+  const [isExpanded, setIsExpanded] = useState(false);
+  const fileInputRef = useRef(null);
+  const documentListRef = useRef(null);
+  const { t } = useLanguage();
 
   const {
     isEditing,
@@ -40,7 +40,7 @@ const FolderCard = ({
     createSubfolder,
     updateFolderName,
     deleteFolderConfirm,
-  } = useFolderOperations(folder)
+  } = useFolderOperations(folder);
 
   const {
     isDragOver,
@@ -51,126 +51,150 @@ const FolderCard = ({
     handleDragEnter,
     handleDragLeave,
     handleDrop,
-  } = useDragAndDrop(folder, allFolders, setIsExpanded, isExpanded)
+  } = useDragAndDrop(folder, allFolders, setIsExpanded, isExpanded);
 
-  const { handleFileUpload, getCurrentFolderFiles } = useFileUpload(folder, stagedFiles, setStagedFiles)
+  const { handleFileUpload, getCurrentFolderFiles } = useFileUpload(
+    folder,
+    stagedFiles,
+    setStagedFiles
+  );
 
-  const hasChildren = folder.children && folder.children.length > 0
-  const paddingLeft = level * 16
+  const hasChildren = folder.children && folder.children.length > 0;
+  const paddingLeft = level * 16;
   const getResponsiveClasses = (level) => {
     return {
       iconSize: level > 2 ? "w-3 h-3" : level > 0 ? "w-4 h-4" : "w-5 h-5",
-      textSize: level > 2 ? "text-xs" : level > 0 ? "text-sm" : "text-base"
-    }
-  }
+      textSize: level > 2 ? "text-xs" : level > 0 ? "text-sm" : "text-base",
+    };
+  };
 
-  const { iconSize: responsiveIconSize, textSize: responsiveTextSize } = getResponsiveClasses(level)
+  const { iconSize: responsiveIconSize, textSize: responsiveTextSize } =
+    getResponsiveClasses(level);
 
-  const { filesToProcess, processingFiles, hasFilesToProcess, isProcessingFiles } = getCurrentFolderFiles()
+  const {
+    filesToProcess,
+    processingFiles,
+    hasFilesToProcess,
+    isProcessingFiles,
+  } = getCurrentFolderFiles();
 
   const handleToggleExpand = () => {
     if (!isEditing && !showDeleteConfirm && !isDragging) {
-      setIsExpanded(!isExpanded)
+      setIsExpanded(!isExpanded);
     }
-  }
+  };
 
   const handleUploadClick = (e) => {
-    e.stopPropagation()
-    fileInputRef.current.click()
-  }
+    e.stopPropagation();
+    fileInputRef.current.click();
+  };
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files)
+    const files = Array.from(e.target.files);
     if (files.length > 0) {
-      handleFileUpload(files)
+      handleFileUpload(files);
     }
-  }
+  };
 
   const handleCreateSubfolderClick = (e) => {
-    e.stopPropagation()
-    setShowCreateSubfolder(true)
+    e.stopPropagation();
+    setShowCreateSubfolder(true);
     if (!isExpanded) {
-      setIsExpanded(true)
+      setIsExpanded(true);
     }
-  }
+  };
 
   const handleEditClick = (e) => {
-    e.stopPropagation()
-    setIsEditing(true)
-    setEditName(folder.folder_name)
-  }
+    e.stopPropagation();
+    setIsEditing(true);
+    setEditName(folder.folder_name);
+  };
 
   const handleDeleteClick = (e) => {
-    e.stopPropagation()
-    setShowDeleteConfirm(true)
-  }
+    e.stopPropagation();
+    setShowDeleteConfirm(true);
+  };
 
   const handleEditKeyPress = (e) => {
     if (e.key === "Enter") {
-      updateFolderName()
+      updateFolderName();
     } else if (e.key === "Escape") {
-      setEditName(folder.folder_name)
-      setIsEditing(false)
+      setEditName(folder.folder_name);
+      setIsEditing(false);
     }
-  }
+  };
 
   const handleCreateSubfolderConfirm = async () => {
-    const success = await createSubfolder()
+    const success = await createSubfolder();
     if (success && documentListRef.current) {
       setTimeout(() => {
-        documentListRef.current.refreshDocuments()
-      }, 500)
+        documentListRef.current.refreshDocuments();
+      }, 500);
     }
-  }
+  };
 
   const getFolderBaseStatusTooltip = (status) => {
-    const normalizedStatus = status?.toLowerCase()
+    const normalizedStatus = status?.toLowerCase();
     switch (normalizedStatus) {
       case "active":
-        return t("folder.status.active")
+        return t("folder.status.active");
       case "inactive":
-        return t("folder.status.inactive")
+        return t("folder.status.inactive");
       default:
-        return t("folder.status.unknown")
+        return t("folder.status.unknown");
     }
-  }
+  };
 
   const getStatusColor = (status) => {
-    return status === "Active" ? "var(--color-success)" : "var(--color-warning)"
-  }
+    return status === "Active"
+      ? "var(--color-success)"
+      : "var(--color-warning)";
+  };
 
-  const getFolderCardStyles = (level, isDragging, isDragOver, showDeleteConfirm, isEditing) => {
+  const getFolderCardStyles = (
+    level,
+    isDragging,
+    isDragOver,
+    showDeleteConfirm,
+    isEditing
+  ) => {
     const baseStyles = {
       backgroundColor: "var(--bg-primary)",
       border: "1px solid var(--border-light)",
       borderRadius: "0.375rem",
       padding: "0.5rem",
       margin: "0.125rem 0",
-      cursor: (!isEditing && !showDeleteConfirm) ? "pointer" : "default",
+      cursor: !isEditing && !showDeleteConfirm ? "pointer" : "default",
       transition: "all 0.2s ease",
       opacity: isDragging ? 0.5 : 1,
-      transform: isDragging ? "scale(0.95)" : "scale(1)"
-    }
+      transform: isDragging ? "scale(0.95)" : "scale(1)",
+    };
 
     if (isDragOver) {
-      baseStyles.backgroundColor = "rgba(59, 130, 246, 0.1)"
-      baseStyles.borderColor = "var(--color-primary-dark)"
+      baseStyles.backgroundColor = "rgba(59, 130, 246, 0.1)";
+      baseStyles.borderColor = "var(--color-primary-dark)";
     }
 
     if (showDeleteConfirm) {
-      baseStyles.backgroundColor = "rgba(239, 68, 68, 0.1)"
-      baseStyles.borderColor = "var(--color-error)"
+      baseStyles.backgroundColor = "rgba(239, 68, 68, 0.1)";
+      baseStyles.borderColor = "var(--color-error)";
     }
 
     if (isEditing) {
-      baseStyles.backgroundColor = "rgba(251, 191, 36, 0.1)"
-      baseStyles.borderColor = "var(--color-warning)"
+      baseStyles.backgroundColor = "rgba(251, 191, 36, 0.1)";
+      baseStyles.borderColor = "var(--color-warning)";
     }
 
-    return baseStyles
-  }
+    return baseStyles;
+  };
 
-  const folderCardStyles = getFolderCardStyles(level, isDragging, isDragOver, showDeleteConfirm, isEditing)
+  const folderCardStyles = getFolderCardStyles(
+    level,
+    isDragging,
+    isDragOver,
+    showDeleteConfirm,
+    isEditing
+  );
 
   return (
     <div className="w-full">
@@ -182,32 +206,32 @@ const FolderCard = ({
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className="flex items-center gap-2 group"
+        className="flex items-center group"
         style={{
           ...folderCardStyles,
-          paddingLeft: `${8 + paddingLeft}px`
+          paddingLeft: `${1 + paddingLeft}px`,
         }}
         onClick={handleToggleExpand}
         onMouseEnter={(e) => {
           if (!isDragOver && !showDeleteConfirm && !isEditing) {
-            e.currentTarget.style.backgroundColor = "var(--bg-tertiary)"
+            e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
           }
         }}
         onMouseLeave={(e) => {
           if (!isDragOver && !showDeleteConfirm && !isEditing) {
-            e.currentTarget.style.backgroundColor = "var(--bg-primary)"
+            e.currentTarget.style.backgroundColor = "var(--bg-primary)";
           }
         }}
       >
         {hasChildren || showCreateSubfolder ? (
           isExpanded ? (
-            <ChevronDown 
-              className={responsiveIconSize} 
+            <ChevronDown
+              className={responsiveIconSize}
               style={{ color: "var(--text-tertiary)" }}
             />
           ) : (
-            <ChevronRight 
-              className={responsiveIconSize} 
+            <ChevronRight
+              className={responsiveIconSize}
               style={{ color: "var(--text-tertiary)" }}
             />
           )
@@ -215,11 +239,11 @@ const FolderCard = ({
           <div className={responsiveIconSize} />
         )}
 
-        <Folder 
-          className={responsiveIconSize} 
-          style={{ color: "var(--color-warning)" }}
+        <Folder
+          className={responsiveIconSize}
+          style={{ color: "var(--color-warning)", marginRight: "1rem" }}
         />
-
+        
         <div className="flex-1 min-w-0">
           {isEditing ? (
             <input
@@ -233,7 +257,7 @@ const FolderCard = ({
               onClick={(e) => e.stopPropagation()}
             />
           ) : showDeleteConfirm ? (
-            <span 
+            <span
               className={`font-medium ${responsiveTextSize}`}
               style={{ color: "var(--color-error)" }}
             >
@@ -241,20 +265,27 @@ const FolderCard = ({
             </span>
           ) : (
             <>
-              <span 
-                className={`font-medium truncate block ${responsiveTextSize}`}
+              <span
+                className={`font-xs truncate block ${responsiveTextSize}`}
                 style={{ color: "var(--text-primary)" }}
               >
                 {folder.folder_name}
               </span>
-              {folder.creation_date && level === 0 && (
-                <span 
-                  className="text-xs block"
-                  style={{ color: "var(--text-tertiary)" }}
-                >
-                  {t("folder.created")}: {formatDate(folder.creation_date)}
-                </span>
-              )}
+             {folder.creation_date && level === 0 && (
+  <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
+    <span>
+      {t("folder.created")}: {formatDate(folder.creation_date)}
+    </span>
+    {!isEditing && !showDeleteConfirm && (
+      <span
+        className="w-2 h-2 rounded-full flex-shrink-0"
+        style={{ backgroundColor: getStatusColor(folder.status) }}
+        title={getFolderBaseStatusTooltip(folder.status)}
+      ></span>
+    )}
+  </div>
+)}
+              
               {(hasFilesToProcess || isProcessingFiles) && (
                 <div className="text-xs mt-1">
                   {hasFilesToProcess && (
@@ -263,11 +294,12 @@ const FolderCard = ({
                     </span>
                   )}
                   {isProcessingFiles && (
-                    <span 
+                    <span
                       className="ml-2"
                       style={{ color: "var(--color-warning)" }}
                     >
-                      {processingFiles.length > 0 ? processingFiles.length : ""} {t("folder.processing")}
+                      {processingFiles.length > 0 ? processingFiles.length : ""}{" "}
+                      {t("folder.processing")}
                     </span>
                   )}
                 </div>
@@ -275,15 +307,6 @@ const FolderCard = ({
             </>
           )}
         </div>
-
-        {!isEditing && !showDeleteConfirm && (
-          <span
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: getStatusColor(folder.status) }}
-            title={getFolderBaseStatusTooltip(folder.status)}
-          ></span>
-        )}
-
         <div className="flex items-center gap-1">
           <FolderActions
             level={level}
@@ -292,8 +315,8 @@ const FolderCard = ({
             editName={editName}
             onConfirmEdit={updateFolderName}
             onCancelEdit={() => {
-              setEditName(folder.folder_name)
-              setIsEditing(false)
+              setEditName(folder.folder_name);
+              setIsEditing(false);
             }}
             onConfirmDelete={deleteFolderConfirm}
             onUpload={handleUploadClick}
@@ -321,8 +344,8 @@ const FolderCard = ({
               setSubfolderName={setSubfolderName}
               onConfirm={handleCreateSubfolderConfirm}
               onCancel={() => {
-                setSubfolderName("")
-                setShowCreateSubfolder(false)
+                setSubfolderName("");
+                setShowCreateSubfolder(false);
               }}
               paddingLeft={paddingLeft}
             />
@@ -339,8 +362,8 @@ const FolderCard = ({
                   userEmail={userEmail}
                   onProcessFiles={onProcessFiles}
                   isProcessing={isProcessing}
-                  stagedFiles={stagedFiles} 
-                  setStagedFiles={setStagedFiles} 
+                  stagedFiles={stagedFiles}
+                  setStagedFiles={setStagedFiles}
                 />
               ))}
             </>
@@ -356,7 +379,7 @@ const FolderCard = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default FolderCard
+export default FolderCard;

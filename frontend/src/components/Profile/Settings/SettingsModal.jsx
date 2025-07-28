@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Settings, ChevronDown, Check, Sun, Moon } from "lucide-react";
 import { useFontSize } from "../../../context/FontSizeContext";
 import { useTheme } from "../../../context/ThemeContext";
+import { useLanguage } from "../../../context/LanguageContext";
 import ButtonModal from "../../ui/ButtonModal";
 
 const SettingsTrigger = ({ variant = "icon", t }) => {
@@ -47,7 +48,8 @@ const SettingsContent = ({ closeModal }) => {
   const [isAppearanceOpen, setIsAppearanceOpen] = useState(false);
   const { fontSize, setFontSize } = useFontSize();
   const { theme, setTheme } = useTheme();
-  const { t, i18n } = useTranslation();
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const languages = [
     { code: "es", name: t("languages.spanish") },
@@ -69,12 +71,12 @@ const SettingsContent = ({ closeModal }) => {
   ];
 
   const currentLanguage =
-    languages.find((lang) => lang.code === i18n.language) || languages[0];
+    languages.find((lang) => lang.code === language) || languages[0];
   const currentAppearance =
     appearances.find((app) => app.value === theme) || appearances[0];
 
-  const changeLanguage = (languageCode) => {
-    i18n.changeLanguage(languageCode);
+  const changeLanguage = async (languageCode) => {
+    await setLanguage(languageCode);
     setIsLanguageOpen(false);
   };
 
@@ -140,10 +142,10 @@ const SettingsContent = ({ closeModal }) => {
                   border: "1px solid var(--border-medium)",
                 }}
               >
-                {languages.map((language) => (
+                {languages.map((lang) => (
                   <button
-                    key={language.code}
-                    onClick={() => changeLanguage(language.code)}
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
                     className={`w-full px-3 py-2.5 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between`}
                     style={{ color: "var(--text-primary)" }}
                     onMouseEnter={(e) =>
@@ -153,8 +155,8 @@ const SettingsContent = ({ closeModal }) => {
                       (e.target.style.backgroundColor = "transparent")
                     }
                   >
-                    <span>{language.name}</span>
-                    {i18n.language === language.code && (
+                    <span>{lang.name}</span>
+                    {language === lang.code && (
                       <Check
                         className="w-4 h-4"
                         style={{ color: "var(--text-tertiary)" }}

@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react"
 import { companyService } from "../services/companyService"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "./AuthProvider"
@@ -21,11 +21,16 @@ export const CompanyProvider = ({ children }) => {
   const [currentCompany, setCurrentCompany] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const hasInitialized = useRef(false)
+  const lastTokenRef = useRef(null)
 
   const fetchCompanies = useCallback(async () => {
-    if (!user || !token) {
+    if (!user || !token || lastTokenRef.current === token) {
       return
     }
+
+    hasInitialized.current = true
+    lastTokenRef.current = token
 
     try {
       setLoading(true)
@@ -41,15 +46,15 @@ export const CompanyProvider = ({ children }) => {
         }
       }
     } catch (err) {
-      setError(t("errors.sessionTimeout"))
+      setError("Session timeout error")
       console.error('Error fetching companies:', err)
     } finally {
       setLoading(false)
     }
-  }, [user, token, t])
+  }, [user, token])
 
   const updateCompany = useCallback(async (data) => {
-    if (!currentCompany) return { success: false }
+    if (!currentCompany) return
 
     try {
       setLoading(true)
@@ -60,25 +65,22 @@ export const CompanyProvider = ({ children }) => {
       if (response.success) {
         const updatedCompany = { ...currentCompany, ...data }
         setCurrentCompany(updatedCompany)
-        
+
         setCompanies(prev => 
           prev.map(company => 
             company.company_id === currentCompany.company_id ? updatedCompany : company
           )
         )
-        
-        window.dispatchEvent(new CustomEvent('companyDataUpdated', { 
-          detail: updatedCompany 
-        }))
-        
-        return { success: true }
+        return response
+      } else {
+        const errorMessage = "Error updating company. Please try again."
+        setError(errorMessage)
+        throw new Error(errorMessage)
       }
-      
-      return response
     } catch (err) {
-      setError(t("errors.updateCompany"))
-      console.error('Error updating company:', err)
-      return { success: false }
+      const errorMessage = "Error updating company. Please try again."
+      setError(errorMessage)
+      throw err
     } finally {
       setLoading(false)
     }
@@ -86,7 +88,15 @@ export const CompanyProvider = ({ children }) => {
 
   const updateLocalData = useCallback((data) => {
     if (currentCompany) {
-      setCurrentCompany(prev => ({ ...prev, ...data }))
+      const updatedCompany = { ...currentCompany, ...data }
+      setCurrentCompany(updatedCompany)
+      setCompanies(prev => 
+        prev.map(company => 
+          company.company_id === currentCompany.company_id 
+            ? updatedCompany 
+            : company
+        )
+      )
     }
   }, [currentCompany])
 
@@ -99,7 +109,7 @@ export const CompanyProvider = ({ children }) => {
 
   // Obtener iniciales
   const getInitials = useCallback(() => {
-    if (!currentCompany?.company_name) return 'TI'
+    if (!currentCompany?.company_name) return ''
     return currentCompany.company_name
       .split(' ')
       .map(word => word.charAt(0).toUpperCase())
@@ -112,6 +122,8 @@ export const CompanyProvider = ({ children }) => {
     setCurrentCompany(null)
     setError(null)
     setLoading(false)
+    hasInitialized.current = false
+    lastTokenRef.current = null
   }, [])
 
   useEffect(() => {

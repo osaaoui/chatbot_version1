@@ -54,7 +54,8 @@ async def process_documents(req: ProcessRequest):
         if has_already_been_processed(req.user_id, filename):
             continue  
 
-        chunks = process_documents_for_user([filepath], req.user_id)
+        # ✅ Ahora usamos await porque process_documents_for_user es async
+        chunks = await process_documents_for_user([filepath], req.user_id)
         mark_as_processed(req.user_id, filename, chunks)
         total_chunks += chunks
         processed_files.append(filename)

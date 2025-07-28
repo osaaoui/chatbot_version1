@@ -40,3 +40,8 @@ requests
 python-multipart
 "pydantic[email]"
 chromadb
+
+# Email services - NUEVAS DEPENDENCIAS
+aiosmtplib==3.0.1
+jinja2==3.1.2
+email-validator==2.1.1

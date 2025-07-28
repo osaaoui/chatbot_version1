@@ -39,7 +39,7 @@ class UserStoreService(BaseService):
                     user_data["fullName"],
                     user_data["email"],
                     user_data["hashed_password"],
-                    package_type_id
+                    user_data['packageId'] if 'packageId' in user_data else package_type_id
                 )
                 
                 if not result:

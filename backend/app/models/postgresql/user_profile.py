@@ -13,7 +13,7 @@ class UserProfile(BaseModel):
     last_modification_date: Optional[datetime] = None
 
 class UpdateUserProfileRequest(BaseModel):
-    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
 
 class UpdateUserProfileResponse(BaseModel):
     profile: UserProfile

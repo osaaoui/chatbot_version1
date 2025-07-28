@@ -7,15 +7,32 @@
   "avatar": {
     "myAccount": "My Account",
     "myProfile": "My Profile",
+    "security": "Security",
     "textOnly": "Text Only",
     "logout": "Logout",
     "legal": "Terms & Conditions",
     "settings": "Settings",
     "help": "Help"
   },
+  "security": {
+    "title": "Security Settings",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "passwordRequirements": "Password must be at least 8 characters and include uppercase, lowercase, numbers, and special characters.",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "enable2FA": "Enable 2FA",
+    "twoFactorDescription": "Add an extra layer of security to your account",
+    "placeholders": {
+      "currentPassword": "Enter current password",
+      "newPassword": "Enter new password",
+      "confirmPassword": "Confirm new password"
+    }
+  },
   "buttonModal": {
     "settings": "Settings",
-    "language": "Language", 
+    "language": "Language",
     "fontSize": "Font Size",
     "appearance": "Appearance",
     "light": "Light",
@@ -31,13 +48,17 @@
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
+    "saveChanges": "Save Changes",
     "addTeam": "Add Team"
   },
   "profile": {
     "title": "My Profile",
+    "fullName": "Full Name",
     "email": "Email:",
     "status": "Status:",
     "active": "Active",
+    "uploadPhoto": "Click the camera icon to upload a photo",
+    "removePhoto": "Remove photo",
     "success": {
       "updated": "Profile updated successfully"
     },
@@ -65,7 +86,8 @@
     "close": "Close",
     "today": "Today",
     "yesterday": "Yesterday",
-    "daysAgo": "{{days}} days ago"
+    "daysAgo": "{{days}} days ago",
+    "dismiss": "Dismiss"
   },
   "auth": {
     "login": "Login",
@@ -122,7 +144,13 @@
     "creating": "Creating...",
     "create": "Create",
     "newConversationButton": "New Conversation",
-    "goToEnd": "Go to end"
+    "goToEnd": "Go to end",
+    "dropFilesHere": "Drop files here to upload",
+    "readDocs": "Connect document base",
+    "connectDocumentBase": "Connect document base",
+    "disconnectDocumentBase": "Disconnect document base",
+    "documentBaseConnected": "Document base connected",
+    "documentBaseDisconnected": "Document base disconnected"
   },
   "teams": {
     "title": "Work Teams",
@@ -175,30 +203,47 @@
   "company": {
     "title": "Company Profile",
     "companyName": "Company Name",
-    "companyNameRequired": "Company Name *",
+    "companyNameRequired": "Company Name",
     "companyEmail": "Company Email",
     "companyWebsite": "Company Website",
     "taxId": "Tax ID Number",
     "country": "Country",
+    "billingAddress": "Billing Address",
+    "postalCode": "Postal Code",
+    "comments": "Comments",
+    "selectCompany": "Select Company",
+    "selectCompanyOption": "Select a company",
+    "selectCompanyToEdit": "Select a company to edit",
     "logo": "Logo",
+    "logoPlaceholder": "Logo",
+    "uploadLogo": "Upload Logo",
     "changeLogo": "Change logo",
     "removeLogo": "Remove logo",
     "noLogo": "No logo",
     "logoAlt": "Company logo",
     "placeholders": {
       "companyName": "Enter your company name",
-      "companyEmail": "📧 email@company.com",
-      "companyWebsite": "🌐 https://yourcompany.com",
-      "taxId": "🏢 Tax ID or fiscal number",
-      "selectCountry": "🌍 Select a country"
+      "companyEmail": "Email@company.com",
+      "companyWebsite": "https://yourcompany.com",
+      "taxId": "Tax ID or fiscal number",
+      "selectCountry": "Select a country",
+      "billingAddress": "Enter billing address",
+      "postalCode": "Enter postal code",
+      "comments": "Additional comments"
     },
     "errors": {
       "savingData": "Error saving company data",
-      "loadingData": "Error loading company data"
+      "loadingData": "Error loading company data",
+      "countriesLoad": "Error loading countries"
     },
     "success": {
       "dataSaved": "Company data saved successfully"
     }
+  },
+  "dropdown": {
+    "search": "Search...",
+    "noResults": "No results found",
+    "searchCountry": "Search country..."
   },
   "document_base": {
     "created": "Created",
@@ -249,6 +294,16 @@
       "unknown": "Unknown status"
     }
   },
+  "uploadModal": {
+    "title": "Upload Files",
+    "filesToUpload": "Files to upload",
+    "selectDocumentBase": "Select Document Base",
+    "chooseDocumentBase": "Choose a document base",
+    "noDocumentBases": "No document bases found.",
+    "selectFolder": "Select Folder",
+    "chooseFolder": "Choose a folder",
+    "noFolders": "No folders found for this document base."
+  },
   "legal": {
     "title": "Terms of Use & Legal Documents",
     "description": "Access our legal documents and policies regarding data handling and platform usage.",
@@ -268,5 +323,38 @@
     "updateDocumentBase": "Error updating document base",
     "deleteDocumentBase": "Error deleting document base",
     "failed": "Error"
+  },
+  "plan": {
+    "management": "Plan Management",
+    "currentPlan": "Current Plan",
+    "viewCurrentPlan": "View details of your current plan",
+    "availablePackages": "Available Packages", 
+    "viewAvailablePackages": "Explore plan options",
+    "viewBills": "View Bills",
+    "billingHistory": "Billing History",
+    "currentPlanDetails": "Current Plan Details",
+    "users": "Users",
+    "storage": "Storage",
+    "current": "Current",
+    "limit": "Limit",
+    "used": "Used",
+    "ofUserLimitUsed": "of user limit used",
+    "storageUsed": "storage used",
+    "renewalInformation": "Renewal Information",
+    "nextRenewalDate": "Next renewal date",
+    "renewNow": "Renew Now",
+    "increasePlanLimits": "Increase Plan Limits",
+    "increaseUserLimit": "Increase User Limit",
+    "increaseStorageLimit": "Increase Storage Limit",
+    "currentLimit": "Current limit",
+    "additionalCost": "Additional Cost",
+    "newUserLimit": "New user limit",
+    "newStorageLimit": "New storage limit (TB)",
+    "increase": "Increase",
+    "pricingDetails": "Pricing Details",
+    "additionalUsers": "Additional Users",
+    "additionalStorage": "Additional Storage",
+    "billingCycle": "Billing Cycle",
+    "changesTakeEffect": "Changes Take Effect"
   }
 }

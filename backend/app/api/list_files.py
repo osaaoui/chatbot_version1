@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query, Depends
 import os
 import json
 from app.services.metadata_store import has_already_been_processed
-from app.services.vectorstore_service import safe_collection_name
+from app.services.vectorstore_service_pg import safe_collection_name
 from app.core.config import settings
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings

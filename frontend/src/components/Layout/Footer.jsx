@@ -18,7 +18,7 @@ const Footer = () => {
             {t("footer.version", "TIA v2.1.0")}{" "}
             {t("footer.creation", "Tip is a Creation of")}
             <a
-              href="https://sofita.ca"
+              href="https://softia.ca"
               className="ml-1 transition-colors hover:underline"
               style={{ 
                 color: 'var(--color-primary-dark)',
@@ -32,13 +32,13 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Sofita.ca
+              Softia.ca
             </a>
           </span>
         </div>
 
         <div className="flex items-center space-x-2" style={{ color: 'var(--text-secondary)' }}>
-          <span>© {currentYear} Sofita.ca</span>
+          <span>© {currentYear} Softia.ca</span>
           <span>•</span>
           <span>{t("footer.rights", "All rights reserved")}</span>
         </div>

@@ -5,7 +5,9 @@ const Avatar = ({
   name = "", 
   size = "w-10 h-10",
   menuItems = [],
-  className = "" 
+  className = "",
+  showMenu = true,
+  profileImage = null
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
@@ -25,41 +27,43 @@ const Avatar = ({
   
   const defaultItems = [
     { label: t("avatar.myProfile"), onClick: () => console.log("Perfil") },
-    { label: "Configuración", onClick: () => console.log("Configuración") },
-    { label: "Ayuda", onClick: () => console.log("Ayuda") },
+    { label: t("avatar.settings"), onClick: () => console.log("Configuración") },
+    { label: t("avatar.help"), onClick: () => console.log("Ayuda") },
     { separator: true },
     { label: t("avatar.logout"), onClick: () => console.log("Logout") }
   ]
   
   const items = menuItems.length > 0 ? menuItems : defaultItems
   
+  const handleClick = () => {
+    if (showMenu) {
+      setIsOpen(!isOpen)
+    }
+  }
+  
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`${size} rounded-full font-semibold flex items-center justify-center transition-colors focus:outline-none focus:ring-2`}
+        onClick={handleClick}
+        className={`${size} rounded-full font-semibold flex items-center justify-center transition-colors focus:outline-none overflow-hidden ${showMenu ? 'focus:ring-2 cursor-pointer hover:opacity-80' : 'cursor-default'}`}
         style={{
-          backgroundColor: "var(--bg-secondary-dark)",
+          backgroundColor: profileImage ? "transparent" : "var(--bg-secondary-dark)",
           color: "var(--text-primary)",
           borderRadius: "50%"
         }}
-        onMouseEnter={(e) => {
-          e.target.style.backgroundColor = "var(--bg-tertiary)"
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.backgroundColor = "var(--bg-secondary-dark)"
-        }}
-        onFocus={(e) => {
-          e.target.style.boxShadow = "0 0 0 2px var(--color-primary-dark)"
-        }}
-        onBlur={(e) => {
-          e.target.style.boxShadow = "none"
-        }}
       >
-        {getInitial(name)}
+        {profileImage ? (
+          <img 
+            src={profileImage} 
+            alt={name}
+            className="w-full h-full object-cover rounded-full"
+          />
+        ) : (
+          getInitial(name)
+        )}
       </button>
       
-      {isOpen && (
+      {showMenu && isOpen && (
         <div 
           className="absolute z-[9999] right-0 mt-2 w-48 rounded-lg shadow-lg py-1"
           style={{

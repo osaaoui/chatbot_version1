@@ -7,16 +7,33 @@
   "avatar": {
     "myAccount": "Mi cuenta",
     "myProfile": "Mi Perfil",
+    "security": "Seguridad",
     "textOnly": "Solo texto",
     "logout": "Cerrar sesión",
     "legal": "Términos y Condiciones",
     "settings": "Configuración",
     "help": "Ayuda"
   },
+  "security": {
+    "title": "Configuración de Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "confirmNewPassword": "Confirmar Nueva Contraseña",
+    "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir mayúsculas, minúsculas, números y caracteres especiales.",
+    "twoFactorAuth": "Autenticación de Dos Factores",
+    "enable2FA": "Habilitar 2FA",
+    "twoFactorDescription": "Agrega una capa extra de seguridad a tu cuenta",
+    "placeholders": {
+      "currentPassword": "Ingresa tu contraseña actual",
+      "newPassword": "Ingresa la nueva contraseña",
+      "confirmPassword": "Confirma la nueva contraseña"
+    }
+  },
   "buttonModal": {
     "settings": "Configuración",
     "language": "Idioma",
-    "fontSize": "Tamaño de fuente", 
+    "fontSize": "Tamaño de fuente",
     "appearance": "Apariencia",
     "light": "Claro",
     "dark": "Oscuro"
@@ -31,13 +48,17 @@
     "edit": "Editar",
     "save": "Guardar",
     "cancel": "Cancelar",
+    "saveChanges": "Guardar Cambios",
     "addTeam": "Agregar Equipo"
   },
   "profile": {
     "title": "Mi Perfil",
+    "fullName": "Nombre Completo",
     "email": "Email:",
     "status": "Estado:",
     "active": "Activo",
+    "uploadPhoto": "Haz clic en el ícono para subir una foto",
+    "removePhoto": "Eliminar foto",
     "success": {
       "updated": "Perfil actualizado exitosamente"
     },
@@ -65,7 +86,8 @@
     "close": "Cerrar",
     "today": "Hoy",
     "yesterday": "Ayer",
-    "daysAgo": "Hace {{days}} días"
+    "daysAgo": "Hace {{days}} días",
+    "dismiss": "Descartar"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -123,7 +145,12 @@
     "create": "Crear",
     "newConversationButton": "Nueva Conversación",
     "goToEnd": "Ir al final",
-    "dropFilesHere": "Suelta los archivos aquí para subir"
+    "dropFilesHere": "Suelta los archivos aquí para subir",
+    "readDocs": "Conectar base de documentos",
+    "connectDocumentBase": "Conectar base de documentos",
+    "disconnectDocumentBase": "Desconectar base de documentos",
+    "documentBaseConnected": "Base de documentos conectada",
+    "documentBaseDisconnected": "Base de documentos desconectada"
   },
   "teams": {
     "title": "Equipos de Trabajo",
@@ -176,30 +203,47 @@
   "company": {
     "title": "Perfil empresa",
     "companyName": "Nombre de la empresa",
-    "companyNameRequired": "Nombre de la empresa *",
+    "companyNameRequired": "Nombre de la empresa",
     "companyEmail": "Email de la empresa",
     "companyWebsite": "Sitio web de la empresa",
     "taxId": "Número de identificación fiscal",
     "country": "País",
+    "billingAddress": "Dirección de facturación",
+    "postalCode": "Código postal",
+    "comments": "Comentarios",
+    "selectCompany": "Seleccionar empresa",
+    "selectCompanyOption": "Selecciona una empresa",
+    "selectCompanyToEdit": "Selecciona una empresa para editar",
     "logo": "Logo",
+    "logoPlaceholder": "Logo",
+    "uploadLogo": "Subir Logo",
     "changeLogo": "Cambiar logo",
     "removeLogo": "Eliminar logo",
     "noLogo": "Sin logo",
     "logoAlt": "Logo de la empresa",
     "placeholders": {
       "companyName": "Ingresa el nombre de tu empresa",
-      "companyEmail": "📧 email@empresa.com",
-      "companyWebsite": "🌐 https://tuempresa.com",
-      "taxId": "🏢 NIT o número fiscal",
-      "selectCountry": "🌍 Selecciona un país"
+      "companyEmail": "Email@empresa.com",
+      "companyWebsite": "https://tuempresa.com",
+      "taxId": "NIT o número fiscal",
+      "selectCountry": "Selecciona un país",
+      "billingAddress": "Ingresa dirección de facturación",
+      "postalCode": "Ingresa código postal",
+      "comments": "Comentarios adicionales"
     },
     "errors": {
       "savingData": "Error al guardar los datos de la empresa",
-      "loadingData": "Error al cargar los datos de la empresa"
+      "loadingData": "Error al cargar los datos de la empresa",
+      "countriesLoad": "Error al cargar países"
     },
     "success": {
       "dataSaved": "Datos de la empresa guardados correctamente"
     }
+  },
+  "dropdown": {
+    "search": "Buscar...",
+    "noResults": "No se encontraron resultados",
+    "searchCountry": "Buscar país..."
   },
   "document_base": {
     "created": "Creado",
@@ -250,6 +294,16 @@
       "unknown": "Estado desconocido"
     }
   },
+  "uploadModal": {
+    "title": "Subir Archivos",
+    "filesToUpload": "Archivos a subir",
+    "selectDocumentBase": "Seleccionar Base de Documentos",
+    "chooseDocumentBase": "Elige una base de documentos",
+    "noDocumentBases": "No se encontraron bases de documentos.",
+    "selectFolder": "Seleccionar Carpeta",
+    "chooseFolder": "Elige una carpeta",
+    "noFolders": "No se encontraron carpetas para esta base de documentos."
+  },
   "legal": {
     "title": "Términos de Uso y Documentos Legales",
     "description": "Accede a nuestros documentos legales y políticas sobre el manejo de datos y uso de la plataforma.",
@@ -270,14 +324,37 @@
     "deleteDocumentBase": "Error al eliminar la base de documentos",
     "failed": "Error"
   },
-  "uploadModal": {
-    "title": "Subir Archivos",
-    "filesToUpload": "Archivos a subir",
-    "selectDocumentBase": "Seleccionar Base de Documentos",
-    "chooseDocumentBase": "Elige una base de documentos",
-    "noDocumentBases": "No se encontraron bases de documentos.",
-    "selectFolder": "Seleccionar Carpeta",
-    "chooseFolder": "Elige una carpeta",
-    "noFolders": "No se encontraron carpetas para esta base de documentos."
+  "plan": {
+    "management": "Gestión de Plan",
+    "currentPlan": "Plan Actual",
+    "viewCurrentPlan": "Ver detalles de tu plan actual",
+    "availablePackages": "Paquetes Disponibles", 
+    "viewAvailablePackages": "Explorar opciones de planes",
+    "viewBills": "Ver Facturas",
+    "billingHistory": "Historial de facturación",
+    "currentPlanDetails": "Detalles del Plan Actual",
+    "users": "Usuarios",
+    "storage": "Almacenamiento",
+    "current": "Actual",
+    "limit": "Límite",
+    "used": "Usado",
+    "ofUserLimitUsed": "del límite de usuarios usado",
+    "storageUsed": "almacenamiento usado",
+    "renewalInformation": "Información de Renovación",
+    "nextRenewalDate": "Próxima fecha de renovación",
+    "renewNow": "Renovar Ahora",
+    "increasePlanLimits": "Aumentar Límites del Plan",
+    "increaseUserLimit": "Aumentar Límite de Usuarios",
+    "increaseStorageLimit": "Aumentar Límite de Almacenamiento",
+    "currentLimit": "Límite actual",
+    "additionalCost": "Costo adicional",
+    "newUserLimit": "Nuevo límite de usuarios",
+    "newStorageLimit": "Nuevo límite de almacenamiento (TB)",
+    "increase": "Aumentar",
+    "pricingDetails": "Detalles de Precios",
+    "additionalUsers": "Usuarios adicionales",
+    "additionalStorage": "Almacenamiento adicional",
+    "billingCycle": "Ciclo de facturación",
+    "changesTakeEffect": "Los cambios toman efecto"
   }
 }

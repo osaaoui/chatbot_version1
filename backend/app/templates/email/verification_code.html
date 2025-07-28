@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Código de Verificación - TiaBot</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .code-container {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            letter-spacing: 8px;
+            margin: 30px 0;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+        .expiry {
+            color: #ffc107;
+            font-size: 14px;
+            text-align: center;
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .security-note {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #6c757d;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖 TiaBot</div>
+            <h1 class="title">Verificación de Email</h1>
+        </div>
+        
+        <p class="message">
+            {% if is_resend %}
+                Has solicitado reenviar el código de verificación para tu dirección de email <strong>{{ to_email }}</strong>.
+            {% else %}
+                ¡Hola! Has solicitado verificar tu dirección de email <strong>{{ to_email }}</strong> para completar tu registro en TiaBot.
+            {% endif %}
+        </p>
+        
+        <div class="code-container">
+            {{ verification_code }}
+        </div>
+        
+        <div class="expiry">
+            ⏰ <strong>Este código expira en {{ expires_minutes }} minutos</strong>
+        </div>
+        
+        <div class="security-note">
+            <strong>🔒 Nota de seguridad:</strong> Nunca compartas este código con nadie. Nuestro equipo nunca te pedirá este código por teléfono o email.
+        </div>
+        
+        <div class="footer">
+            <p>Si no solicitaste este código, puedes ignorar este email de forma segura.</p>
+            <p>© 2025 TiaBot. Todos los derechos reservados.</p>
+            <p>Este es un email automático, por favor no respondas a este mensaje.</p>
+        </div>
+    </div>
+</body>
+</html>

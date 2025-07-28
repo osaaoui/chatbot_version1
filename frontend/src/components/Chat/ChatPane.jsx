@@ -3,7 +3,6 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { useAuth } from "../../context/AuthProvider"
 import ChatMessage from "./ChatMessage"
-import ConversationsModal from "./ConversationsModal"
 import ChatHeader from "./ChatHeader"
 import ChatInput from "./ChatInput"
 import ChatMessagesArea from "./ChatMessageArea"
@@ -12,7 +11,7 @@ import { useScrollBehavior } from "../../hooks/chat/useScrollBehavior"
 import { useMarkdownRenderer } from "../../hooks/chat/useMarkdownRenderer"
 import { useConversationLogic } from "../../hooks/chat/useConversationLogic"
 
-function ChatPane({
+const ChatPane = React.memo(function ChatPane({
   question,
   onQuestionChange,
   onSend,
@@ -24,8 +23,8 @@ function ChatPane({
   hasMoreMessages,
   isLoadingMessages,
   loadMoreMessages,
-  onFileUpload, // New prop for global file upload
-  isUploading, // New prop for global uploading state
+  onFileUpload,
+  isUploading,
 }) {
   const { token } = useAuth()
 
@@ -69,7 +68,6 @@ function ChatPane({
     },
     [setSelectedSource],
   )
-
   const submitQuestion = useCallback(async () => {
     const trimmed = question.trim()
     if (!trimmed || isLoading) return
@@ -92,6 +90,18 @@ function ChatPane({
     [onFileUpload],
   )
 
+  const handleCloseModal = useCallback(() => {
+    setShowUploadModal(false)
+  }, [])
+
+  const handleShowConversations = useCallback(() => {
+    setShowConversations(true)
+  }, [setShowConversations])
+
+  const handleSelectConversation = useCallback((conv) => {
+    selectConversation(token, conv)
+  }, [selectConversation, token])
+
   const renderedMessages = useMemo(() => {
     return chatHistory
       .filter((msg) => msg && msg.id && msg.type)
@@ -110,15 +120,10 @@ function ChatPane({
       <ChatHeader
         currentConversation={currentConversation}
         toggleSidebar={toggleSidebar}
-        onShowConversations={() => setShowConversations(true)}
-      />
-      <ConversationsModal
-        isOpen={showConversations}
-        onClose={() => setShowConversations(false)}
+        onShowConversations={handleShowConversations}
         conversations={conversations}
-        currentConversation={currentConversation}
         isLoadingConversations={isLoadingConversations}
-        onSelectConversation={(conv) => selectConversation(token, conv)}
+        onSelectConversation={handleSelectConversation}
         onCreateNew={handleCreateNewConversation}
         formatDate={formatDate}
       />
@@ -141,20 +146,20 @@ function ChatPane({
         question={question}
         onQuestionChange={onQuestionChange}
         onSubmit={submitQuestion}
-        isLoading={isLoading || isUploading} // Disable input if uploading
+        isLoading={isLoading || isUploading}
         currentConversation={currentConversation}
-        onFilesDropped={handleFilesDropped} // Pass the new handler
+        onFilesDropped={handleFilesDropped}
       />
 
       <UploadModal
         isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
+        onClose={handleCloseModal}
         files={filesToUpload}
         onConfirmUpload={handleUploadConfirmed}
         isUploading={isUploading}
       />
     </div>
   )
-}
+})
 
 export default ChatPane

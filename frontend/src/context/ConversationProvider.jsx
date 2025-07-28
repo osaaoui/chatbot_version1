@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
 import axios from 'axios';
+import { useAuth } from "./AuthProvider"; 
 
 const ConversationContext = createContext();
 
 const API_BASE = import.meta.env.VITE_API_URL + '/api/v2';
 
 export const ConversationProvider = ({ children }) => {
+  const { user, token } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -14,13 +16,17 @@ export const ConversationProvider = ({ children }) => {
   const [hasMoreMessages, setHasMoreMessages] = useState(false);
   const [nextCursor, setNextCursor] = useState(null);
 
-  const fetchConversations = useCallback(async (token) => {
-    if (!token) return;
+  const fetchConversations = useCallback(async (tokenParam) => {
+    const authToken = tokenParam || token;
+    
+    if (!user || !authToken) {
+      return;
+    }
     
     try {
       setIsLoadingConversations(true);
       const response = await axios.get(`${API_BASE}/conversations`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
 
       if (response.data.success) {
@@ -31,20 +37,22 @@ export const ConversationProvider = ({ children }) => {
     } finally {
       setIsLoadingConversations(false);
     }
-  }, []);
+  }, [user, token]);
 
-  const createConversation = useCallback(async (token, title) => {
-    if (!token || !title?.trim()) return null;
+  const createConversation = useCallback(async (tokenParam, title) => {
+    const authToken = tokenParam || token;
+    
+    if (!user || !authToken || !title?.trim()) return null;
     
     try {
       const response = await axios.post(
         `${API_BASE}/conversations`, 
         { name_conversation: title.trim() },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${authToken}` } }
       );
 
       if (response.data.success) {
-        await fetchConversations(token);
+        await fetchConversations(authToken);
         const conversationIdMatch = response.data.data.conversation_id.match(/UUID\('([^']+)'\)/);
         return conversationIdMatch ? conversationIdMatch[1] : null;
       }
@@ -52,10 +60,12 @@ export const ConversationProvider = ({ children }) => {
       console.error('Error creating conversation:', err);
     }
     return null;
-  }, [fetchConversations]);
+  }, [fetchConversations, user, token]);
 
-  const fetchMessages = useCallback(async (token, conversationId, loadMore = false, preservePendingMessages = false) => {
-    if (!token || !conversationId) return;
+  const fetchMessages = useCallback(async (tokenParam, conversationId, loadMore = false, preservePendingMessages = false) => {
+    const authToken = tokenParam || token;
+    
+    if (!user || !authToken || !conversationId) return;
     
     try {
       setIsLoadingMessages(true);
@@ -67,7 +77,7 @@ export const ConversationProvider = ({ children }) => {
       }
 
       const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
 
       if (response.data.success) {
@@ -145,9 +155,11 @@ export const ConversationProvider = ({ children }) => {
     } finally {
       setIsLoadingMessages(false);
     }
-  }, [nextCursor]);
+  }, [nextCursor, user, token]);
 
-  const selectConversation = useCallback(async (token, conversation, preservePendingMessages = false) => {
+  const selectConversation = useCallback(async (tokenParam, conversation, preservePendingMessages = false) => {
+    const authToken = tokenParam || token;
+    
     setCurrentConversation(conversation);
     setNextCursor(null);
     setHasMoreMessages(false);
@@ -156,24 +168,26 @@ export const ConversationProvider = ({ children }) => {
       setMessages([]);
     }
     
-    if (conversation) {
-      await fetchMessages(token, conversation.conversation_id, false, preservePendingMessages);
+    if (conversation && user && authToken) {
+      await fetchMessages(authToken, conversation.conversation_id, false, preservePendingMessages);
     } else if (!preservePendingMessages) {
       setMessages([]);
     }
-  }, [fetchMessages]);
+  }, [fetchMessages, user, token]);
 
   const setCurrentConversationDirect = useCallback((conversation) => {
     setCurrentConversation(conversation);
   }, []);
 
-  const loadMoreMessages = useCallback(async (token) => {
-    if (!token || !hasMoreMessages || isLoadingMessages || !currentConversation || !nextCursor) {
+  const loadMoreMessages = useCallback(async (tokenParam) => {
+    const authToken = tokenParam || token;
+    
+    if (!user || !authToken || !hasMoreMessages || isLoadingMessages || !currentConversation || !nextCursor) {
       return;
     }
   
-    return await fetchMessages(token, currentConversation.conversation_id, true, false);
-  }, [hasMoreMessages, isLoadingMessages, currentConversation, nextCursor, fetchMessages]);
+    return await fetchMessages(authToken, currentConversation.conversation_id, true, false);
+  }, [hasMoreMessages, isLoadingMessages, currentConversation, nextCursor, fetchMessages, user, token]);
 
   const addMessageToConversation = useCallback((newMessage) => {
     const messageToAdd = {
@@ -238,6 +252,24 @@ export const ConversationProvider = ({ children }) => {
     });
   }, []);
 
+  const clearConversationData = useCallback(() => {
+    setConversations([]);
+    setCurrentConversation(null);
+    setMessages([]);
+    setIsLoadingConversations(false);
+    setIsLoadingMessages(false);
+    setHasMoreMessages(false);
+    setNextCursor(null);
+  }, []);
+
+  useEffect(() => {
+    if (user && token) {
+      fetchConversations(token);
+    } else {
+      clearConversationData();
+    }
+  }, [user, token, fetchConversations, clearConversationData]);
+
   const contextValue = useMemo(() => ({
     conversations,
     currentConversation,
@@ -253,7 +285,8 @@ export const ConversationProvider = ({ children }) => {
     fetchMessages,
     loadMoreMessages,
     addMessageToConversation,
-    updateMessageInConversation
+    updateMessageInConversation,
+    clearConversationData
   }), [
     conversations,
     currentConversation,
@@ -269,7 +302,8 @@ export const ConversationProvider = ({ children }) => {
     fetchMessages,
     loadMoreMessages,
     addMessageToConversation,
-    updateMessageInConversation 
+    updateMessageInConversation,
+    clearConversationData
   ]);
 
   return (

@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../context/AuthProvider";
+import { useProfileImage } from "../../context/useProfileImage"; 
 import Modal from "../ui/Modal.jsx";
+import Avatar from "../ui/Avatar.jsx";
+import Input from "../ui/Input.jsx";
 import axios from "axios";
 
 const ProfileModal = ({ isOpen, onClose }) => {
-  const { user, token, login } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const { t } = useTranslation();
+  const { profileImage, saveImage, removeImage } = useProfileImage();
+  const fileInputRef = useRef(null);
   
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -16,10 +21,8 @@ const ProfileModal = ({ isOpen, onClose }) => {
     role: ''
   });
   const [formData, setFormData] = useState({
-    email: ''
+    fullName: ''
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     if (isOpen && token) {
@@ -30,7 +33,6 @@ const ProfileModal = ({ isOpen, onClose }) => {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      setError('');
       
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/auth/profile`,
@@ -48,14 +50,34 @@ const ProfileModal = ({ isOpen, onClose }) => {
           email,
           role
         });
-        setFormData({ email });
+        setFormData({ fullName: full_name });
       }
     } catch (err) {
       console.error('Error loading profile:', err);
-      setError(t('profile.error.loadFailed') || t('errors.failed'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      saveImage(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    removeImage();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCameraClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleInputChange = (e) => {
@@ -69,12 +91,10 @@ const ProfileModal = ({ isOpen, onClose }) => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      setError('');
-      setSuccess('');
 
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}/api/auth/profile`,
-        { email: formData.email },
+        { full_name: formData.fullName },
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -88,38 +108,28 @@ const ProfileModal = ({ isOpen, onClose }) => {
         
         setProfileData(prev => ({
           ...prev,
-          email: result.profile.email
+          fullName: result.profile.full_name
         }));
         
-        if (result.token_regenerated && result.new_token) {
-          const updatedUser = {
+        if (updateUser) {
+          updateUser({
             ...user,
-            email: result.profile.email
-          };
-          
-          login(result.new_token, updatedUser);
+            fullName: result.profile.full_name
+          });
         }
         
-        setSuccess(t('profile.success.updated') || t('common.success'));
         setIsEditing(false);
       }
     } catch (err) {
       console.error('Error updating profile:', err);
-      setError(
-        err.response?.data?.detail || 
-        t('profile.error.updateFailed') || 
-        t('errors.failed')
-      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    setFormData({ email: profileData.email });
+    setFormData({ fullName: profileData.fullName });
     setIsEditing(false);
-    setError('');
-    setSuccess('');
   };
 
   const handleClose = () => {
@@ -127,101 +137,140 @@ const ProfileModal = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const buttons = isEditing ? [
-    { 
-      label: t('modal.cancel'), 
-      onClick: handleCancel, 
-      variant: "secondary",
-      disabled: loading
-    },
-    { 
-      label: t('modal.save'), 
-      onClick: handleSave, 
-      variant: "primary",
-      disabled: loading
+  const getModalButtons = () => {
+    if (isEditing) {
+      return [
+        {
+          label: t('modal.cancel'),
+          onClick: handleCancel,
+          variant: 'secondary'
+        },
+        {
+          label: t('modal.save'),
+          onClick: handleSave,
+          variant: 'primary'
+        }
+      ];
+    } else {
+      return [
+        {
+          label: t('modal.edit'),
+          onClick: () => setIsEditing(true),
+          variant: 'primary'
+        }
+      ];
     }
-  ] : [
-    { 
-      label: t('modal.close'), 
-      onClick: handleClose, 
-      variant: "secondary" 
-    },
-    { 
-      label: t('modal.edit'), 
-      onClick: () => setIsEditing(true), 
-      variant: "primary" 
-    }
-  ];
-
-  const content = (
-    <div className="space-y-4">
-      <h2 className="text-heading text-xl font-bold mb-4">
-        {t('profile.title')}
-      </h2>
-      
-      {loading && (
-        <div className="flex justify-center items-center py-4">
-          <div className="text-body">{t('common.loading')}</div>
-        </div>
-      )}
-      
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-      
-      {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-          {success}
-        </div>
-      )}
-      
-      {!loading && (
-        <>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-body">
-              {t('auth.fullName')}
-            </label>
-            <p className="text-heading">{profileData.fullName}</p>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-body">
-              {t('auth.email')}
-            </label>
-            {isEditing ? (
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="input-base w-full"
-                disabled={loading}
-              />
-            ) : (
-              <p className="text-heading">{profileData.email}</p>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-body">
-              {t('auth.selectRole')}
-            </label>
-            <p className="text-heading">{profileData.role}</p>
-          </div>
-        </>
-      )}
-    </div>
-  );
+  };
 
   return (
     <Modal 
       isOpen={isOpen} 
       onClose={handleClose}
-      buttons={buttons}
+      size="small"
+      buttons={getModalButtons()}
     >
-      {content}
+      {/* Header con título */}
+      <div className="flex items-center gap-2 mb-6">
+        <svg className="w-5 h-5 text-body" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <h2 className="text-heading text-lg font-semibold">
+          {t('profile.title')}
+        </h2>
+      </div>
+
+      {loading && (
+        <div className="flex justify-center items-center py-8">
+          <div className="text-body">{t('common.loading')}</div>
+        </div>
+      )}
+      
+      {!loading && (
+        <>
+          {/* Avatar section */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="relative">
+              <Avatar 
+                name={profileData.fullName || 'User'}
+                size="w-20 h-20"
+                className="text-xl"
+                showMenu={false}
+                profileImage={profileImage}
+              />
+              <button
+                onClick={handleCameraClick}
+                className="profile-camera-btn"
+                title={t('profile.uploadPhoto')}
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C13.1 2 14 2.9 14 4H16L17 5V6C17.8 6.4 18.4 7.1 18.7 8H20C21.1 8 22 8.9 22 10V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V10C2 8.9 2.9 8 4 8H5.3C5.6 7.1 6.2 6.4 7 6V5L8 4H10C10 2.9 10.9 2 12 2M12 7C9.24 7 7 9.24 7 12S9.24 17 12 17 17 14.76 17 12 14.76 7 12 7M12 9C13.66 9 15 10.34 15 12S13.66 15 12 15 9 13.66 9 12 10.34 9 12 9Z"/>
+                </svg>
+              </button>
+              
+              {/* Input file oculto */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </div>
+            
+            <p className="profile-upload-text">
+              {t('profile.uploadPhoto')}
+            </p>
+            
+            {/* Botón para remover imagen */}
+            {profileImage && (
+              <button
+                onClick={handleRemoveImage}
+                className="btn-secondary mt-4"
+              >
+                {t('profile.removePhoto')}
+              </button>
+            )}
+          </div>
+
+          {/* Form fields */}
+          <div className="space-y-4">
+            {isEditing ? (
+              <Input
+                type="text"
+                name="fullName"
+                label={t('auth.fullName')}
+                value={formData.fullName}
+                onChange={handleInputChange}
+                disabled={loading}
+                required
+                allowNumbers={false}
+                allowLetters={true}
+                allowSpecialChars={false}
+                maxLength={35}
+                placeholder={t('auth.fullName')}
+              />
+            ) : (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-body">
+                  {t('auth.fullName')}
+                </label>
+                <div className="profile-input-disabled input-base w-full cursor-not-allowed">
+                  {profileData.fullName}
+                </div>
+              </div>
+            )}
+            
+            <Input
+              type="email"
+              name="email"
+              label={t('profile.email')}
+              value={profileData.email}
+              disabled={true}
+              className="profile-input-readonly cursor-not-allowed"
+            />
+          </div>
+        </>
+      )}
     </Modal>
   );
 };
