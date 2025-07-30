@@ -4,7 +4,7 @@ from app.core.base_service import BaseService
 from app.api import chat, upload, processing, list_files
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import auth_endpoint
-from app.api.postgresql import user_profile 
+from app.api.postgresql import user_profile, stripe_transactions
 from app.api import viewer
 from fastapi.staticfiles import StaticFiles
 import os
@@ -15,6 +15,7 @@ from app.api.postgresql import folders, documents, conversation, message, compan
 from app.api.postgresql import country
 from app.core.circuit_breaker import CircuitBreakerOpenException
 from fastapi.responses import JSONResponse
+from app.api.postgresql import stripe_transactions
 
 
 
@@ -104,3 +105,4 @@ app.include_router(user_settings.router, prefix="/api/v2/settings", tags=["user_
 app.include_router(serve_files_router, prefix="/api")  
 app.include_router(country.router, prefix="/api/v2/countries", tags=["countries"])
 app.include_router(emailverification.router, prefix="/api/v2/email-verification", tags=["email_verification"])  # NUEVA LÍNEA
+app.include_router(stripe_transactions.router, prefix="/api/v2/stripe", tags=["stripe"])

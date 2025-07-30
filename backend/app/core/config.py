@@ -21,5 +21,10 @@ class Settings:
     
     # Email templates directory
     EMAIL_TEMPLATES_DIR = os.getenv("EMAIL_TEMPLATES_DIR", "app/templates/email")
+    
+    # ✅ NUEVAS CONFIGURACIONES DE STRIPE
+    STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+    STRIPE_KEY = os.getenv("STRIPE_KEY")
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 settings = Settings()

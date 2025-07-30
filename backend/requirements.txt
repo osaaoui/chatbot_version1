@@ -50,3 +50,5 @@ langchain-community[pgvector]
 pgvector
 langchain_postgres
 sqlalchemy
+stripe==12.3.0
+python-dotenv==1.1.1

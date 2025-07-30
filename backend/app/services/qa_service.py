@@ -3,7 +3,7 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
 from langchain_core.prompts import ChatPromptTemplate
 
-from . import vectorstore_service  # Handles vectorstore loading/retrieval
+from . import vectorstore_service_pg  # Handles vectorstore loading/retrieval
 from ..core.config import settings  # Loads env vars like OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)
@@ -112,7 +112,7 @@ def get_answer(question, user_id):
 
     logger.info(f"Received question from user '{user_id}': '{question}'")
 
-    retriever = vectorstore_service.get_retriever(user_id, search_kwargs={"k": 15})
+    retriever = vectorstore_service_pg.get_retriever(user_id, search_kwargs={"k": 15})
     if not retriever:
         logger.warning("No retriever found; vector store may be empty.")
         return "Could not access your documents to answer the question.", []
